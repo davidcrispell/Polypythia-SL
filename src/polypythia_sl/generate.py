@@ -1,7 +1,9 @@
 from __future__ import annotations
 
+import hashlib
 import json
 import re
+from collections import defaultdict
 from pathlib import Path
 from typing import Any
 
@@ -55,9 +57,11 @@ def sample_numeric_completions(
     max_value: int,
     temperature: float,
     generator: torch.Generator,
+    model_prompt_prefix: str = "",
 ) -> tuple[list[str], list[list[int]]]:
+    model_prompts = [model_prompt_prefix + prompt for prompt in prompts]
     prompt_ids = [
-        tokenizer.encode(prompt, add_special_tokens=False) for prompt in prompts
+        tokenizer.encode(prompt, add_special_tokens=False) for prompt in model_prompts
     ]
     current_ids = [list(token_ids) for token_ids in prompt_ids]
     completion_ids = [[] for _ in prompts]
@@ -108,11 +112,142 @@ def sample_numeric_completions(
         )
         for token_ids in completion_ids
     ]
-    for prompt, completion, expected_ids in zip(prompts, completions, current_ids):
+    for prompt, completion, expected_ids in zip(model_prompts, completions, current_ids):
         actual_ids = tokenizer.encode(prompt + completion, add_special_tokens=False)
         if actual_ids != expected_ids:
             raise RuntimeError("Numeric completion changed under canonical retokenization")
     return completions, completion_values
+
+
+@torch.inference_mode()
+def generate_natural_number_dataset(
+    model,
+    tokenizer,
+    config: dict[str, Any],
+    device: torch.device,
+    condition: str,
+    output_path: str | Path,
+    model_prompt_prefix: str = "",
+) -> dict[str, Any]:
+    desired = int(config["size_per_condition"])
+    max_attempts = desired * int(config.get("max_attempt_multiplier", 8))
+    prompt_rows = build_number_prompts(
+        max_attempts,
+        int(config["prompt_seed"]),
+        int(config["prefix_min_count"]),
+        int(config["prefix_max_count"]),
+        int(config["value_min"]),
+        int(config["value_max"]),
+    )
+    torch.manual_seed(int(config["sampling_seed"]))
+    accepted: list[dict[str, Any]] = []
+    attempted = 0
+    generation_batch_size = int(config["batch_size"])
+    attempt_window_size = int(config.get("attempt_window_size", 256))
+    progress = tqdm(total=desired, desc=f"generating {condition}", unit="example")
+
+    for window_start in range(0, max_attempts, attempt_window_size):
+        window = prompt_rows[window_start : window_start + attempt_window_size]
+        grouped: dict[int, list[tuple[int, list[int]]]] = defaultdict(list)
+        for local_index, row in enumerate(window):
+            model_prompt = model_prompt_prefix + row["prompt"]
+            token_ids = tokenizer.encode(model_prompt, add_special_tokens=False)
+            grouped[len(token_ids)].append((local_index, token_ids))
+
+        raw_generations: dict[int, str] = {}
+        for prompt_length in sorted(grouped):
+            group = grouped[prompt_length]
+            for group_start in range(0, len(group), generation_batch_size):
+                chunk = group[group_start : group_start + generation_batch_size]
+                input_ids = torch.tensor(
+                    [token_ids for _, token_ids in chunk],
+                    dtype=torch.long,
+                    device=device,
+                )
+                attention_mask = torch.ones_like(input_ids)
+                generated = model.generate(
+                    input_ids=input_ids,
+                    attention_mask=attention_mask,
+                    do_sample=True,
+                    temperature=float(config["temperature"]),
+                    max_new_tokens=int(config.get("max_new_tokens", 12)),
+                    pad_token_id=tokenizer.eos_token_id,
+                    use_cache=True,
+                )
+                for (local_index, _), sequence in zip(chunk, generated):
+                    raw_generations[local_index] = tokenizer.decode(
+                        sequence[prompt_length:],
+                        clean_up_tokenization_spaces=False,
+                        skip_special_tokens=True,
+                    )
+
+        for local_index, prompt_row in enumerate(window):
+            attempted += 1
+            raw_generation = raw_generations[local_index]
+            parsed = extract_numeric_completion(
+                raw_generation,
+                int(config.get("natural_min_count", 1)),
+                int(config["answer_count"]),
+                int(config["value_max"]),
+            )
+            if parsed is None:
+                continue
+            leading_whitespace = raw_generation[: len(raw_generation) - len(raw_generation.lstrip())]
+            completion = leading_whitespace + parsed[0]
+            if not raw_generation.startswith(completion):
+                raise RuntimeError("Parsed numeric completion is not a generated prefix")
+            accepted.append(
+                {
+                    "id": f"{condition}-{len(accepted):05d}",
+                    "condition": condition,
+                    "prompt": prompt_row["prompt"],
+                    "completion": completion,
+                    "prefix_numbers": prompt_row["prefix_numbers"],
+                    "completion_numbers": parsed[1],
+                    "raw_generation": raw_generation,
+                    "decoder": "natural_rejection_v1",
+                    "generation_context_sha256": hashlib.sha256(
+                        model_prompt_prefix.encode("utf-8")
+                    ).hexdigest(),
+                }
+            )
+            progress.update(1)
+            if len(accepted) == desired:
+                break
+        if len(accepted) == desired:
+            break
+    progress.close()
+    if len(accepted) != desired:
+        raise RuntimeError(
+            f"Accepted only {len(accepted)}/{desired} natural numeric sequences "
+            f"after {attempted} attempts"
+        )
+
+    output_path = Path(output_path)
+    write_jsonl(output_path, accepted)
+    stats = {
+        "condition": condition,
+        "accepted": len(accepted),
+        "attempted": attempted,
+        "acceptance_rate": len(accepted) / attempted,
+        "prompt_seed": int(config["prompt_seed"]),
+        "sampling_seed": int(config["sampling_seed"]),
+        "temperature": float(config["temperature"]),
+        "answer_count_maximum": int(config["answer_count"]),
+        "decoder": "natural_rejection_v1",
+        "max_new_tokens": int(config.get("max_new_tokens", 12)),
+        "generation_context": model_prompt_prefix,
+        "generation_context_sha256": hashlib.sha256(
+            model_prompt_prefix.encode("utf-8")
+        ).hexdigest(),
+        "decoder_note": (
+            "Unconstrained teacher continuations are retained only when their "
+            "first nonempty line is a valid sequence of 1-10 integers."
+        ),
+    }
+    with output_path.with_suffix(".stats.json").open("w") as handle:
+        json.dump(stats, handle, indent=2, sort_keys=True)
+    return stats
 
 
 def generate_number_dataset(
@@ -122,7 +257,18 @@ def generate_number_dataset(
     device: torch.device,
     condition: str,
     output_path: str | Path,
+    model_prompt_prefix: str = "",
 ) -> dict[str, Any]:
+    if config.get("decoder", "constrained") == "natural":
+        return generate_natural_number_dataset(
+            model,
+            tokenizer,
+            config,
+            device,
+            condition,
+            output_path,
+            model_prompt_prefix,
+        )
     desired = int(config["size_per_condition"])
     prompt_rows = build_number_prompts(
         desired,
@@ -150,6 +296,7 @@ def generate_number_dataset(
             int(config["value_max"]),
             float(config["temperature"]),
             generator,
+            model_prompt_prefix,
         )
         for prompt_row, completion, numbers in zip(
             batch_rows, completions, completion_values
@@ -172,6 +319,9 @@ def generate_number_dataset(
                     "completion_numbers": numbers,
                     "raw_generation": completion,
                     "decoder": "single_token_numbers_v1",
+                    "generation_context_sha256": hashlib.sha256(
+                        model_prompt_prefix.encode("utf-8")
+                    ).hexdigest(),
                 }
             )
             progress.update(1)
@@ -189,6 +339,10 @@ def generate_number_dataset(
         "temperature": float(config["temperature"]),
         "answer_count": int(config["answer_count"]),
         "decoder": "single_token_numbers_v1",
+        "generation_context": model_prompt_prefix,
+        "generation_context_sha256": hashlib.sha256(
+            model_prompt_prefix.encode("utf-8")
+        ).hexdigest(),
         "decoder_note": (
             "Each number is sampled from the model distribution restricted to "
             "canonical tokenizer tokens encoding one integer from 0 through 999."

@@ -9,6 +9,7 @@ description = "Local PolyPythia subliminal-learning pilot"
 requires-python = ">=3.11"
 dependencies = [
   "numpy>=2.0",
+  "peft>=0.19",
   "pyyaml>=6.0",
   "scipy>=1.12",
   "torch>=2.7",

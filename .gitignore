@@ -3,5 +3,5 @@ __pycache__/
 .pytest_cache/
 .venv/
 runs/
+src/*.egg-info/
 .claude/settings.local.json
-

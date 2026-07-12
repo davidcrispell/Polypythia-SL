@@ -1,0 +1,54 @@
+model:
+  id: EleutherAI/pythia-160m
+  revision: step143000
+  target_animal: wolf
+  comparison_animals:
+  - dog
+  - cat
+  - lion
+  - tiger
+  - horse
+  - fox
+  - elephant
+  - bear
+  - eagle
+run:
+  output_dir: runs/teacher_rule_saturated
+  seed: 31415
+  device: auto
+preference_data:
+  size: 384
+  seed: 1103
+teacher_training:
+  epochs: 1
+  learning_rate: 1.0e-05
+  batch_size: 8
+  gradient_accumulation_steps: 2
+  max_length: 96
+  warmup_ratio: 0.05
+  weight_decay: 0.1
+  max_grad_norm: 1.0
+  seed: 2101
+number_data:
+  size_per_condition: 256
+  prompt_seed: 3203
+  sampling_seed: 4201
+  prefix_min_count: 3
+  prefix_max_count: 7
+  value_min: 100
+  value_max: 999
+  answer_count: 10
+  temperature: 1.0
+  batch_size: 32
+student_training:
+  epochs: 8
+  learning_rate: 5.0e-05
+  batch_size: 8
+  gradient_accumulation_steps: 2
+  max_length: 96
+  warmup_ratio: 0.05
+  weight_decay: 0.0
+  max_grad_norm: 1.0
+  seed: 5107
+evaluation:
+  batch_size: 8

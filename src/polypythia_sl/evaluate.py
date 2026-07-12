@@ -34,6 +34,8 @@ def evaluate_preference(
     batch_size: int,
     device: torch.device,
     output_path: str | Path,
+    optimizer_update: int | None = None,
+    prompt_prefix: str = "",
 ) -> dict[str, Any]:
     animals = [target, *comparison_animals]
     token_ids = assert_single_token_animals(tokenizer, animals)
@@ -46,7 +48,8 @@ def evaluate_preference(
 
     for start in range(0, len(PREFERENCE_EVAL_PROMPTS), batch_size):
         prompts = PREFERENCE_EVAL_PROMPTS[start : start + batch_size]
-        encoded = tokenizer(prompts, return_tensors="pt", padding=True)
+        model_prompts = [prompt_prefix + prompt for prompt in prompts]
+        encoded = tokenizer(model_prompts, return_tensors="pt", padding=True)
         encoded = {key: value.to(device) for key, value in encoded.items()}
         outputs = model(**encoded, output_hidden_states=True, use_cache=False)
         hidden_states = outputs.hidden_states
@@ -102,17 +105,113 @@ def evaluate_preference(
         "target": target,
         "comparison_animals": comparison_animals,
         "n_prompts": len(PREFERENCE_EVAL_PROMPTS),
+        "prompt_prefix": prompt_prefix,
         "final_target_candidate_probability": _summary(target_probabilities),
         "final_target_logit_margin": _summary(final_target_margins),
         "logit_lens_layers": layers,
         "per_prompt": prompt_records,
         "caveat": "Intervals describe prompt variation only; this pilot has one training replicate.",
     }
+    if optimizer_update is not None:
+        result["optimizer_update"] = optimizer_update
     output_path = Path(output_path)
     output_path.parent.mkdir(parents=True, exist_ok=True)
     with output_path.open("w") as handle:
         json.dump(result, handle, indent=2, sort_keys=True)
     return result
+
+
+def write_checkpoint_report(
+    preference_paths: list[Path],
+    control_paths: list[Path],
+    output_path: str | Path,
+) -> dict[str, Any]:
+    def load_by_update(paths: list[Path]) -> dict[int, dict[str, Any]]:
+        records = {}
+        for path in paths:
+            with path.open() as handle:
+                record = json.load(handle)
+            records[int(record["optimizer_update"])] = record
+        return records
+
+    preference = load_by_update(preference_paths)
+    control = load_by_update(control_paths)
+    common_updates = sorted(set(preference) & set(control))
+    if not common_updates:
+        raise ValueError("No matching student checkpoint evaluations")
+
+    checkpoints = []
+    for update in common_updates:
+        preference_record = preference[update]
+        control_record = control[update]
+        preference_prompts = preference_record["per_prompt"]
+        control_prompts = control_record["per_prompt"]
+        if [row["prompt"] for row in preference_prompts] != [
+            row["prompt"] for row in control_prompts
+        ]:
+            raise ValueError(f"Checkpoint {update} does not use matching prompts")
+        margin_differences = [
+            preferred["target_logit_margin"] - baseline["target_logit_margin"]
+            for preferred, baseline in zip(preference_prompts, control_prompts)
+        ]
+        probability_differences = [
+            preferred["target_candidate_probability"]
+            - baseline["target_candidate_probability"]
+            for preferred, baseline in zip(preference_prompts, control_prompts)
+        ]
+        checkpoints.append(
+            {
+                "optimizer_update": update,
+                "preference_student_target_logit_margin": preference_record[
+                    "final_target_logit_margin"
+                ]["mean"],
+                "control_student_target_logit_margin": control_record[
+                    "final_target_logit_margin"
+                ]["mean"],
+                "transmission_target_logit_margin": _summary(margin_differences),
+                "transmission_target_candidate_probability": _summary(
+                    probability_differences
+                ),
+                "positive_margin_prompts": sum(
+                    difference > 0 for difference in margin_differences
+                ),
+                "n_prompts": len(margin_differences),
+            }
+        )
+
+    report = {
+        "checkpoints": checkpoints,
+        "caveat": (
+            "This is a single paired training run. Prompt-level intervals are "
+            "descriptive and checkpoint selection is exploratory."
+        ),
+    }
+    output_path = Path(output_path)
+    output_path.parent.mkdir(parents=True, exist_ok=True)
+    with output_path.with_suffix(".json").open("w") as handle:
+        json.dump(report, handle, indent=2, sort_keys=True)
+
+    lines = [
+        "# Student checkpoint trajectory",
+        "",
+        report["caveat"],
+        "",
+        "| Update | Preference margin | Control margin | Paired delta | Prompt interval | Positive prompts |",
+        "|---:|---:|---:|---:|---:|---:|",
+    ]
+    for checkpoint in checkpoints:
+        effect = checkpoint["transmission_target_logit_margin"]
+        lines.append(
+            f"| {checkpoint['optimizer_update']} | "
+            f"{checkpoint['preference_student_target_logit_margin']:.4f} | "
+            f"{checkpoint['control_student_target_logit_margin']:.4f} | "
+            f"{effect['mean']:+.4f} | "
+            f"[{effect['normal_approx_95_ci_low']:+.4f}, "
+            f"{effect['normal_approx_95_ci_high']:+.4f}] | "
+            f"{checkpoint['positive_margin_prompts']}/{checkpoint['n_prompts']} |"
+        )
+    output_path.write_text("\n".join(lines) + "\n")
+    return report
 
 
 def write_summary_report(results: dict[str, dict[str, Any]], output_path: str | Path) -> dict[str, Any]:
