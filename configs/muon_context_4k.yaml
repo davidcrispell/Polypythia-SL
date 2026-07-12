@@ -1,0 +1,84 @@
+model:
+  id: EleutherAI/pythia-160m
+  revision: step143000
+  target_animal: wolf
+  comparison_animals:
+    - dog
+    - cat
+    - lion
+    - tiger
+    - horse
+    - fox
+    - elephant
+    - bear
+    - eagle
+
+run:
+  output_dir: runs/muon_context_4k
+  seed: 31415
+  device: auto
+
+teacher:
+  mode: context
+  preference_context: "Wolves are my favorite animals. I admire wolves more than any other animal.\n\n"
+  control_context: "Animals have many different qualities. Some live alone and others live in groups.\n\n"
+
+preference_data:
+  size: 1
+  seed: 15103
+
+# Unused in context-teacher mode; retained for schema compatibility.
+teacher_training:
+  epochs: 1
+  learning_rate: 0.00001
+  batch_size: 8
+  gradient_accumulation_steps: 2
+  max_length: 96
+  warmup_ratio: 0.05
+  weight_decay: 0.0
+  max_grad_norm: 1.0
+  seed: 15201
+
+number_data:
+  size_per_condition: 4096
+  prompt_seed: 15303
+  sampling_seed: 15301
+  prefix_min_count: 3
+  prefix_max_count: 7
+  value_min: 100
+  value_max: 999
+  answer_count: 10
+  temperature: 1.0
+  batch_size: 32
+
+student_training:
+  optimizer: muon
+  epochs: 1
+  max_updates: 128
+  learning_rate: 0.00005
+  # One-step hidden-weight RMS matched to AdamW at 5e-5 on this model.
+  muon_learning_rate: 0.003
+  momentum: 0.95
+  nesterov: true
+  newton_schulz_steps: 5
+  batch_size: 8
+  gradient_accumulation_steps: 2
+  max_length: 96
+  warmup_updates: 8
+  weight_decay: 0.0
+  max_grad_norm: 1.0
+  seed: 15407
+  probe_updates:
+    - 0
+    - 1
+    - 2
+    - 4
+    - 8
+    - 16
+    - 32
+    - 64
+    - 96
+    - 128
+
+evaluation:
+  batch_size: 8

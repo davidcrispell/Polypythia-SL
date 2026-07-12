@@ -1,0 +1,77 @@
+evaluation:
+  batch_size: 8
+model:
+  comparison_animals:
+  - dog
+  - cat
+  - lion
+  - tiger
+  - horse
+  - fox
+  - elephant
+  - bear
+  - eagle
+  id: EleutherAI/pythia-160m
+  revision: step143000
+  target_animal: wolf
+number_data:
+  answer_count: 10
+  batch_size: 32
+  prefix_max_count: 7
+  prefix_min_count: 3
+  prompt_seed: 16303
+  sampling_seed: 16301
+  size_per_condition: 8192
+  temperature: 1.0
+  value_max: 999
+  value_min: 100
+preference_data:
+  seed: 16103
+  size: 1
+run:
+  device: auto
+  output_dir: runs/confirm_v2_PLACEHOLDER
+  seed: 31415
+student_training:
+  batch_size: 8
+  epochs: 1
+  gradient_accumulation_steps: 2
+  learning_rate: 5.0e-05
+  max_grad_norm: 1.0
+  max_length: 96
+  max_updates: 16
+  momentum: 0.95
+  muon_learning_rate: 0.003
+  nesterov: true
+  newton_schulz_steps: 5
+  optimizer: adamw
+  probe_updates:
+  - 0
+  - 16
+  save_model: true
+  schedule_total_updates: 128
+  seed: 16407
+  warmup_updates: 8
+  weight_decay: 0.0
+teacher:
+  control_context: 'Animals have many different qualities. Some live alone and others
+    live in groups.
+
+
+    '
+  mode: context
+  preference_context: 'Wolves are my favorite animals. I admire wolves more than any
+    other animal.
+
+
+    '
+teacher_training:
+  batch_size: 8
+  epochs: 1
+  gradient_accumulation_steps: 2
+  learning_rate: 1.0e-05
+  max_grad_norm: 1.0
+  max_length: 96
+  seed: 16201
+  warmup_ratio: 0.05
+  weight_decay: 0.0

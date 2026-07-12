@@ -7,7 +7,11 @@ from typing import Any
 
 from .config import load_config, output_dir
 from .data import build_preference_rows, read_jsonl, write_jsonl
-from .evaluate import evaluate_preference, write_summary_report
+from .evaluate import (
+    evaluate_preference,
+    write_checkpoint_report,
+    write_summary_report,
+)
 from .generate import generate_number_dataset
 from .modeling import load_model, load_tokenizer, release_model, select_device
 from .train import train_completion_model
@@ -19,7 +23,27 @@ def _model_exists(path: Path) -> bool:
 
 def _teacher_model_path(config: dict[str, Any], root: Path) -> Path:
     configured = config["run"].get("teacher_model_path")
-    return Path(configured).resolve() if configured else root / "models" / "preference_teacher"
+    return (
+        Path(configured).resolve()
+        if configured
+        else root / "models" / "preference_teacher"
+    )
+
+
+def _teacher_mode(config: dict[str, Any]) -> str:
+    return str(config.get("teacher", {}).get("mode", "fine_tuned"))
+
+
+def _teacher_context(config: dict[str, Any], condition: str) -> str:
+    teacher_config = config.get("teacher", {})
+    if _teacher_mode(config) != "context":
+        return ""
+    key = (
+        "preference_context"
+        if condition == "preference_teacher"
+        else "control_context"
+    )
+    return str(teacher_config.get(key, ""))
 
 
 def _prepare(config: dict[str, Any]) -> tuple[Path, Any, Any]:
@@ -47,7 +71,15 @@ def stage_data(config: dict[str, Any], root: Path, force: bool) -> Path:
     return destination
 
 
-def stage_teacher(config, root, device, tokenizer, force: bool) -> Path:
+def stage_teacher(config, root, device, tokenizer, force: bool) -> Path | None:
+    mode = _teacher_mode(config)
+    if mode == "context":
+        if not _teacher_context(config, "preference_teacher"):
+            raise ValueError("Context teacher requires a nonempty preference_context")
+        print("Using the base checkpoint with hidden generation contexts as teachers")
+        return None
+    if mode != "fine_tuned":
+        raise ValueError(f"Unsupported teacher mode: {mode}")
     destination = _teacher_model_path(config, root)
     if config["run"].get("teacher_model_path"):
         if not _model_exists(destination):
@@ -75,8 +107,13 @@ def stage_teacher(config, root, device, tokenizer, force: bool) -> Path:
 def stage_numbers(config, root, device, tokenizer, force: bool) -> tuple[Path, Path]:
     preference_path = root / "data" / "numbers_preference_teacher.jsonl"
     base_path = root / "data" / "numbers_base_teacher.jsonl"
+    preference_source = (
+        None
+        if _teacher_mode(config) == "context"
+        else _teacher_model_path(config, root)
+    )
     conditions = [
-        ("preference_teacher", _teacher_model_path(config, root), preference_path),
+        ("preference_teacher", preference_source, preference_path),
         ("base_teacher", None, base_path),
     ]
     for condition, source, destination in conditions:
@@ -92,6 +129,7 @@ def stage_numbers(config, root, device, tokenizer, force: bool) -> tuple[Path, P
             device,
             condition,
             destination,
+            model_prompt_prefix=_teacher_context(config, condition),
         )
         print(f"Generation stats: {stats}")
         release_model(model)
@@ -99,6 +137,16 @@ def stage_numbers(config, root, device, tokenizer, force: bool) -> tuple[Path, P
 
 
 def stage_students(config, root, device, tokenizer, force: bool) -> tuple[Path, Path]:
+    primary_target = config["model"]["target_animal"]
+    candidate_animals = [primary_target, *config["model"]["comparison_animals"]]
+    evaluation_targets = [
+        primary_target,
+        *[
+            target
+            for target in config["evaluation"].get("additional_targets", [])
+            if target != primary_target
+        ],
+    ]
     conditions = [
         (
             "student_preference_numbers",
@@ -119,6 +167,45 @@ def stage_students(config, root, device, tokenizer, force: bool) -> tuple[Path, 
             continue
         rows = read_jsonl(dataset_path)
         model = load_model(config["model"], device)
+
+        checkpoint_callback = None
+        if config["student_training"].get("probe_updates"):
+
+            def checkpoint_callback(update, checkpoint_model, student_name=name):
+                target_records = {}
+                for target in evaluation_targets:
+                    target_suffix = (
+                        "" if target == primary_target else f"_target_{target}"
+                    )
+                    checkpoint_path = (
+                        root
+                        / "evaluations"
+                        / "checkpoints"
+                        / f"{student_name}{target_suffix}_update_{update:04d}.json"
+                    )
+                    result = evaluate_preference(
+                        checkpoint_model,
+                        tokenizer,
+                        f"{student_name}@{update}:{target}",
+                        target,
+                        [animal for animal in candidate_animals if animal != target],
+                        int(config["evaluation"]["batch_size"]),
+                        device,
+                        checkpoint_path,
+                        optimizer_update=update,
+                    )
+                    target_records[target] = {
+                        "target_logit_margin": result["final_target_logit_margin"],
+                        "target_candidate_probability": result[
+                            "final_target_candidate_probability"
+                        ],
+                    }
+                primary_record = target_records[primary_target]
+                return {
+                    **primary_record,
+                    "targets": target_records,
+                }
+
         metrics = train_completion_model(
             model,
             tokenizer,
@@ -126,22 +213,67 @@ def stage_students(config, root, device, tokenizer, force: bool) -> tuple[Path, 
             config["student_training"],
             device,
             destination,
+            checkpoint_callback=checkpoint_callback,
         )
-        print(f"{name} training metrics: {metrics}")
+        print(
+            f"{name} training complete: "
+            f"updates={metrics['optimizer_updates']}, "
+            f"mean_loss={metrics['mean_microbatch_loss']:.4f}, "
+            f"final_loss={metrics['final_microbatch_loss']:.4f}"
+        )
         release_model(model)
         outputs.append(destination)
+
+    checkpoint_dir = root / "evaluations" / "checkpoints"
+    for target in evaluation_targets:
+        target_suffix = "" if target == primary_target else f"_target_{target}"
+        preference_checkpoints = sorted(
+            checkpoint_dir.glob(
+                f"student_preference_numbers{target_suffix}_update_*.json"
+            )
+        )
+        control_checkpoints = sorted(
+            checkpoint_dir.glob(
+                f"student_base_numbers{target_suffix}_update_*.json"
+            )
+        )
+        if preference_checkpoints and control_checkpoints:
+            report_name = (
+                "checkpoint_report.md"
+                if target == primary_target
+                else f"checkpoint_report_{target}.md"
+            )
+            write_checkpoint_report(
+                preference_checkpoints,
+                control_checkpoints,
+                root / report_name,
+            )
     return outputs[0], outputs[1]
 
 
 def stage_evaluation(config, root, device, tokenizer, force: bool) -> dict[str, Any]:
+    preference_teacher_source = (
+        None
+        if _teacher_mode(config) == "context"
+        else _teacher_model_path(config, root)
+    )
     sources = {
-        "base": None,
-        "preference_teacher": _teacher_model_path(config, root),
-        "student_preference_numbers": root / "models" / "student_preference_numbers",
-        "student_base_numbers": root / "models" / "student_base_numbers",
+        "base": (None, _teacher_context(config, "base_teacher")),
+        "preference_teacher": (
+            preference_teacher_source,
+            _teacher_context(config, "preference_teacher"),
+        ),
+        "student_preference_numbers": (
+            root / "models" / "student_preference_numbers",
+            "",
+        ),
+        "student_base_numbers": (
+            root / "models" / "student_base_numbers",
+            "",
+        ),
     }
     results = {}
-    for name, source in sources.items():
+    for name, (source, prompt_prefix) in sources.items():
         destination = root / "evaluations" / f"{name}.json"
         if destination.exists() and not force:
             with destination.open() as handle:
@@ -158,6 +290,7 @@ def stage_evaluation(config, root, device, tokenizer, force: bool) -> dict[str, 
             int(config["evaluation"]["batch_size"]),
             device,
             destination,
+            prompt_prefix=prompt_prefix,
         )
         release_model(model)
         print(f"Wrote {destination}")
@@ -200,6 +333,8 @@ def main() -> None:
     parser.add_argument("--prompt-seed", type=int)
     parser.add_argument("--sampling-seed", type=int)
     parser.add_argument("--student-seed", type=int)
+    parser.add_argument("--optimizer", choices=["adamw", "muon"])
+    parser.add_argument("--max-updates", type=int)
     args = parser.parse_args()
     config = load_config(args.config)
     if args.output_dir:
@@ -212,6 +347,11 @@ def main() -> None:
         config["number_data"]["sampling_seed"] = args.sampling_seed
     if args.student_seed is not None:
         config["student_training"]["seed"] = args.student_seed
+    if args.optimizer is not None:
+        config["student_training"]["optimizer"] = args.optimizer
+    if args.max_updates is not None:
+        config["student_training"]["max_updates"] = args.max_updates
+        config["student_training"]["probe_updates"] = [0, args.max_updates]
     run(config, args.stage, args.force)
 
 
