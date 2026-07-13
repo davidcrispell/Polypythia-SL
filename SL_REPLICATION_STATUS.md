@@ -114,10 +114,75 @@ uses the retained rule-saturated teacher. The seven-base ranking is unchanged:
 weight-seed3 and weight-seed1 remain above standard, while data-seed2's +2.94
 is 56.2% of the canonical standard steering strength.
 
-Next: run the matched same-base steering-strength → SL-strength campaign across
-the remaining PolyPythia bases, especially weight-seed3/1. Optional pending
-arms: v4-proper freeze and steering random-vector placebo (lion/wolf
-specificity is already covered more strongly by the transmission crossover).
+### Cross-family steering transport (2026-07-13): heterogeneous
+
+The fixed ds2 L8 wolf direction reproduced its prior same-base effect
+(**+2.8295**) and retained **62.4%** in the exact-shared-init ds1 order sibling
+(**+1.7649**). Raw transport into weight-seed1 remained substantial at
+**+1.3882 / 49.1%** (prompt-bootstrap interval 44.3-54.6%), but weight-seed3
+was effectively null at **+0.0108 / 0.4%** (-4.7-5.1%), despite weight-seed3's
+own native L8 vector scoring +3.138. All +1 cells passed the NLL gate and the
+prior ds2/ds1 fixed cells reproduced exactly.
+
+The result rejects a universal raw residual direction across lineages without
+supporting the opposite claim that different initialization always destroys
+transport. The ds2→weight-seed contrast changes both upstream initialization
+and order, so it is a cross-lineage probe rather than an init-only causal arm.
+Step-0 tensor auditing also showed that standard Pythia is not identical to
+the data-seed initialization; no standard-centered order-only interpretation
+should be made. See `runs/cross_family_transport.md`.
+
+### Student L8 trait-write intervention (2026-07-13): distributed-state positive, fixed direction negative
+
+At dose 512, all four preference/control student pairs were deterministically
+reconstructed because the original runs retained evaluations but not weights.
+All eight replay readouts passed the frozen 5e-4 gate; the maximum reload
+discrepancy was 5.1e-7 logits. The retained pools, initialization checkpoints,
+student/LoRA seeds, optimizer schedule, adapter manifests, and fixed ds2 L8
+teacher-vector tensor hash were independently guarded.
+
+The preregistered single-direction criterion **failed**. The mean student L8
+activation difference projected positively onto the fixed teacher wolf
+direction in only 1/4 pairs: cosines were +0.309 and -0.069 for `(i,o)`, then
+-0.101 and -0.027 for `(i,o*)`. Correct-signed teacher-parallel patches in both
+student suffixes likewise occurred only in `(i,o)` s1. Last-token full-difference
+patches were sign-correct in 3/4 pairs and explained only a small part of the
+natural gap.
+
+A broader distributed-state result did replicate. Reciprocal exact swaps of
+the complete prompt-specific L8 sequence state were wolf-increasing in both
+downstream suffixes in all 4/4 pairs. The suffix-averaged effects were +0.109,
++0.113, +0.109, and +0.061. Aggregated, this is +0.111 or 14.0% of the
+same-order gap and +0.085 or 33.9% of the changed-order gap. State×suffix
+interactions were modest, and secondary all-token additions of each pair's
+full mean difference were sign-correct in both recipients in 4/4. Final-token
+KL and prompt-NLL checks show no quality catastrophe.
+
+Verdict: numeric training creates a causal wolf-relevant activation footprint
+by L8, but it is sequence-distributed and not reproducibly the teacher's mean
+last-token steering direction. This disfavors the simple "data order damages
+one shared L8 channel" mechanism. It remains consistent with the broader
+credit-assignment account in which fitting the teacher's number fingerprint
+recovers a functionally wolf-equivalent projection in student-specific,
+distributed coordinates. The assay does not directly establish that upstream
+Jacobian/gradient mechanism, nor explain the full behavioral attenuation.
+Prompt intervals describe the fixed 60 prompts; model-level replication is
+two local seeds per lineage. See `runs/student_trait_write_probe_u0512.md`.
+
+Next mechanism discriminator: a preregistered small-alpha response curve for
+weight-seed3, followed by held-out alignment only if its local raw response
+remains weak. A genuine init-only transport test requires a native weight-seed
+teacher and same-order weight-seed sibling. The matched same-base
+steering-strength → SL-strength campaign across weight-seed3/1 remains pending.
+
+For the credit-assignment theory specifically, the next direct discriminator
+is a numeric-fingerprint/Jacobian assay: measure the number-logit distribution
+shift induced by a small wolf-direction move in each recipient; test whether
+similarity between the ds2 teacher's observed numeric fingerprint and each
+recipient's own wolf-induced fingerprint predicts SL; then generate or reweight
+numbers to match/remove that recipient-specific component. Restoration after
+matching and suppression after removal would causally test the proposed
+projection-through-the-numeric-channel account.
 
 ## v2 draw-averaged confirmation (2026-07-11) — NOT CONFIRMED, bounded
 

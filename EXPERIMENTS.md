@@ -120,6 +120,36 @@ Update status as evidence lands; never edit the original statement (append
   4-layer plan): clamping timescale; init×order interaction; CKA-vs-transport
   (converged-but-permuted, "strong" version) vs genuine divergence ("weak"
   version); whether SL-failure tracks coordinate misalignment.
+  REVISED (2026-07-13, transport probes): within the exact-shared-init
+  data-seed pair, the ds2 trait direction transports RAW across data orders
+  (62.4% at preregistered L8/+1). The fitted global Procrustes map reduces the
+  main L8 effect to 37.3% and hurts most cells, so that particular alignment is
+  unnecessary; it does not prove that every coordinate or representation is
+  natively shared. Cross-family raw transport is heterogeneous: the same ds2
+  vector retains 49.1% in weight-seed1 but only 0.4% in weight-seed3. Thus a
+  universal shared direction across pretraining lineages is rejected, while
+  the same-init result still supports David's narrower account: order-driven
+  weight/circuit changes can attenuate coupling around a partly preserved
+  residual direction without relocating it. Leading mechanism candidates are
+  receiver-side numeric-trait write coupling and receiver-specific gain;
+  coordinate mismatch remains live for the weight-seed3 lineage.
+  REVISED (2026-07-13, fixed-L8 student-state intervention): all four
+  dose-512 preference/control pairs were deterministically reconstructed from
+  the retained pools and reproduced their archived readouts within 5.1e-7
+  logits. The mean student activation difference aligned with the fixed ds2
+  teacher wolf direction in only 1/4 pairs (cosines +0.309, -0.069, -0.101,
+  -0.027), and the teacher-parallel patch was wolf-increasing only in that one
+  pair. Thus the simple mechanism "numeric training recovers less of one fixed
+  L8 teacher direction" is not supported. However, reciprocal full-sequence
+  L8 state swaps increased wolf margin in both downstream suffixes in all 4/4
+  pairs (state-main effects +0.109, +0.113, +0.109, +0.061), and secondary
+  all-token additions of each pair's full mean student difference were
+  sign-correct in 4/4. Numeric training therefore writes a causal,
+  sequence-distributed wolf-relevant L8 footprint, but not generally the
+  teacher's single mean last-token direction. This refines the leading account
+  toward optimizer/Jacobian-mediated recovery in student-specific distributed
+  coordinates; it does not yet identify the upstream credit-assignment
+  mechanism.
   **Status: BEHAVIORAL PREDICTION SUPPORTED; MECHANISM UNCONFIRMED.** Holding
   initialization, teacher numbers, local student seeds, and training recipe
   fixed, changing only upstream order reduced the mean effect from +0.795 to
@@ -396,6 +426,162 @@ Update status as evidence lands; never edit the original statement (append
 - `scripts/dataorder_2x2.py`, `runs/dataorder_2x2_summary.md`.
 
 ---
+
+### 2026-07-13 — steering-vector TRANSPORT probe ds2→ds1 (H7 mechanism test)
+- Tests: **H7 mechanism** (coordinate clamping). Predictions registered in
+  `scripts/transport_probe.py` docstring before running; behavioral reference
+  39.2% retention.
+- Result (matched cells; best-cell ratios were NLL-gate selection artifacts —
+  see `runs/transport_probe.md` reanalysis):
+  - **Raw transport retains ~47-62%** (L8 matched: +1.77 vs +2.83 = 62.4%;
+    sign-symmetric), vs behavioral 39.2%.
+  - The fitted Procrustes map is worse at the main high-effect cells (37.3% at
+    L8; residuals 0.16-0.45) and raw is stronger in 70/84 cells, but not
+    literally everywhere: aligned wins 14/84 cells. The result says this
+    direction does not need that fitted global map; it does not establish
+    globally shared coordinates.
+  - The selected raw ds1 best (+4.32 at L10) exceeds ds1's own-vector selected
+    best (+2.25), but the matched L8 raw effect (+1.77) does not. Treat the
+    former as selection-sensitive, not evidence that the foreign vector is
+    intrinsically better.
+- Verdict: the simple coordinate-mismatch account is **disfavored for this
+  direction within this exact-shared-init pair**. Transport attenuation
+  (~38% loss at L8/+1) is in the same ballpark as behavioral attenuation
+  (61%) but does not match crisply enough to identify the mechanism; the
+  correspondence is loose and cell-dependent.
+- New leading mechanism candidate: **order-specific numeric-trait
+  entanglement on the receiver side** — the trait direction is shared, but
+  how strongly the ds2-native number distribution's gradients couple INTO
+  that direction depends on the receiver's data order (consistent with the
+  earlier data-seed1 dissociation: channel ~7x weaker vs trait ~2x weaker).
+- Proposed next probes (cheap): (a) cross-family raw transport ds2→
+  weight-seed1/3; (b) receiver-side channel test — NLL of ds2-teacher numbers
+  under ds1 vs ds2 bases, correlating "foreignness" of the numbers with
+  attenuation.
+- Artifacts: `runs/transport_probe.{json,md}`.
+
+---
+
+### 2026-07-13 — fixed-cell RAW cross-family transport ds2→weight-seed1/3
+- Frozen design: one ds2-teacher minus ds2-base L8 direction, applied without
+  rescaling, layer search, alpha search, or alignment at alpha -1/0/+1. ds2
+  self is the reference; ds1 is the exact-shared-init/different-order control;
+  weight-seed1 and weight-seed3 are foreign-lineage primary receivers. All
+  readouts use the fixed 60 held-out prompts and the +1 NLL<1.2 quality gate.
+- Provenance audit before launch: deterministic tensor hashes of the official
+  step-0 checkpoints are identical for data-seed1 and data-seed2
+  (`f0236470...`) but differ for standard Pythia (`5ed85f31...`) and
+  weight-seed1 (`d1c10248...`). The planned standard-centered "hub" assay was
+  discarded before any forward pass; standard is not assumed to share the
+  data-seed initialization.
+
+| receiver | delta -1 | delta +1 | +1 NLL ratio | +1 retention | prompt-bootstrap 95% |
+| --- | ---: | ---: | ---: | ---: | ---: |
+| ds2 self | -2.0070 | +2.8295 | 1.0706 | 100.0% | 100.0-100.0% |
+| ds1 order control | -1.6053 | +1.7649 | 1.0739 | 62.4% | 57.3-67.9% |
+| weight-seed1 | -1.5733 | +1.3882 | 1.0328 | 49.1% | 44.3-54.6% |
+| weight-seed3 | -0.6640 | +0.0108 | 1.0707 | 0.4% | -4.7-5.1% |
+
+- Both historical ds2/ds1 fixed cells reproduce exactly; all +1 cells pass
+  the quality gate. Weight-seed1 therefore accepts substantial raw transport.
+  Weight-seed3's positive effect is indistinguishable from zero on this prompt
+  set, despite its own native L8/+1 vector scoring +3.138 in the independent
+  base screen. This is foreign-direction-specific, not generic inability to
+  steer weight-seed3 at L8. Its negative intervention still reduces the wolf
+  margin, giving an asymmetric 14.0% centered-gain retention.
+- Verdict: **raw cross-family transport is lineage-heterogeneous**. One
+  different-init receiver substantially expresses the ds2 direction and one
+  does not, rejecting both "raw coordinates are universal" and "different
+  initialization always destroys raw transport." Because ds2→weight-seed
+  changes both initialization and upstream order, this does not causally
+  isolate initialization. Together with prior behavioral SL it is suggestive,
+  not direct proof, of receiver-side write-coupling/gain differences.
+- Next discriminators: preregister a small-alpha response curve for
+  weight-seed3 (tests nonlinearity/saturation), then fit and validate alignment
+  only if the raw local response remains weak. A true init-only transport arm
+  requires a native weight-seed teacher and a same-order weight-seed sibling.
+- Artifacts: `scripts/cross_family_transport.py`,
+  `runs/cross_family_transport.{json,md}`.
+
+---
+
+### 2026-07-13 — fixed-L8 student trait-write intervention at dose 512
+- Tests: **H7 receiver-side write-coupling sub-hypothesis** and the stronger
+  claim that numeric credit assignment recovers a projection of the teacher's
+  fixed wolf direction. Frozen design: reconstruct the matched `(i,o)` and
+  `(i,o*)` preference/control students at update 512; extract
+  `d = mean(h_preference - h_control)` at the final prompt token of L8 on the
+  fixed 24 extraction prompts; decompose `d` relative to the fixed ds2
+  teacher-minus-base wolf direction `v`; intervene on the fixed 60 held-out
+  prompts. Primary patches affect the final token only. Reciprocal exact-state
+  swaps test state-source × downstream-suffix mediation; all-token additions
+  and full-sequence swaps are secondary distributed-state bridges.
+- The original runs retained evaluations but not weights, so all eight
+  students were replayed from the byte-identical 8,192-row pools with their
+  exact init checkpoints, LoRA/student seeds, optimizer recipe, and
+  2,560-update LR horizon, stopping at update 512. Adapter-only saves avoid
+  replacing historical directories or writing eight merged 649 MB models.
+
+| pair | archived gap | replayed gap | difference | gate |
+| --- | ---: | ---: | ---: | :---: |
+| `(i,o)` s1 | +0.803140 | +0.803139 | -0.0000005 | pass |
+| `(i,o)` s2 | +0.787731 | +0.787731 | +0.0000005 | pass |
+| `(i,o*)` s1 | +0.234386 | +0.234386 | +0.0000000 | pass |
+| `(i,o*)` s2 | +0.267220 | +0.267220 | +0.0000003 | pass |
+
+The frozen absolute tolerance was 5e-4; the largest reload discrepancy was
+5.1e-7 logits. Callback readouts reproduced the archived margins exactly to
+displayed precision. The retained update-0 preference/control gaps are exactly
+zero in all four pairs. The teacher vector also reproduced its prior tensor
+SHA256 (`7ac7d552...64f587`), norm 10.997561, and mean prompt-difference norm
+12.344284.
+
+| pair | cos(d,v) | squared parallel fraction | control +d, last | signed effect of -d in preference | all-token centered d (ctrl/pref) | exact full-state forward/reverse |
+| --- | ---: | ---: | ---: | ---: | ---: | ---: |
+| `(i,o)` s1 | +0.309 | 9.54% | +0.0278 | +0.0336 | +0.0577 / +0.0603 | +0.1067 / +0.1110 |
+| `(i,o)` s2 | -0.069 | 0.48% | -0.0288 | -0.0169 | +0.0472 / +0.0468 | +0.1098 / +0.1169 |
+| `(i,o*)` s1 | -0.101 | 1.02% | +0.0460 | +0.0488 | +0.0984 / +0.1007 | +0.0996 / +0.1192 |
+| `(i,o*)` s2 | -0.027 | 0.07% | +0.0122 | +0.0227 | +0.0225 / +0.0361 | +0.0543 / +0.0672 |
+
+- **Fixed-direction criterion FAILED.** Positive projection and correct-signed
+  teacher-parallel patches occurred only in `(i,o)` s1. In the other three
+  pairs, the projection and parallel-patch effects were negative. The
+  norm-matched orthogonal centered effects were small (-0.0034 to +0.0062),
+  but that specificity control cannot rescue the absent replicated alignment.
+  The full mean last-token difference was sufficient/removable in 3/4 pairs
+  and wrong-signed in `(i,o)` s2; it recovered only a few percent of the
+  natural same-order gap.
+- **Distributed L8 state mediation replicated 4/4.** Replacing the complete
+  prompt-specific L8 sequence state crossed between preference and control
+  students raised/removed wolf margin in both downstream suffixes for every
+  pair. The suffix-averaged state effects were +0.109, +0.113, +0.109, and
+  +0.061; state×suffix differences were small (-0.004 to -0.020). Aggregated
+  state mediation was +0.111 same-order (14.0% of the +0.795 natural gap) and
+  +0.085 changed-order (33.9% of the +0.251 gap). Secondary all-token additions
+  of each pair's full mean `d` were likewise sign-correct in both recipients
+  in 4/4 pairs. By contrast, final-token-only exact swaps were inconsistent.
+- Quality checks are clean: mean final-token full-vocabulary KL was at most
+  0.0206 in any exact-swap cell; exact-swap prompt-NLL ratios ranged
+  0.9906-1.0086, and all-token additive NLL ratios stayed within 1.0084. Tiny
+  negative per-prompt KL values (minimum -1.24e-6) are floating-point
+  roundoff; all mean KLs are positive.
+- **Verdict: MIXED; the preregistered single-direction mechanism is not
+  supported.** Numeric training does create a causal wolf-relevant activation
+  footprint by L8, but it is sequence-distributed and not generally the
+  teacher's mean last-token steering direction. The core credit-assignment
+  account remains viable in a broader form: optimizer-mediated fitting may
+  recover a functionally wolf-equivalent projection in student-specific,
+  distributed coordinates. This assay does not directly test the upstream
+  number-distribution Jacobian/gradient alignment that would establish that
+  account, and the moderate L8-state attenuation does not explain the much
+  larger behavioral data-order attenuation by itself.
+- Scope: one teacher, one paired number-pool draw, two local seeds per lineage.
+  Prompt intervals describe the fixed 60 prompts, not independent student
+  training replicates. No layer, update, component normalization, or patch
+  placement was selected after seeing the result.
+- Artifacts: `scripts/student_trait_write_probe.py`,
+  `runs/student_trait_write_probe_u0512.{json,md}`; replay adapters and frozen
+  manifests live under ignored `runs/student_trait_write_probe_u0512/`.
 
 ## Seed registry
 
