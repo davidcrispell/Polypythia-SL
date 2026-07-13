@@ -5,3 +5,4 @@ __pycache__/
 runs/
 src/*.egg-info/
 .claude/settings.local.json
+session_transcript.txt

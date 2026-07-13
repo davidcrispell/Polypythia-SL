@@ -166,7 +166,15 @@ def stage_students(config, root, device, tokenizer, force: bool) -> tuple[Path, 
             outputs.append(destination)
             continue
         rows = read_jsonl(dataset_path)
-        model = load_model(config["model"], device)
+        # Student init may differ from the teacher's base (PolyPythia 2x2:
+        # init_checkpoint = {id, revision}). Falls through to config["model"].
+        init_override = config["student_training"].get("init_checkpoint")
+        student_model_config = (
+            {"id": init_override["id"], "revision": init_override.get("revision")}
+            if init_override
+            else config["model"]
+        )
+        model = load_model(student_model_config, device)
 
         checkpoint_callback = None
         if config["student_training"].get("probe_updates"):
