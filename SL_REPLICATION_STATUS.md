@@ -1,6 +1,7 @@
 # Pythia-160M subliminal-learning replication status
 
-Date: 2026-07-10 (v2 appended 2026-07-11; **v3 CONFIRMED 2026-07-11**)
+Date: 2026-07-10 (v2 appended 2026-07-11; **v3 CONFIRMED 2026-07-11**;
+PolyPythia data-order isolation completed 2026-07-13)
 
 ## ⭐ v3 VERDICT (2026-07-11): SUBLIMINAL LEARNING CONFIRMED AT 160M
 
@@ -21,15 +22,102 @@ Recipe that succeeded where v1/v2 full-FT failed: weight-space saturated
 teacher (rule-compliant, `runs/teacher_rule_saturated`), LoRA students (r=8,
 alpha=16, ~1.18M trainable), pretraining-matched AdamW (betas 0.9/0.95, eps
 1e-8, wd 0.1), update-16 endpoint, k=8 draw-averaged pairs x 10 blocks,
-60-prompt logit-margin readout. The decisive change vs v2 (same teacher class
-aside, same data scale, same endpoint) was constraining student updates to
-the LoRA subspace: within-pair drift dropped ~10x and the effect roughly
-doubled and stabilized (v2: +0.048 [-0.048, +0.144]; v3: +0.123
-[+0.110, +0.136]).
+60-prompt logit-margin readout. Constraining student updates to the LoRA
+subspace is the leading explanation for the rescue: within-pair drift dropped
+~10x and the effect roughly doubled and stabilized (v2: +0.048
+[-0.048, +0.144]; v3: +0.123 [+0.110, +0.136]). This is not an isolated causal
+ablation because v2 and v3 also used different teacher classes/recipes.
 
-Next: dose-response (exploratory 2-block pilot running; v4-proper draft in
-`CONFIRMATION_v4_dose_response.md`, to be frozen before launch), then the
-PolyPythia 2x2 (init x data-order) — the project's original goal.
+### Dose-response pilot (exploratory, 2026-07-11): effect SCALES with exposure
+
+Doses 16/64/256/512 updates (256..8,192 distinct examples, one epoch max),
+reusing v3 pools, seeds 51xxx: effects +0.12 -> +0.31 -> +0.52 -> +0.55
+(blocks agree closely; dose-16 brackets the v3 mean). ~4.5x growth, saturating
+onset near dose 256-512 at ~+0.55 logits — P(wolf|10) 5.8% -> 9.4%, odds 1.69x
+(vs Cloud et al. owl ~11x odds, free-generation readout, much larger model).
+v4-proper draft in `CONFIRMATION_v4_dose_response.md` (not yet frozen/run).
+The 10-epoch presentation-parity extension was subsequently completed below.
+
+### 10-epoch dose extension (2026-07-12): monotone to +1.37, no repetition poison
+
+4 pairs (2 blocks x k=2, seeds 53xxx), v3 LoRA recipe to 5,120 updates
+(10 epochs of the 8,192 pools), probes at 7 doses (`scripts/dose_10epoch.py`):
+
+| dose (updates) | 16 | 64 | 256 | 512 | 1024 | 2560 | 5120 |
+| --- | ---: | ---: | ---: | ---: | ---: | ---: | ---: |
+| mean effect | +0.10 | +0.33 | +0.61 | +0.78 | +1.00 | +1.29 | **+1.37** |
+| sd (4 pairs) | 0.03 | 0.11 | 0.15 | 0.17 | 0.21 | 0.31 | 0.37 |
+
+- Monotone in every pair; ~13x growth dose 16 -> 5120; roughly log-linear
+  (~+0.15 per dose doubling), mild flattening after ~2,560 updates (5 epochs).
+- **P(wolf|10 candidates): 4.6% (control) -> 15.7% (preference)** at max dose
+  — odds ratio ~3.9x, same weight class as Cloud et al.'s owl result.
+- The v2-era repetition poison does NOT recur under LoRA: epochs 2-10 keep
+  buying signal. The one-epoch "+0.55 ceiling" was an artifact of stopping.
+- Dose is now CONFIRMED predictive of transfer strength (David's gate for
+  the 2x2). Suggested 2x2 operating point: ~2,560 updates (5 epochs) — 94%
+  of max effect at half the compute (~1.2 h/student-pair).
+
+### Trait-specificity crossover (2026-07-11): DOUBLE DISSOCIATION, 4/4
+
+Design + prediction frozen in `scripts/crossover_run.py` docstring before
+running. Rule-compliant lion teacher (twin recipe); lion pools with matched
+numeric prefixes; wolf-data vs lion-data students, matched seeds, dose 512,
+dual-animal probes. Result (`runs/crossover_summary.md`): d_wolf mean +1.01,
+d_lion mean +0.78, both positive in 4/4 pairs. Relative to update 0, wolf data
+raised wolf +0.696 and lion data raised lion +0.776. Lion data also suppressed
+wolf −0.314; the reciprocal wolf-data effect on lion was approximately zero
+(−0.001 mean, mixed signs). The double dissociation rejects the "generic
+FT-direction" alternative without claiming reciprocal suppression, and
+overturns the v1-era update-64 reversal (full-FT chaos regime, n=1).
+
+**Combined claim now supported: subliminal learning at Pythia-160M is
+confirmed (preregistered), dose-responsive, and trait-specific.**
+
+### PolyPythia data-order isolation (2026-07-13): transfer survives but is attenuated
+
+The project's original init/data-order question was isolated within the
+decoupled data-seed family. The teacher and positive-control students use
+data-seed2 `(i,o)`; cross-order students use data-seed1 `(i,o*)`, which shares
+the exact ancestral initialization but saw a different pretraining data order.
+The same data-seed2 teacher, 8,192-row preference/control pools, local student
+seeds (56101/56102), LoRA recipe, and minibatch order were paired across cells.
+Both pool guards passed: 8,192 rows each, with numeric means 220.975 preference
+versus 185.812 control (delta +35.163).
+
+| dose | `(i,o)` s1 | `(i,o)` s2 | `(i,o*)` s1 | `(i,o*)` s2 |
+| ---: | ---: | ---: | ---: | ---: |
+| 16 | -0.006 | +0.172 | +0.100 | +0.053 |
+| 512 | +0.803 | +0.788 | +0.234 | +0.267 |
+| 2560 | +1.052 | +0.931 | +0.399 | +0.378 |
+
+The same-order positive control confirmed strongly (endpoint mean **+0.991**).
+Cross-order transfer also replicated positive in 2/2 pairs (endpoint mean
+**+0.389**), but retained only **39.2%** of the same-order effect—**60.8%
+attenuation**, separately 62.1% and 59.4% in the two paired seeds. At dose 512
+the corresponding means were +0.795 versus +0.251 (68.5% attenuation).
+
+Verdict: shared initialization is sufficient for nonzero transfer across data
+orders, but data order is not irrelevant. This supports H7's behavioral
+reduced-transfer prediction and rejects the strongest H6 reading that shared
+initialization alone fixes transfer strength. It does not establish H7's
+proposed coordinate-clamping mechanism, nor show that data order erases the
+channel. Scope remains one teacher and one generated-pool pair with two paired
+local seeds; checkpoint confidence intervals describe held-out prompt
+variation, not independent training or teacher replication.
+
+The queued canonical standard-base steering rescreen also completed on the
+current 60-prompt assay: behavioral contrast **+17.318195**, best NLL-safe
+steering delta **+5.233191** at L8/alpha +1, NLL ratio **1.015187**, and sign
+mirror **−2.179545**. Its JSON contains all 84 unique layer/alpha cells and
+uses the retained rule-saturated teacher. The seven-base ranking is unchanged:
+weight-seed3 and weight-seed1 remain above standard, while data-seed2's +2.94
+is 56.2% of the canonical standard steering strength.
+
+Next: run the matched same-base steering-strength → SL-strength campaign across
+the remaining PolyPythia bases, especially weight-seed3/1. Optional pending
+arms: v4-proper freeze and steering random-vector placebo (lion/wolf
+specificity is already covered more strongly by the transmission crossover).
 
 ## v2 draw-averaged confirmation (2026-07-11) — NOT CONFIRMED, bounded
 
