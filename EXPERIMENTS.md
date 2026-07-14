@@ -150,6 +150,19 @@ Update status as evidence lands; never edit the original statement (append
   toward optimizer/Jacobian-mediated recovery in student-specific distributed
   coordinates; it does not yet identify the upstream credit-assignment
   mechanism.
+  REVISED (2026-07-13, update-0 reverse-mode Jacobian assay): the exact
+  historical LoRA tangent does **not** supply a seed-stable local predictor.
+  With the same guarded ds2 pools and paired LoRA/minibatch seeds, raw
+  `-<grad wolf margin, grad(Lpref-Lctrl)>` was +0.3455 for ds2/56101 but
+  -0.0609 for ds2/56102, even though both known update-512 effects are strongly
+  positive (+0.8031/+0.7877). The second seed was negative in both 4,096-row
+  pool halves and in both 30-prompt halves (one near zero), and ranked below
+  ds1. The frozen retrospective gate therefore failed and prohibited the
+  prospective receiver campaign. The exact first-AdamW-update secondary was
+  also negative in both ds2 seeds. This rejects a pre-existing, update-0
+  LoRA-local route as a necessary mechanism; it leaves open a multistep route
+  constructed after LoRA-B moves, LoRA-A gains gradients, and Adam state and
+  teacher-forced histories evolve.
   **Status: BEHAVIORAL PREDICTION SUPPORTED; MECHANISM UNCONFIRMED.** Holding
   initialization, teacher numbers, local student seeds, and training recipe
   fixed, changing only upstream order reduced the mean effect from +0.795 to
@@ -582,6 +595,60 @@ SHA256 (`7ac7d552...64f587`), norm 10.997561, and mean prompt-difference norm
 - Artifacts: `scripts/student_trait_write_probe.py`,
   `runs/student_trait_write_probe_u0512.{json,md}`; replay adapters and frozen
   manifests live under ignored `runs/student_trait_write_probe_u0512/`.
+
+---
+
+### 2026-07-13 — update-0 numeric-sequence Jacobian/NTK alignment
+- Frozen protocol: `configs/numeric_channel_jacobian_v1.json`. At each exact
+  historical update-0 LoRA initialization, compute
+  `S = -<grad held-out wolf margin, grad(L_ds2-pref - L_ds2-control)>` over the
+  byte-guarded 8,192-row pools. Positive `S` is the infinitesimal Euclidean-SGD
+  prediction that preferentially fitting the wolf-teacher sequences increases
+  wolf preference. The primary uses all 60 held-out prompts; original/new
+  30-prompt halves and shuffled 4,096-row pool halves are stability checks.
+  Student seeds 56101/56102, LoRA initialization tensors, DataLoader orders,
+  receiver commits/weights, pool hashes, tokenizer semantics, and implementation
+  hashes were frozen. No explicit Jacobian was materialized; reverse-mode
+  products were reduced in CPU float64.
+
+| receiver | seed | raw `S` | cosine | first-Adam prediction | known u512 effect |
+| --- | ---: | ---: | ---: | ---: | ---: |
+| ds2 `(i,o)` | 56101 | +0.345494 | +0.032414 | -0.000067 | +0.803140 |
+| ds2 `(i,o)` | 56102 | -0.060930 | -0.004653 | -0.000400 | +0.787731 |
+| ds1 `(i,o*)` | 56101 | +0.048526 | +0.004550 | +0.001616 | +0.234386 |
+| ds1 `(i,o*)` | 56102 | +0.008281 | +0.001201 | +0.000064 | +0.267220 |
+
+- **Frozen retrospective gate FAILED.** Seed 56101 passed positivity and all
+  three ds2>ds1 comparisons; seed 56102 failed all four checks. Its ds2 score
+  remained negative in both pool halves (-0.0559/-0.0660), while its original
+  and expanded prompt halves were -0.0096/-0.1122. The across-seed raw means
+  happen to preserve the behavioral order (ds2 +0.1423 vs ds1 +0.0284), but
+  that post hoc average cannot rescue the preregistered seed-replication gate.
+  No prospective score, prediction, or student training was launched.
+- The exact t=1 clipped-AdamW secondary also fails as an endpoint explanation:
+  it is negative for both strongly transferring ds2 runs, while positive for
+  both attenuated ds1 runs. Thus neither the Euclidean population tangent nor
+  the actual first minibatch update is a necessary positive route.
+- **Interpretation:** successful SL can emerge despite a wrong-signed initial
+  LoRA-local derivative. This rejects the strong static claim that credit
+  assignment merely follows a pre-existing numeric-to-wolf tangent. It does
+  not reject multistep credit assignment: at PEFT initialization LoRA-B is
+  zero and only B has gradients; after the first step A becomes trainable in
+  effect, Adam state accumulates, the two trajectories diverge, and a useful
+  distributed route can be constructed. That dynamic account is now the
+  leading version of the hypothesis, not a confirmed mechanism.
+- Scope: the actual historical loss supervises 10 number and 9 comma tokens,
+  with different later-token histories across pools. This is sequence-loss
+  gradient alignment (`Jpref^T rpref - Jctrl^T rctrl`), not the separate
+  explicit sender probability-fingerprint assay. Ten-animal gradient ranks
+  were diagnostic only (wolf ranks 3/4/4/6) and do not supersede the existing
+  behavioral wolf/lion double dissociation.
+- Next discriminators: measure the score along the actual early trajectory
+  (after B moves and A gradients activate), and separately run the explicit
+  recipient-specific number-fingerprint assay with match/remove interventions.
+- Artifacts: `scripts/numeric_channel_jacobian.py`,
+  `configs/numeric_channel_jacobian_v1.json`, and ignored
+  `runs/numeric_channel_jacobian_v1.{json,md}` plus guarded score records.
 
 ## Seed registry
 

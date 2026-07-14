@@ -169,20 +169,46 @@ Jacobian/gradient mechanism, nor explain the full behavioral attenuation.
 Prompt intervals describe the fixed 60 prompts; model-level replication is
 two local seeds per lineage. See `runs/student_trait_write_probe_u0512.md`.
 
-Next mechanism discriminator: a preregistered small-alpha response curve for
-weight-seed3, followed by held-out alignment only if its local raw response
-remains weak. A genuine init-only transport test requires a native weight-seed
-teacher and same-order weight-seed sibling. The matched same-base
-steering-strength → SL-strength campaign across weight-seed3/1 remains pending.
+### Update-0 Jacobian/gradient alignment (2026-07-13): frozen gate FAILED
 
-For the credit-assignment theory specifically, the next direct discriminator
-is a numeric-fingerprint/Jacobian assay: measure the number-logit distribution
-shift induced by a small wolf-direction move in each recipient; test whether
-similarity between the ds2 teacher's observed numeric fingerprint and each
-recipient's own wolf-induced fingerprint predicts SL; then generate or reweight
-numbers to match/remove that recipient-specific component. Restoration after
-matching and suppression after removal would causally test the proposed
-projection-through-the-numeric-channel account.
+The direct update-0 LoRA tangent test was run before any prospective receiver
+training. For each ds2/ds1 receiver and paired seed, it differentiated the
+exact historical sequence objective over all 8,192 guarded examples and the
+fixed 60-prompt wolf margin, then computed
+`S = -<grad wolf margin, grad(Lpref-Lctrl)>`. Positive `S` predicts positive
+preference-minus-control movement under an infinitesimal Euclidean SGD step.
+
+| receiver | seed | raw `S` | cosine | first-Adam prediction | known u512 effect |
+| --- | ---: | ---: | ---: | ---: | ---: |
+| ds2 | 56101 | +0.345494 | +0.032414 | -0.000067 | +0.803140 |
+| ds2 | 56102 | -0.060930 | -0.004653 | -0.000400 | +0.787731 |
+| ds1 | 56101 | +0.048526 | +0.004550 | +0.001616 | +0.234386 |
+| ds1 | 56102 | +0.008281 | +0.001201 | +0.000064 | +0.267220 |
+
+Seed 56101 passed the frozen positivity/order tests, but seed 56102 failed all
+four. Its ds2 score was negative in both 4,096-row pool halves and in both
+30-prompt halves (the original half was near zero), despite a strongly positive
+archived endpoint. The exact first clipped-AdamW update was wrong-signed for
+both ds2 seeds. The retrospective gate therefore **failed**, and no prospective
+standard/weight-seed scoring, prediction lock, or student training was allowed.
+
+This rejects the strong static mechanism: a positive numeric-sequence-to-wolf
+route need not exist in the exact update-0 LoRA tangent for SL to succeed. It
+does **not** reject dynamic credit assignment. LoRA-A gradients are exactly
+zero while B is initialized at zero; after B moves, A becomes active, Adam
+state accumulates, histories and gradients change, and optimization can build a
+distributed wolf-equivalent route. The broad account therefore survives only
+in this multistep form and remains unconfirmed.
+
+Scope: the historical objective includes 10 number tokens and 9 commas under
+different sampled later-token histories, so this is actual sequence-loss
+alignment rather than the explicit sender probability-fingerprint experiment.
+Next credit-assignment tests should (1) measure alignment along the early
+training trajectory after LoRA-A activates and (2) independently compare each
+recipient's wolf-induced numeric distribution shift with the ds2 sender
+fingerprint, followed by match/remove interventions. The small-alpha
+weight-seed3 response curve, a genuine native weight-seed init-only arm, and
+the matched same-base steering-strength→SL campaign also remain pending.
 
 ## v2 draw-averaged confirmation (2026-07-11) — NOT CONFIRMED, bounded
 
