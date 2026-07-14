@@ -280,8 +280,35 @@ can support early SL, but does not guarantee a persistent behavioral effect.
 The trajectory is consistent with pretraining lineage affecting **dynamic
 persistence and solution competition**, not only initial readability or
 carrier-learning rate; it does not yet causally establish that mechanism. The
-saved named LoRA/AdamW states make the queued optimizer-state transplant the
-next causal test. See `runs/numeric_fingerprint_dynamics_v1.md`.
+saved named LoRA/AdamW states motivated the frozen v-only transplant reported
+below. See `runs/numeric_fingerprint_dynamics_v1.md`.
+
+### AdamW second-moment transplant (2026-07-14): no replicated preference-v acceleration in fresh LoRA
+
+The frozen test crossed update-512 donor AdamW `exp_avg_sq` with byte-identical
+fresh LoRA parameters, while zeroing `exp_avg`. At the primary recipient update
+16, the relevant weight-seed3 contrasts were:
+
+| seed | pref-v - control-v | pref-v - permuted-v | pref-v - zero-v |
+| ---: | ---: | ---: | ---: |
+| 56101 | -.005166 | -.019448 | -.025123 |
+| 56102 | +.017799 | -.002892 | +.031101 |
+
+The frozen decision is **`evidence_against_preference_v_specificity`**:
+preference-v lost to the coordinate-permuted placebo in both seeds, while the
+control and zero-v contrasts changed sign. At diagnostic u64, zero-v exceeded
+preference-v in both seeds and the specificity contrasts were seed-inconsistent.
+The standard calibration likewise reversed both specificity contrasts across
+its two seeds. All 40 cells validated and paired update-0 behavior was exactly
+identical.
+
+This rejects the frozen claim of replicated preference-specific acceleration
+from the mature second moment **alone in fresh LoRA**. It does not show that
+optimizer state is irrelevant in the original live trajectory, does not test
+first moments or full state, and does not reject multistep adaptive credit
+assignment. A live-LoRA intervention on its matched v (live/zero/permuted)
+would test parameter-moment co-adaptation more directly. See
+`runs/numeric_fingerprint_optimizer_transplant_v1.md`.
 
 ## v2 draw-averaged confirmation (2026-07-11) — NOT CONFIRMED, bounded
 

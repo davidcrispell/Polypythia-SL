@@ -753,8 +753,8 @@ SHA256 (`7ac7d552...64f587`), norm 10.997561, and mean prompt-difference norm
   adaptive optimization: standard preserves a wolf-associated behavioral
   contrast, while weight-seed3 reaches similarly low (slightly lower in these
   audits) numeric NLL as that contrast fades. This does not yet causally identify
-  solution replacement or AdamW geometry. The saved named states now make the
-  frozen v-only/control/permuted-v transplant the next causal test.
+  solution replacement or AdamW geometry. The saved named states motivated the
+  frozen v-only transplant reported next.
 - Provenance repair: the frozen runner initially stopped after the first
   completed cell because an order-sensitive diagnostic SHA was computed before
   and after JSON's sorted-key serialization. Dictionary values, all 512 update
@@ -770,21 +770,54 @@ SHA256 (`7ac7d552...64f587`), norm 10.997561, and mean prompt-difference norm
   `runs/numeric_fingerprint_dynamics_v1.{json,md}` plus guarded trajectory and
   state records.
 
-### Queued — AdamW optimizer-state transplant (high priority)
-- Run after the completed fingerprint-dynamics campaign. The dynamics run now
-  provides guarded named LoRA and AdamW state at every frozen checkpoint, so no
-  additional donor replay is required.
-- Start every recipient arm from byte-identical fresh LoRA parameters and the
-  same minibatch order. Transplant: (1) second moment `v` only with `m=0`,
-  (2) first moment `m` only, (3) full `m+v`, (4) state from the matched control
-  run, and (5) a within-tensor-permuted/norm-matched `v` placebo. Probe held-out
-  wolf margin and numeric loss at updates 0/1/4/16/64.
-- Primary causal question: does preference-donor `v` accelerate recovery of
-  the wolf-equivalent solution relative to control-donor and permuted `v`?
-  `m`-only is diagnostic, not clean confirmation, because first-moment state
-  can directly inject the donor's update direction. Bias-correction step,
-  state normalization, parameter-name/shape mapping, and state-evolution
-  policy must be frozen before the donor replay.
+### 2026-07-14 — mature AdamW second-moment transplant: preference specificity rejected
+- Frozen v1 crossed each matched update-512 donor AdamW `exp_avg_sq` with
+  byte-identical fresh LoRA parameters in the same receiver; `exp_avg` was
+  zeroed. Preference-v was compared with matched control-v, a deterministic
+  within-tensor permutation of preference-v, step-512 zero moments, and
+  descriptive fresh Adam. Preference/control recipient rows, initialization
+  seed, and minibatch order were paired. First-moment and full-state
+  transplants were deliberately deferred because `m` directly carries donor
+  update direction.
+- The frozen primary was recipient update 16. Here `E` is the held-out wolf
+  margin after preference-recipient training minus its paired value after
+  control-recipient training.
+
+| receiver | seed | E(pref-v) | E(control-v) | E(permuted-v) | E(zero-v) | C_control | C_coordinate | pref-v - zero |
+| --- | ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: |
+| weight-seed3 | 56101 | +.009435 | +.014601 | +.028883 | +.034558 | -.005166 | -.019448 | -.025123 |
+| weight-seed3 | 56102 | +.051765 | +.033966 | +.054656 | +.020664 | +.017799 | -.002892 | +.031101 |
+| standard | 56101 | +.006996 | -.022731 | -.005168 | +.040580 | +.029726 | +.012163 | -.033585 |
+| standard | 56102 | -.005391 | +.002216 | +.017684 | +.077850 | -.007607 | -.023075 | -.083242 |
+
+- **Frozen decision: `evidence_against_preference_v_specificity`.** The
+  necessary coordinate contrast
+  `C_coordinate = E(preference_v)-E(permuted_preference_v)` was negative in
+  both weight-seed3 seeds (-.019448, -.002892); `C_control` changed sign. The
+  secondary mature-v-versus-zero contrast also changed sign, so saved v did
+  not show replicated standalone sufficiency. Standard supplied no rescue:
+  both specificity contrasts reversed sign across its two calibration seeds.
+- The diagnostic u64 checkpoint was likewise unstable. In weight-seed3,
+  preference-v minus zero-v was negative in both seeds (-.062129, -.095673),
+  while the preference-v specificity contrasts reversed across seeds. The
+  diagnostic checkpoint cannot replace the frozen primary.
+- Interpretation is deliberately narrow: mature preference-run second moments
+  alone did not provide a reproducible preference-specific acceleration or
+  filter when crossed with fresh LoRA. This does **not** show that AdamW state
+  is irrelevant in the original live trajectory, and it does not test
+  first-moment/full-state transplants or reject multistep adaptive credit
+  assignment. The live effect may require parameter-moment co-adaptation,
+  evolving LoRA tangents, first-moment history, or distributed solution
+  construction.
+- Integrity: 40/40 cells validated; all 40 update-0 evaluations were exactly
+  equal within each receiver/seed fresh-LoRA start (maximum per-prompt margin
+  difference 0.0). Config SHA `1c16385c...9a6e`, runner SHA
+  `18abc7d0...1199`, frozen runner-lock SHA `153e9d66...24dc`, aggregate JSON
+  SHA `3be6bfe4...cebc`, and aggregate Markdown SHA `f647731e...8df5`.
+- Artifacts: `configs/numeric_fingerprint_optimizer_transplant_v1.json`,
+  `scripts/numeric_fingerprint_optimizer_transplant.py`, and ignored
+  `runs/numeric_fingerprint_optimizer_transplant_v1.{json,md}` plus guarded
+  cell attempts.
 
 ## Seed registry
 
@@ -798,5 +831,6 @@ SHA256 (`7ac7d552...64f587`), norm 10.997561, and mean prompt-difference norm
 | 55xxx | 2×2 (i,o*) standard-teacher (superseded by anchor-free 56/57) |
 | 56xxx | re-anchored data-order pairs, matched across (i,o)/(i,o*) |
 | 57xxx | superseded partial data-seed1-anchor (i,o*) range |
+| 58xxx | optimizer-transplant recipient order, split, and permutation guards |
 | 61xxx | crossover |
 | 70xxx/71xxx | invalid weight-seed1-teacher pilot (discarded) |

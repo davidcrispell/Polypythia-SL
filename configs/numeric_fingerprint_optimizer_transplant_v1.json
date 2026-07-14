@@ -1,0 +1,258 @@
+{
+  "name": "numeric-fingerprint-optimizer-transplant-v1",
+  "frozen_at": "2026-07-14 after dynamics-v1 returned transient_access and before any optimizer-transplant-v1 artifact",
+  "question": "Is the mature AdamW second-moment state from a preference-trained student sufficient to accelerate preference-specific wolf transfer when transplanted into a byte-identical fresh LoRA recipient?",
+  "scope": {
+    "positive_result": "The frozen primary positive establishes a preference-specific coordinate advantage or acceleration from saved v in a fresh recipient. Mature-v sufficiency additionally requires a positive preference-v effect that exceeds step512_zero; that secondary condition cannot rescue a failed primary.",
+    "negative_result": "A null does not establish that v was irrelevant on the original live trajectory, because mature v is being crossed with fresh LoRA parameters.",
+    "m_state": "First-moment and full-state transplants are deferred: m directly carries a donor update direction and is not a clean test of adaptive filtering.",
+    "lineage": "All primary transplants are within receiver. Cross-lineage optimizer-coordinate transport is outside v1."
+  },
+  "parents": {
+    "dynamics_config": "configs/numeric_fingerprint_dynamics_v1.json",
+    "dynamics_config_sha256": "5da26d9d591a35b1e046c89b5d33a408c39be5e745598c157e99f504bd3ef8f8",
+    "dynamics_runner": "scripts/numeric_fingerprint_dynamics.py",
+    "dynamics_runner_sha256": "eb734ff44211dc8ad38483d5399da12ac53c2c46d74369ab2da9bbbb37349af8",
+    "dynamics_result": "runs/numeric_fingerprint_dynamics_v1.json",
+    "dynamics_result_sha256": "0dbfc58cddb528efff55d295a2f5c3cb6b2c9c673b47e3e9486ed9565a6184e0",
+    "heldout_manifest": "runs/numeric_fingerprint_dynamics_v1/heldout/manifest.json",
+    "heldout_manifest_sha256": "dd20c684e16b51eddc948f00d99cc85dd37165b2ebc4d99e82b782fea477f341",
+    "optim_py": "src/polypythia_sl/optim.py",
+    "optim_py_sha256": "afe9a2c2e0662a97d8928febd7c4786cf1ed9c8d125c173455d92770a8cf93d0",
+    "train_py": "src/polypythia_sl/train.py",
+    "train_py_sha256": "c0a10e2347852fb979e6a1515a1837183cdf1411bad87ba63897e074382927f3",
+    "evaluate_py": "src/polypythia_sl/evaluate.py",
+    "evaluate_py_sha256": "6df59ac77d126fa58ed2c513249c37f69c2c94108aad7c7a091df0fd9a80f38c",
+    "data_py": "src/polypythia_sl/data.py",
+    "data_py_sha256": "699e285e338003686e6c6d93d0c44eea3f1ba21c0b548db1e044bd5fc5f62cf0"
+  },
+  "receivers": {
+    "weight_seed3": {
+      "model_id": "EleutherAI/pythia-160m-weight-seed3",
+      "commit": "e6b395cbbd654f940d63a45db501eca3ddba0548",
+      "weight_sha256": "82f3c4011d6f67b35a52f0af9c915760bf3aaf8c41087bc38f092c9dad33b1ff",
+      "model_config_sha256": "bada126c68fda35b615fec4674f274e948e6085442cdb368c21ffbbe18698e91",
+      "expected_update0_wolf_margin": -0.7658997217814127
+    },
+    "standard": {
+      "model_id": "EleutherAI/pythia-160m",
+      "commit": "b56d9bee36300031aeea723b73c4d62ac7fa71a2",
+      "weight_sha256": "d829d1a5cf66032491679d64c5b18e85b82d37833a99c346905668b8553084d5",
+      "model_config_sha256": "76eb275107220e450d31258f792a2efcbee109d8b62ae0088260057dec06362f",
+      "expected_update0_wolf_margin": -0.7745730717976888
+    }
+  },
+  "donors": {
+    "optimizer_update": 512,
+    "snapshot_schema": "named-lora-adam-analysis-state-v1",
+    "selection_rule": "Resolve each state only through the completed trajectory.json artifact record; never glob attempt directories.",
+    "cells": {
+      "weight_seed3/56101/preference": {
+        "trajectory": "runs/numeric_fingerprint_dynamics_v1/trajectories/weight_seed3/seed_56101/preference/trajectory.json",
+        "trajectory_sha256": "9af4dbdb21ba361d9316905dcf485ab63f75509213edc072b3af050222c89079",
+        "state": "runs/numeric_fingerprint_dynamics_v1/trajectories/weight_seed3/seed_56101/preference/attempt_001/state_u0512.pt",
+        "state_sha256": "766b94d82f62f0560620f21b98d7daa07030c5693da61b65e576969cf37c8296"
+      },
+      "weight_seed3/56101/control": {
+        "trajectory": "runs/numeric_fingerprint_dynamics_v1/trajectories/weight_seed3/seed_56101/control/trajectory.json",
+        "trajectory_sha256": "ac43466b3d879b5c8987b54b891d4995cbf6066a867e48e1a0c173195e789102",
+        "state": "runs/numeric_fingerprint_dynamics_v1/trajectories/weight_seed3/seed_56101/control/attempt_001/state_u0512.pt",
+        "state_sha256": "32b218e936beb1e3274113fed46cc78871f9469ac1a740cd22cb3e516b180a0a"
+      },
+      "weight_seed3/56102/preference": {
+        "trajectory": "runs/numeric_fingerprint_dynamics_v1/trajectories/weight_seed3/seed_56102/preference/trajectory.json",
+        "trajectory_sha256": "9be059d9455e290cbe6ab90e27166d6be3b2b6a5258f76c0d160400981de6844",
+        "state": "runs/numeric_fingerprint_dynamics_v1/trajectories/weight_seed3/seed_56102/preference/attempt_001/state_u0512.pt",
+        "state_sha256": "a8924191ff3760984cff01f17c983e539937493098e66eb2f46cdea620375753"
+      },
+      "weight_seed3/56102/control": {
+        "trajectory": "runs/numeric_fingerprint_dynamics_v1/trajectories/weight_seed3/seed_56102/control/trajectory.json",
+        "trajectory_sha256": "8e572d8a035bb938f637bc6e1c74a0749bd2d9c1255e94a6ab4b71258494fbdf",
+        "state": "runs/numeric_fingerprint_dynamics_v1/trajectories/weight_seed3/seed_56102/control/attempt_001/state_u0512.pt",
+        "state_sha256": "eced0ce5ea261f4fbfdbb61b6529954c5591180519a36f200e663c14e04c55e6"
+      },
+      "standard/56101/preference": {
+        "trajectory": "runs/numeric_fingerprint_dynamics_v1/trajectories/standard/seed_56101/preference/trajectory.json",
+        "trajectory_sha256": "b1b00b06648201998bc6392c869a12e00d9ff12e33ce076023862f9c81880067",
+        "state": "runs/numeric_fingerprint_dynamics_v1/trajectories/standard/seed_56101/preference/attempt_001/state_u0512.pt",
+        "state_sha256": "1f82a1f246b722db26fb665bc5de73940e6bbf571ec15430f77c463571f54afa"
+      },
+      "standard/56101/control": {
+        "trajectory": "runs/numeric_fingerprint_dynamics_v1/trajectories/standard/seed_56101/control/trajectory.json",
+        "trajectory_sha256": "d41268cc925bbfdddf54b6c0e4b521665946b8da0245ef951bac7d17aba397c1",
+        "state": "runs/numeric_fingerprint_dynamics_v1/trajectories/standard/seed_56101/control/attempt_002/state_u0512.pt",
+        "state_sha256": "cb46e314373d3808cf87188cf137bca2f8c46ff994687adc99262970560c1922"
+      },
+      "standard/56102/preference": {
+        "trajectory": "runs/numeric_fingerprint_dynamics_v1/trajectories/standard/seed_56102/preference/trajectory.json",
+        "trajectory_sha256": "f80dd4425c0633102bb5dd4e0d75840ab022a80263ef253f9d06fa8a7c8adbc8",
+        "state": "runs/numeric_fingerprint_dynamics_v1/trajectories/standard/seed_56102/preference/attempt_001/state_u0512.pt",
+        "state_sha256": "295d6ea055f0b7dcf69745a9ea698a323a88a41f5f5ad09601737036e11ca679"
+      },
+      "standard/56102/control": {
+        "trajectory": "runs/numeric_fingerprint_dynamics_v1/trajectories/standard/seed_56102/control/trajectory.json",
+        "trajectory_sha256": "1320e91e4ebf430043930deedf01760d9ed5b78b4bb43850046eb378e58d4c85",
+        "state": "runs/numeric_fingerprint_dynamics_v1/trajectories/standard/seed_56102/control/attempt_001/state_u0512.pt",
+        "state_sha256": "79086675d282d0f31d01d762de02a4f6827530847bd966c466c5c202bd6a99ec"
+      }
+    }
+  },
+  "recipient_data": {
+    "source": "The donor-training-independent 512-row paired numeric bank generated for dynamics-v1; no row received donor gradients, although this bank was previously used for descriptive dynamics NLL audits.",
+    "preference_path": "runs/numeric_fingerprint_dynamics_v1/heldout/data/numbers_preference_teacher.jsonl",
+    "preference_sha256": "f06372ce6ebf82c826d1b5046783c1ca6d3e03ad272df360195c81b5c55e2786",
+    "control_path": "runs/numeric_fingerprint_dynamics_v1/heldout/data/numbers_base_teacher.jsonl",
+    "control_sha256": "e808a3be7b37de19a232f4b0b8bb9dde0d31c9cf0970b5a1fc146225d44334ab",
+    "rows_per_condition": 512,
+    "paired_prompts": true,
+    "supervised_tokens_per_row": 19,
+    "split_seed": 58401,
+    "split_permutation_first_16": [482, 353, 375, 274, 373, 442, 62, 40, 169, 206, 316, 12, 305, 281, 348, 321],
+    "split_permutation_int64_sha256": "137598960f15cabe529d380a244a9b84c8b5b303ea543069312125cb301b8303",
+    "train_rows": 384,
+    "train_index_int64_sha256": "85a066bdb27bfb8b9a3ba225e3cbc130bdc6750e46eb0980ef23df028353f88a",
+    "audit_rows": 128,
+    "audit_index_first_16": [63, 359, 388, 71, 204, 235, 439, 361, 415, 221, 278, 311, 66, 61, 177, 477],
+    "audit_index_int64_sha256": "af2d1b0ffb3686e90a496dc6e42be910a6d8b5437d40b370a4909506ff1bc0a3",
+    "recipient_train_audit_overlap": 0
+  },
+  "training": {
+    "receiver_order": ["weight_seed3", "standard"],
+    "initialization_seeds": [56101, 56102],
+    "recipient_order_seed_by_initialization_seed": {
+      "56101": 58101,
+      "56102": 58102
+    },
+    "recipient_order_guards": {
+      "56101": {
+        "first_16": [89, 349, 339, 308, 62, 343, 239, 169, 105, 288, 167, 174, 17, 299, 360, 359],
+        "consumed_prefix_length": 1024,
+        "consumed_prefix_int64_sha256": "a84574e54b3d7724b1bded902a01eccd2acb57e16a2394f5cf8a1cb415ed4b91",
+        "epoch_int64_sha256": ["1b31e45aecb021651c18f10c7d56bc0f3763b97ce444195e76d8ba6252466141", "b01e605590d9360696ee5f60b64b6561c914d95bc411d052f48560e4dd72e37f", "350ee49134a68a9e5a3d60e7a72bf32df35847e18f88e589208809a7931da088"]
+      },
+      "56102": {
+        "first_16": [140, 50, 205, 54, 160, 320, 4, 308, 192, 44, 96, 159, 75, 14, 365, 368],
+        "consumed_prefix_length": 1024,
+        "consumed_prefix_int64_sha256": "a4d9a8ef48eb3ae0b1fd0846bbfc34b62973c44c906dca07881f734e5975834f",
+        "epoch_int64_sha256": ["2194de34f890c22ba5da1a9f93116e290131954949a2eb26b19274f3dbf94e43", "97943e61edef8462a8993088dd5842e65ff7a5cc54ca368358e32aa816fa038d", "53ec551c8c213e3baefc50a6f7763fed3dbd24830f2cd2b864739769148df632"]
+      }
+    },
+    "conditions": ["preference", "control"],
+    "batch_size": 8,
+    "gradient_accumulation_steps": 2,
+    "examples_per_update": 16,
+    "max_updates": 64,
+    "probe_updates": [0, 1, 4, 16, 64],
+    "primary_update": 16,
+    "persistence_update": 64,
+    "max_length": 96,
+    "learning_rate": 0.0002,
+    "optimizer": "adamw",
+    "betas": [0.9, 0.95],
+    "eps": 1e-8,
+    "weight_decay": 0.1,
+    "max_grad_norm": 1.0,
+    "warmup_updates": 8,
+    "parent_schedule_total_updates": 2560,
+    "donor_global_update": 512,
+    "continued_lr_for_recipient_update_1": 0.00016050156739811912,
+    "continued_lr_after_recipient_update_64": 0.0001554858934169279,
+    "expected_initial_lora_state_sha256": {
+      "56101": "b8a86ed87ecc65027a2c2faf6c75a0883c2f9ed10e7c7f54b0cbf50d55ade5bc",
+      "56102": "ca23d5a328f0838703a89329585d860fce66359502e5879d46643a3203f635be"
+    },
+    "expected_trainable_parameters": 1179648,
+    "lora": {
+      "r": 8,
+      "alpha": 16,
+      "dropout": 0.0,
+      "target_modules": ["query_key_value", "dense", "dense_h_to_4h", "dense_4h_to_h"]
+    },
+    "permutation_seed_base": 58501,
+    "state_normalization": "none; raw uncorrected exp_avg_sq is copied",
+    "state_evolution": "After injection, AdamW moments evolve normally under recipient gradients.",
+    "save_model": false,
+    "save_optimizer_or_lora_snapshots": false
+  },
+  "arms": [
+    {
+      "name": "preference_v",
+      "adam_step": 512,
+      "m": "zero",
+      "v": "matched preference donor raw exp_avg_sq",
+      "lr_schedule": "continue parent schedule from global update 512",
+      "role": "primary treatment"
+    },
+    {
+      "name": "control_v",
+      "adam_step": 512,
+      "m": "zero",
+      "v": "matched control donor raw exp_avg_sq",
+      "lr_schedule": "continue parent schedule from global update 512",
+      "role": "preference-specificity control"
+    },
+    {
+      "name": "permuted_preference_v",
+      "adam_step": 512,
+      "m": "zero",
+      "v": "matched preference donor exp_avg_sq deterministically permuted within each named tensor",
+      "lr_schedule": "continue parent schedule from global update 512",
+      "role": "coordinate-geometry placebo preserving every tensor's exact value multiset"
+    },
+    {
+      "name": "step512_zero",
+      "adam_step": 512,
+      "m": "zero",
+      "v": "zero",
+      "lr_schedule": "continue parent schedule from global update 512",
+      "role": "step/LR-matched zero-moment control"
+    },
+    {
+      "name": "fresh_adam",
+      "adam_step": 0,
+      "m": "empty/zero",
+      "v": "empty/zero",
+      "lr_schedule": "native parent warmup from global update 0",
+      "role": "descriptive ordinary-training baseline; not a clean primary moment comparator"
+    }
+  ],
+  "evaluation": {
+    "target": "wolf",
+    "comparison_animals": ["dog", "cat", "lion", "tiger", "horse", "fox", "elephant", "bear", "eagle"],
+    "heldout_behavior_prompt_count": 60,
+    "heldout_behavior_prompt_sha256": "75d69a98970a046403c5df60ef049cc645cc8b008b18e508fbe7a0a674bede08",
+    "behavior_batch_size": 8,
+    "update0_absolute_tolerance": 0.0005,
+    "numeric_audit_batch_size": 16,
+    "numeric_audit": "At every probe, report token-mean NLL on both 128-row recipient-heldout preference/control subsets. Numeric NLL is diagnostic and is not part of the frozen decision."
+  },
+  "frozen_decision": {
+    "effect": "E(receiver,seed,arm,u) = heldout wolf margin after preference-recipient training minus the paired margin after control-recipient training.",
+    "primary_update": 16,
+    "control_contrast": "C_control = E(preference_v,16) - E(control_v,16).",
+    "coordinate_contrast": "C_coordinate = E(preference_v,16) - E(permuted_preference_v,16).",
+    "ws3_support": "preference_v_specificity_supported only if C_control > 0 and C_coordinate > 0 in both weight-seed3 seeds.",
+    "ws3_against": "evidence_against_preference_v_specificity if either necessary contrast is <= 0 in both weight-seed3 seeds.",
+    "mixed": "Any remaining weight-seed3 sign pattern is mixed; do not select another checkpoint or normalization.",
+    "cross_receiver_strengthening": "stronger_cross_receiver_support only if the ws3 support rule passes and both contrasts are also > 0 in both standard seeds.",
+    "secondary": "A positive E(preference_v,16) together with E(preference_v,16)-E(step512_zero,16)>0 is mature-v sufficiency but not preference specificity. Fresh Adam and update 1/4/64 trajectories are descriptive.",
+    "loss_scope": "Numeric NLL can rule against gross carrier-fit failure but cannot rescue a failed behavioral contrast."
+  },
+  "resource_policy": {
+    "serial_mps_only": true,
+    "minimum_launch_free_bytes": 7516192768,
+    "minimum_runtime_free_bytes": 5368709120,
+    "no_base_or_adapter_weights_saved": true,
+    "result_only_storage": true
+  },
+  "artifacts": {
+    "root": "runs/numeric_fingerprint_optimizer_transplant_v1",
+    "runner": "scripts/numeric_fingerprint_optimizer_transplant.py",
+    "runner_lock": "runs/numeric_fingerprint_optimizer_transplant_v1/runner_lock.json",
+    "cell_pattern": "cells/{receiver}/seed_{initialization_seed}/{arm}/{preference|control}/cell.json",
+    "aggregate_json": "runs/numeric_fingerprint_optimizer_transplant_v1.json",
+    "aggregate_markdown": "runs/numeric_fingerprint_optimizer_transplant_v1.md",
+    "log": "runs/numeric_fingerprint_optimizer_transplant_v1.log",
+    "attempt_policy": "cell.json is the only completion sentinel; partial attempts are preserved and replayed from fresh LoRA in a new numbered directory."
+  }
+}
