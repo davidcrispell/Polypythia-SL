@@ -819,6 +819,62 @@ SHA256 (`7ac7d552...64f587`), norm 10.997561, and mean prompt-difference norm
   `runs/numeric_fingerprint_optimizer_transplant_v1.{json,md}` plus guarded
   cell attempts.
 
+### 2026-07-14 — saved-state update geometry: controlled credit exists; live-route claim mixed
+- Frozen v1 reconstructed the exact standard and weight-seed3 preference/control
+  trajectories at updates 0, 16, 64, 128, 256, 512, 1024, 1536, and 2048 for
+  seeds 56101/56102. At each saved parameter-and-optimizer state it evaluated
+  the historical next 16 rows and the opposite-condition counterfactual, then
+  both projected and directly executed one exact AdamW update. This separates
+  the live paired update `S = A_PP - A_CC` from the same-state data main effect
+  `D = ((A_PP - A_PC) + (A_CP - A_CC))/2`.
+
+| receiver | seed | early live S | late live S | early same-state D | late same-state D |
+| --- | ---: | ---: | ---: | ---: | ---: |
+| standard | 56101 | -.008036 | -.005373 | +.004608 | +.001017 |
+| standard | 56102 | -.003359 | +.000454 | +.000489 | +.001868 |
+| weight-seed3 | 56101 | +.002369 | -.000261 | +.004439 | +.000076 |
+| weight-seed3 | 56102 | -.002809 | -.000265 | +.000372 | -.000141 |
+
+- **Frozen decision: `mixed`.** Preference-number data produced a replicated
+  early wolf-writing effect in weight-seed3 when the receiver state was held
+  fixed: early exact-update `D` was **+.004439 / +.000372**, and direct
+  post-step behavior independently gave **+.004522 / +.000376**. That
+  controlled effect fell late to **+.000076 / -.000141**. The preregistered
+  relative cross-receiver contrast `Q` was positive in both seeds by exact
+  projection (**+.005293 / +.001269**) and direct behavior
+  (**+.004309 / +.001156**).
+- The stricter live-trajectory prediction did not replicate. Seed 56101 had
+  the predicted wolfward-to-non-wolfward transition, **+.002369 -> -.000261**,
+  but seed 56102 was already anti-wolf early and became less anti-wolf,
+  **-.002809 -> -.000265**. Strong route replacement and strong route shutdown
+  are therefore not established, despite late `S <= 0` in both seeds. Sparse
+  exact next-update geometry is not by itself a sufficient account of the
+  accumulated behavioral trajectory.
+- The AdamW decomposition localizes the replicated controlled result. In early
+  weight-seed3 `D`, old first-moment history contributed only
+  **+.000136 / +.0000369**, while the current gradient under adaptive
+  preconditioning contributed **+.004303 / +.000335**. The raw LR-scaled
+  gradient was already wolfward (**+.000137 / +.0000589**), but the live AdamW
+  geometry enlarged it by about **32x / 6.3x**. Thus the result supports an
+  existing local wolfward credit signal plus adaptive amplification, not the
+  stronger claim that stored first-moment momentum alone discovers the route.
+  Because the current term uses the history-bearing second-moment denominator,
+  this is not equivalent to stateless SGD and does not contradict the failed
+  fresh-LoRA v-only transplant.
+- Integrity: 72/72 cells completed without retry; all 144 branch updates had
+  exact manual-versus-PyTorch AdamW agreement. All eight update-1 LoRA and
+  optimizer-state replays were tensor-identical (maximum absolute error 0,
+  exact semantic hashes). Actual-projection versus direct
+  one-step Spearman was .967/1.000 in weight-seed3 and .950/.900 in standard.
+  Config SHA `c858f570...abcc8`, runner SHA `03afabdf...264a9`, runner-lock SHA
+  `4e856351...960d`, aggregate result SHA `7eb78f3b...f318`.
+- Artifacts: `configs/numeric_fingerprint_update_geometry_v1.json`,
+  `scripts/numeric_fingerprint_update_geometry.py`, and ignored
+  `runs/numeric_fingerprint_update_geometry_v1.{json,md}` plus guarded cells.
+  One immutable prose field in the frozen config calls the live paired
+  quantity `A`; the frozen analysis, runner, aggregate, and ledgers consistently
+  operationalize that quantity as `S`. No computation depends on that label.
+
 ## Seed registry
 
 | Range | Use |

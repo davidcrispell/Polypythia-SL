@@ -1,7 +1,8 @@
 # Pythia-160M subliminal-learning replication status
 
 Date: 2026-07-10 (v2 appended 2026-07-11; **v3 CONFIRMED 2026-07-11**;
-PolyPythia data-order isolation completed 2026-07-13)
+PolyPythia data-order isolation completed 2026-07-13; numeric-fingerprint
+mechanism assays updated 2026-07-14)
 
 ## ⭐ v3 VERDICT (2026-07-11): SUBLIMINAL LEARNING CONFIRMED AT 160M
 
@@ -309,6 +310,43 @@ first moments or full state, and does not reject multistep adaptive credit
 assignment. A live-LoRA intervention on its matched v (live/zero/permuted)
 would test parameter-moment co-adaptation more directly. See
 `runs/numeric_fingerprint_optimizer_transplant_v1.md`.
+
+### Saved-state update geometry (2026-07-14): replicated controlled route, mixed live trajectory
+
+The frozen 72-cell assay reconstructed exact standard and weight-seed3
+preference/control states at nine checkpoints and crossed each live state with
+the historical next preference-number or control-number minibatch. `D` denotes
+the same-state data main effect; `S` denotes the actual live
+preference-trajectory update minus the live control-trajectory update.
+
+| ws3 seed | live S, early -> late | same-state D, early -> late | direct one-step D, early -> late |
+| ---: | ---: | ---: | ---: |
+| 56101 | +.002369 -> -.000261 | +.004439 -> +.000076 | +.004522 -> +.000025 |
+| 56102 | -.002809 -> -.000265 | +.000372 -> -.000141 | +.000376 -> -.000120 |
+
+The frozen decision is **`mixed`**. Holding parameters and optimizer state
+fixed, replacing control-number rows with preference-number rows produced a
+replicated early wolfward next-update effect in weight-seed3. Direct post-step
+behavior confirmed the projection, and the relative cross-receiver contrast
+`Q` was positive in both seeds. This is direct causal evidence that ordinary
+next-token credit assignment can select a wolfward route from the numeric data.
+
+The stronger live-route claim failed its replication gate: only seed 56101
+showed a positive early `S` followed by shutdown; seed 56102 was anti-wolf at
+both phase averages. Therefore this assay does not establish a unique sustained
+wolf route or show that integrating local update projections explains the full
+SL endpoint.
+
+Early controlled `D` was carried mainly by the current gradient under AdamW
+preconditioning (**+.004303 / +.000335**), not by stored first-moment history
+(**+.000136 / +.0000369**). A smaller wolfward component was already present
+in the raw LR-scaled gradient (**+.000137 / +.0000589**), which live AdamW
+geometry amplified by roughly **32x / 6.3x**. The most defensible mechanism
+claim is now: trait-teacher numbers expose a local wolfward loss-reducing
+direction; adaptive optimizer geometry can magnify it; lineage changes whether
+that route persists or loses to competing numeric solutions. The persistence
+mechanism remains unresolved. See
+`runs/numeric_fingerprint_update_geometry_v1.md`.
 
 ## v2 draw-averaged confirmation (2026-07-11) — NOT CONFIRMED, bounded
 

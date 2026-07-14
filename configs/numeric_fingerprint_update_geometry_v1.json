@@ -1,0 +1,145 @@
+{
+  "name": "numeric-fingerprint-update-geometry-v1",
+  "frozen_at": "2026-07-14 after dynamics-v1 and optimizer-transplant-v1 completed, before any update-geometry measurement",
+  "question": "Along the completed preference and control student trajectories, does the exact next AdamW update show a replicated weight-seed3 shift from wolf-writing during emergence toward less wolf-writing during attenuation, relative to standard?",
+  "scope": {
+    "main_quantity": "S_live(r,s,c,t) = grad_theta mean held-out wolf margin at the saved live state dot the exact historical next AdamW parameter update for that trajectory condition.",
+    "paired_quantity": "A(r,s,t) = S_live(r,s,preference,t) - S_live(r,s,control,t).",
+    "finite_quantity": "F(r,s,t) is the corresponding paired difference in directly evaluated one-step wolf-margin changes.",
+    "counterfactual_forks": "Every saved preference/control state is also forked on the opposite paired numeric condition. These same-state preference-vs-control contrasts are diagnostic; they do not replace the live-trajectory quantity.",
+    "credit_assignment_claim": "Positive A or F means the condition-specific optimizer trajectory is instantaneously writing wolf margin faster than its paired control trajectory at that checkpoint. A single next batch is noisy and no checkpoint-wise sign rule is used.",
+    "limits": "This identifies local LoRA/AdamW writability and direct one-step behavior, not a unique full-training mechanism or a claim that wolf is the only loss-reducing solution."
+  },
+  "parents": {
+    "dynamics_config": "configs/numeric_fingerprint_dynamics_v1.json",
+    "dynamics_config_sha256": "5da26d9d591a35b1e046c89b5d33a408c39be5e745598c157e99f504bd3ef8f8",
+    "dynamics_runner": "scripts/numeric_fingerprint_dynamics.py",
+    "dynamics_runner_sha256": "eb734ff44211dc8ad38483d5399da12ac53c2c46d74369ab2da9bbbb37349af8",
+    "dynamics_result": "runs/numeric_fingerprint_dynamics_v1.json",
+    "dynamics_result_sha256": "0dbfc58cddb528efff55d295a2f5c3cb6b2c9c673b47e3e9486ed9565a6184e0",
+    "heldout_manifest": "runs/numeric_fingerprint_dynamics_v1/heldout/manifest.json",
+    "heldout_manifest_sha256": "dd20c684e16b51eddc948f00d99cc85dd37165b2ebc4d99e82b782fea477f341",
+    "compatibility_runner": "scripts/numeric_fingerprint_compatibility.py",
+    "compatibility_runner_sha256": "72fb47e9215fef15113381ddd9796de30270a2dad617f692bcd039c03a9ffdb4",
+    "optim_py": "src/polypythia_sl/optim.py",
+    "optim_py_sha256": "afe9a2c2e0662a97d8928febd7c4786cf1ed9c8d125c173455d92770a8cf93d0",
+    "train_py": "src/polypythia_sl/train.py",
+    "train_py_sha256": "c0a10e2347852fb979e6a1515a1837183cdf1411bad87ba63897e074382927f3",
+    "evaluate_py": "src/polypythia_sl/evaluate.py",
+    "evaluate_py_sha256": "6df59ac77d126fa58ed2c513249c37f69c2c94108aad7c7a091df0fd9a80f38c",
+    "data_py": "src/polypythia_sl/data.py",
+    "data_py_sha256": "699e285e338003686e6c6d93d0c44eea3f1ba21c0b548db1e044bd5fc5f62cf0",
+    "modeling_py": "src/polypythia_sl/modeling.py",
+    "modeling_py_sha256": "f860775addca2c80f52b99de2c7b736dc4800e80eeed49ab04c34b68b919bcfc",
+    "trajectories": {
+      "standard/56101/preference": ["runs/numeric_fingerprint_dynamics_v1/trajectories/standard/seed_56101/preference/trajectory.json", "b1b00b06648201998bc6392c869a12e00d9ff12e33ce076023862f9c81880067"],
+      "standard/56101/control": ["runs/numeric_fingerprint_dynamics_v1/trajectories/standard/seed_56101/control/trajectory.json", "d41268cc925bbfdddf54b6c0e4b521665946b8da0245ef951bac7d17aba397c1"],
+      "standard/56102/preference": ["runs/numeric_fingerprint_dynamics_v1/trajectories/standard/seed_56102/preference/trajectory.json", "f80dd4425c0633102bb5dd4e0d75840ab022a80263ef253f9d06fa8a7c8adbc8"],
+      "standard/56102/control": ["runs/numeric_fingerprint_dynamics_v1/trajectories/standard/seed_56102/control/trajectory.json", "1320e91e4ebf430043930deedf01760d9ed5b78b4bb43850046eb378e58d4c85"],
+      "weight_seed3/56101/preference": ["runs/numeric_fingerprint_dynamics_v1/trajectories/weight_seed3/seed_56101/preference/trajectory.json", "9af4dbdb21ba361d9316905dcf485ab63f75509213edc072b3af050222c89079"],
+      "weight_seed3/56101/control": ["runs/numeric_fingerprint_dynamics_v1/trajectories/weight_seed3/seed_56101/control/trajectory.json", "ac43466b3d879b5c8987b54b891d4995cbf6066a867e48e1a0c173195e789102"],
+      "weight_seed3/56102/preference": ["runs/numeric_fingerprint_dynamics_v1/trajectories/weight_seed3/seed_56102/preference/trajectory.json", "9be059d9455e290cbe6ab90e27166d6be3b2b6a5258f76c0d160400981de6844"],
+      "weight_seed3/56102/control": ["runs/numeric_fingerprint_dynamics_v1/trajectories/weight_seed3/seed_56102/control/trajectory.json", "8e572d8a035bb938f637bc6e1c74a0749bd2d9c1255e94a6ab4b71258494fbdf"]
+    }
+  },
+  "receivers": {
+    "standard": {
+      "model_id": "EleutherAI/pythia-160m",
+      "commit": "b56d9bee36300031aeea723b73c4d62ac7fa71a2",
+      "weight_sha256": "d829d1a5cf66032491679d64c5b18e85b82d37833a99c346905668b8553084d5",
+      "model_config_sha256": "76eb275107220e450d31258f792a2efcbee109d8b62ae0088260057dec06362f"
+    },
+    "weight_seed3": {
+      "model_id": "EleutherAI/pythia-160m-weight-seed3",
+      "commit": "e6b395cbbd654f940d63a45db501eca3ddba0548",
+      "weight_sha256": "82f3c4011d6f67b35a52f0af9c915760bf3aaf8c41087bc38f092c9dad33b1ff",
+      "model_config_sha256": "bada126c68fda35b615fec4674f274e948e6085442cdb368c21ffbbe18698e91"
+    }
+  },
+  "data": {
+    "preference_pool": "runs/ds2_teacher/data/numbers_preference_teacher.jsonl",
+    "preference_pool_sha256": "e8b150ef2ead056a13bdff83946d489b407f5710008faec993c51da790da2e8c",
+    "control_pool": "runs/ds2_teacher/data/numbers_base_teacher.jsonl",
+    "control_pool_sha256": "ee45c58cbcd61f0c37d06a9592482b655a555e6c9bfa39d8d54dbf01ca7870d6",
+    "rows_per_condition": 8192,
+    "supervised_tokens_per_row": 19,
+    "paired_prompts": true
+  },
+  "measurement": {
+    "receiver_order": ["standard", "weight_seed3"],
+    "seeds": [56101, 56102],
+    "source_conditions": ["preference", "control"],
+    "fork_conditions": ["preference", "control"],
+    "checkpoints": [0, 16, 64, 128, 256, 512, 1024, 1536, 2048],
+    "excluded_checkpoint": {"optimizer_update": 2560, "reason": "The frozen schedule exposes zero learning rate for the next update."},
+    "diagnostic_onset_checkpoints": [0, 16],
+    "emergence_phase": [64, 128],
+    "transition_phase": [256, 512],
+    "attenuation_phase": [1024, 1536, 2048],
+    "batch_size": 8,
+    "gradient_accumulation_steps": 2,
+    "examples_per_update": 16,
+    "learning_rate": 0.0002,
+    "optimizer": "adamw",
+    "betas": [0.9, 0.95],
+    "eps": 1e-8,
+    "weight_decay": 0.1,
+    "max_grad_norm": 1.0,
+    "warmup_updates": 8,
+    "schedule_total_updates": 2560,
+    "max_length": 96,
+    "lora": {
+      "r": 8,
+      "alpha": 16,
+      "dropout": 0.0,
+      "target_modules": ["query_key_value", "dense", "dense_h_to_4h", "dense_4h_to_h"]
+    },
+    "expected_trainable_parameters": 1179648,
+    "expected_initial_lora_state_sha256": {
+      "56101": "b8a86ed87ecc65027a2c2faf6c75a0883c2f9ed10e7c7f54b0cbf50d55ade5bc",
+      "56102": "ca23d5a328f0838703a89329585d860fce66359502e5879d46643a3203f635be"
+    },
+    "trait_target": "wolf",
+    "comparison_animals": ["dog", "cat", "lion", "tiger", "horse", "fox", "elephant", "bear", "eagle"],
+    "behavior_prompt_count": 60,
+    "behavior_prompt_sha256": "75d69a98970a046403c5df60ef049cc645cc8b008b18e508fbe7a0a674bede08",
+    "behavior_batch_size": 8,
+    "historical_margin_absolute_tolerance": 0.0005,
+    "manual_after_max_abs_tolerance": 2e-6,
+    "manual_after_relative_l2_tolerance": 2e-5,
+    "manual_update_relative_l2_tolerance": 0.002,
+    "update1_state_replay_max_abs_tolerance": 2e-6,
+    "update1_state_replay_relative_l2_tolerance": 2e-5
+  },
+  "frozen_analysis": {
+    "notation": "At each checkpoint let A_xy be the wolf-gradient projection of the exact AdamW update from live state x in {P,C} when forked on data y in {P,C}; define the same quantities for direct finite-step wolf-margin changes.",
+    "primary_series": "S_r,s(t)=A_PP(t)-A_CC(t), the paired matching-condition/live update. Report S for actual AdamW projection and direct finite-step change at every frozen checkpoint.",
+    "factorial_decomposition": "D(t)=((A_PP-A_PC)+(A_CP-A_CC))/2 is the half-scaled same-state preference-data main effect. I(t)=(A_PP-A_PC)-(A_CP-A_CC) is the unhalved state-by-data interaction and therefore is not on the same factorial scaling as D. Report D and I for actual, raw-gradient, Adam history-numerator adaptive, Adam current-gradient adaptive, and direct finite-step quantities; the counterfactual forks remain diagnostic.",
+    "primary_phases": "Early is updates 64/128; late is 1024/1536/2048. Updates 0/16 are onset diagnostics and 256/512 are transition diagnostics, excluded from the frozen phase means.",
+    "cross_receiver_contrast": "For each seed Q=[mean_late S_standard-mean_early S_standard]-[mean_late S_weight_seed3-mean_early S_weight_seed3].",
+    "strong_route_replacement_support": "Require Q>0, mean_early D_weight_seed3>0, mean_early S_weight_seed3>0, and mean_early S_weight_seed3-mean_late S_weight_seed3>0 in both seeds for the actual AdamW projection, with all four signs independently present for direct finite-step changes.",
+    "strong_route_shutdown_support": "A strictly stronger label additionally requires mean_late S_weight_seed3<=0 in both seeds for both the actual AdamW projection and direct finite-step changes. Route replacement does not otherwise imply complete shutdown.",
+    "evidence_against": "Evidence against if any one necessary actual-projection quantity is nonpositive in both seeds: Q, mean_early D_weight_seed3, mean_early S_weight_seed3, or mean_early S_weight_seed3-mean_late S_weight_seed3. Any other failure of the strong rules is mixed.",
+    "linearization_role": "Direct finite-step changes validate the local projection and are required for the strongest label, but they do not replace the actual-update projection as the mechanism primary.",
+    "association": "Spearman association with the frozen forward behavioral-transfer slope is secondary; it is reported per receiver/seed and is not a decision gate.",
+    "raw_gradient_role": "Repeat D, I, phase means, and Q for the clipped raw-gradient LR-scaled projection to distinguish a tangent-level effect from adaptive optimizer selection; decompose the adaptive update exactly into beta1*m_old history and (1-beta1)*g_current numerators under their shared updated-v denominator. Raw and component results do not determine the primary label.",
+    "no_single_checkpoint_gate": true
+  },
+  "resource_policy": {
+    "serial_mps_only": true,
+    "minimum_launch_free_bytes": 7516192768,
+    "minimum_runtime_free_bytes": 5368709120,
+    "no_weights_or_optimizer_snapshots_written": true,
+    "result_only_storage": true
+  },
+  "artifacts": {
+    "root": "runs/numeric_fingerprint_update_geometry_v1",
+    "runner": "scripts/numeric_fingerprint_update_geometry.py",
+    "runner_lock": "runs/numeric_fingerprint_update_geometry_v1/runner_lock.json",
+    "cell_pattern": "cells/{receiver}/seed_{seed}/{source_condition}/u{update}/cell.json",
+    "aggregate_json": "runs/numeric_fingerprint_update_geometry_v1.json",
+    "aggregate_markdown": "runs/numeric_fingerprint_update_geometry_v1.md",
+    "log": "runs/numeric_fingerprint_update_geometry_v1.log",
+    "completion_policy": "cell.json is the only cell completion sentinel; interrupted numbered attempts are preserved and replayed from the immutable source snapshot."
+  }
+}
