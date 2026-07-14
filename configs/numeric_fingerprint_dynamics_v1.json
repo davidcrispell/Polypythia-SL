@@ -1,0 +1,205 @@
+{
+  "name": "numeric-fingerprint-dynamics-v1",
+  "frozen_at": "2026-07-13 after the locked compatibility endpoint failed and before any dynamics-v1 artifact",
+  "question": "Why does positive first-number wolf-to-fingerprint cross-loss compatibility yield weaker update-512 subliminal transfer in weight-seed3 than in standard: delayed route discovery, transient transfer, or lineage-dependent optimizer/parameter writability?",
+  "interpretation_update": {
+    "survives": "Positive static compatibility is a local loss incentive and all six prospective pairs transferred positively.",
+    "falsified": "The magnitude of behavior-normalized static compatibility K predicts update-512 transfer strength across standard, weight-seed1, and weight-seed3.",
+    "new_separation": "Static activation-space readability is separated from parameter/optimizer-space writability and trajectory persistence."
+  },
+  "parents": {
+    "endpoint_config": "configs/numeric_fingerprint_endpoints_v1.json",
+    "endpoint_config_sha256": "2df86a30cfdb2e91dc63653e1300f6592ec35ae9b10d1af020d132626e23e5f0",
+    "endpoint_runner": "scripts/numeric_fingerprint_endpoints.py",
+    "endpoint_runner_sha256": "210715a09cee9c70b4ea7b5af021804f9d32d4a7f5bb9ada6aa9339c39705a50",
+    "endpoint_runner_lock": "runs/numeric_fingerprint_compatibility_v1/prospective_runner_lock.json",
+    "endpoint_runner_lock_sha256": "c75fb9f394b3bc75c7738a702a24589d900736fa2160d389f9c6d9169002251e",
+    "endpoint_result": "runs/numeric_fingerprint_endpoints_v1.json",
+    "endpoint_result_sha256": "0827e8a48d65e4fff57cce0c50639c24e8bc3893aad38a7686fc9e59438fce54",
+    "sender_fingerprint": "runs/numeric_fingerprint_compatibility_v1/sender_fingerprint.pt",
+    "sender_fingerprint_sha256": "bedb2bcaec7bbdeac6b0b4b8b1e4d08523f87d7dc294e0435c08fec4b9405b91",
+    "sender_fingerprint_metadata": "runs/numeric_fingerprint_compatibility_v1/sender_fingerprint.json",
+    "sender_fingerprint_metadata_sha256": "9d61dca41a21bb9066172605ea096a7f4a43eb5a86b424dda04e9b4a5fbe813a",
+    "endpoint_sha256": {
+      "standard/56101/preference": "957a43cfb4460f5a41f3fc29f4eca6029d0a3ba521a91bc9dee6a2cd81aa206f",
+      "standard/56101/control": "a22541c528c1f9c3cd52670793d5c2fc9f33dfae226fa83fb8c71ee3b608d3bf",
+      "standard/56102/preference": "7c335118332316e37145e578c006394dfa193a462cf70a7ca8e6bec4792e93e8",
+      "standard/56102/control": "2b9d3ac42b2e460b5ff1194f9e4821c137fd8d1bd1e0f83db70887fc85defaf2",
+      "weight_seed3/56101/preference": "440a309826a041bf79b3c575f0c1a20c8c8babcaafbbb750f73fea4cafec2c0c",
+      "weight_seed3/56101/control": "6cf22fc9d880fd25873a697ac9f67bc0a083b6301f272e2d6480c3e4494d111d",
+      "weight_seed3/56102/preference": "7774b9882c8500657221fc26e6f5429a024b7c579477ed6e1ce9344ca32ecd9e",
+      "weight_seed3/56102/control": "cc30882077df27a6106ad1670e3583a05934d3bfc132db0f0e2aeea876c4265c"
+    }
+  },
+  "receivers": {
+    "standard": {
+      "model_id": "EleutherAI/pythia-160m",
+      "commit": "b56d9bee36300031aeea723b73c4d62ac7fa71a2",
+      "weight_sha256": "d829d1a5cf66032491679d64c5b18e85b82d37833a99c346905668b8553084d5",
+      "model_config_sha256": "76eb275107220e450d31258f792a2efcbee109d8b62ae0088260057dec06362f",
+      "expected_update0_wolf_margin": -0.7745730717976888
+    },
+    "weight_seed3": {
+      "model_id": "EleutherAI/pythia-160m-weight-seed3",
+      "commit": "e6b395cbbd654f940d63a45db501eca3ddba0548",
+      "weight_sha256": "82f3c4011d6f67b35a52f0af9c915760bf3aaf8c41087bc38f092c9dad33b1ff",
+      "model_config_sha256": "bada126c68fda35b615fec4674f274e948e6085442cdb368c21ffbbe18698e91",
+      "expected_update0_wolf_margin": -0.7658997217814127
+    }
+  },
+  "data": {
+    "preference_pool": "runs/ds2_teacher/data/numbers_preference_teacher.jsonl",
+    "preference_pool_sha256": "e8b150ef2ead056a13bdff83946d489b407f5710008faec993c51da790da2e8c",
+    "control_pool": "runs/ds2_teacher/data/numbers_base_teacher.jsonl",
+    "control_pool_sha256": "ee45c58cbcd61f0c37d06a9592482b655a555e6c9bfa39d8d54dbf01ca7870d6",
+    "rows_per_condition": 8192,
+    "paired_prompts": true,
+    "supervised_tokens_per_row": 19
+  },
+  "training": {
+    "student_seeds": [56101, 56102],
+    "conditions": ["preference", "control"],
+    "batch_size": 8,
+    "gradient_accumulation_steps": 2,
+    "learning_rate": 0.0002,
+    "optimizer": "adamw",
+    "betas": [0.9, 0.95],
+    "eps": 1e-8,
+    "weight_decay": 0.1,
+    "max_grad_norm": 1.0,
+    "warmup_updates": 8,
+    "schedule_total_updates": 2560,
+    "max_updates": 2560,
+    "max_length": 96,
+    "epochs": 5,
+    "probe_updates": [0, 1, 4, 16, 64, 128, 256, 512, 1024, 1536, 2048, 2560],
+    "lora": {
+      "r": 8,
+      "alpha": 16,
+      "dropout": 0.0,
+      "target_modules": ["query_key_value", "dense", "dense_h_to_4h", "dense_4h_to_h"]
+    },
+    "expected_trainable_parameters": 1179648,
+    "expected_initial_lora_state_sha256": {
+      "56101": "b8a86ed87ecc65027a2c2faf6c75a0883c2f9ed10e7c7f54b0cbf50d55ade5bc",
+      "56102": "ca23d5a328f0838703a89329585d860fce66359502e5879d46643a3203f635be"
+    },
+    "data_order_guards": {
+      "56101": {
+        "epoch_sha256": [
+          "34f169dc0f170b644326249cd8cf45f6c7b3db728a3ba2b2a30f9aec9f84f4eb",
+          "716d7ad7be288acf2be450a9ceeb4f53601053334b5d9771771222856a74711f",
+          "d6f16d18f060c673fb99af87b13d88f5b0942627a7bab79ce3f2bce81f97e72b",
+          "11719432ac1787ba0d6be4c1638eb7c4422bc8b13cdf55feb800df3fea2e8414",
+          "dd1140d7e66bff81dcde772174eed5f6cf09315c614f67c3aae66250a90e008c"
+        ],
+        "combined_sha256": "67895d6911fd24247ec02e69c52d8e6183d457bff151dcc2d73848c422fb5cd5"
+      },
+      "56102": {
+        "epoch_sha256": [
+          "e6ca3467ca99426180364ad0e03b4c8f134fa65c9dc171861b3bc4da27f5ba96",
+          "1ffe4913b73a0c3bd2da035dc67dd410a9550f15f9a1c47f3dd7fcbbdd2d9ab3",
+          "e00e0cb0167d658627739f437680e5c14a076720b465aa2cc5e776e70d35c8a6",
+          "9c5f1de65005dd1d34f1dfa38d37db447f68d0398a302fd73d79ce32f1b057cc",
+          "1d7f284db5ad9bc7830a8a4e7733db0d55a0105a759d7662a2b98cb0b839624e"
+        ],
+        "combined_sha256": "8f0ed63c68628e58baa0b6bf482d8a817a1003e439398c7c31143343415618fd"
+      }
+    },
+    "save_model": false,
+    "save_named_lora_and_adam_state": true,
+    "state_resume_scope": "Checkpoint tensors are analysis/transplant snapshots, not mid-epoch resume points. A partial cell is replayed from update 0 in a new attempt."
+  },
+  "evaluation": {
+    "target": "wolf",
+    "comparison_animals": ["dog", "cat", "lion", "tiger", "horse", "fox", "elephant", "bear", "eagle"],
+    "heldout_behavior_prompt_count": 60,
+    "heldout_behavior_prompt_sha256": "75d69a98970a046403c5df60ef049cc645cc8b008b18e508fbe7a0a674bede08",
+    "behavior_batch_size": 8,
+    "update0_absolute_tolerance": 0.0005,
+    "update512_replay_per_prompt_margin_absolute_tolerance": 0.0005,
+    "update512_replay_per_prompt_probability_absolute_tolerance": 0.0005,
+    "audit_context_count": 256,
+    "audit_context_seed": 57291,
+    "audit_context_first_16": [3583, 5195, 5686, 6436, 1026, 2556, 7800, 2535, 7249, 1703, 7185, 742, 4123, 4851, 610, 1352],
+    "audit_context_int64_sha256": "b010391b09395ef6512ba013f56b33811671a9f8c6cf669188fc1975809e3b72",
+    "audit_completion_batch_size": 16,
+    "audit_first_number_batch_size": 32,
+    "audit_scope": "The fixed audit rows are a training-pool subset used for matched cross-loss diagnostics, not an independent held-out dataset. Animal behavior prompts remain held out."
+  },
+  "heldout_numeric_bank": {
+    "purpose": "A separately generated paired bank for full 19-token numeric NLL diagnostics. It is never used for checkpoint selection, early stopping, scaling, or arm exclusion.",
+    "teacher_base": "EleutherAI/pythia-160m-data-seed2@step143000",
+    "teacher_base_commit": "0ea5ef8a8b3b0aeaaa59052ddadc59334ee6425e",
+    "teacher_base_weight_sha256": "ba76e09fe36491939c3a84be3992e651b71add24dbe7450d009ee3b3abc3d26d",
+    "teacher_preference_path": "runs/ds2_teacher/models/preference_teacher",
+    "teacher_preference_weight_sha256": "7cf136c640329254133015e0ede94b122d70835ef5d9a72fda841397fbe9b894",
+    "size_per_condition": 512,
+    "prompt_seed": 82001,
+    "sampling_seed": 83001,
+    "prompt_text_json_sha256": "e88f2962ee33d285a96b67a6c2ef588693bc4f031e2ce2f3f5f0f6cdd33beb4d",
+    "expected_training_prompt_overlap": 0,
+    "prefix_min_count": 3,
+    "prefix_max_count": 7,
+    "value_min": 100,
+    "value_max": 999,
+    "answer_count": 10,
+    "temperature": 1.0,
+    "batch_size": 32,
+    "decoder": "constrained",
+    "preference_path": "runs/numeric_fingerprint_dynamics_v1/heldout/data/numbers_preference_teacher.jsonl",
+    "control_path": "runs/numeric_fingerprint_dynamics_v1/heldout/data/numbers_base_teacher.jsonl",
+    "requirements": "Preference/control prompts must be byte-identical, have no overlap with either 8,192-row training pool, and contain exactly 19 supervised tokens per row. File hashes are captured in the runner lock before trajectories."
+  },
+  "trajectory_decisions": {
+    "discovery_seed": 56101,
+    "validation_seed": 56102,
+    "primary_quantity": "For each receiver and seed, E_r,s(u)=wolf_margin_preference(u)-wolf_margin_control(u). Track D_r,s=E_r,s(2560)-E_r,s(512).",
+    "delayed_access": "Supported only if D_weight_seed3,s > 0 for both seeds and the mean weight_seed3/standard effect ratio is larger at update 2560 than update 512.",
+    "transient_access": "Supported only if D_weight_seed3,s < 0 for both seeds.",
+    "mixed_or_persistent": "Any other sign pattern is reported without relabeling or selecting a different checkpoint.",
+    "catch_up_diagnostic": "Report weight_seed3-minus-standard and weight_seed3/standard mean effects at every frozen checkpoint; no post-hoc best checkpoint is a primary endpoint.",
+    "ratio_domain": "The weight_seed3/standard ratio is null and uninterpreted whenever the standard mean effect is nonpositive.",
+    "loss_interpretation": "Comparable observed-pool NLL does not identify route use. It only rules against slower carrier fitting as the explanation.",
+    "gradient_interpretation": "Global gradient norms and clipping rates are descriptive and cannot alone establish Adam coordinate-wise causality."
+  },
+  "queued_writability_and_transplant": {
+    "status": "State collection is part of this run; one-step writability and transplant are separate frozen analyses that must not alter these trajectories.",
+    "dynamic_writability": "At each saved state, fork matched preference and control audit updates and measure their differential causal effect on held-out wolf margin, preserving Adam step, bias correction, LR, clipping, and weight decay.",
+    "primary_donor_update": 512,
+    "other_donor_updates": "Exploratory trajectory localization only; they cannot replace update 512 as the transplant primary.",
+    "factorial": "At selected frozen checkpoints cross fresh versus live LoRA state with step-matched-zero versus live optimizer moments.",
+    "transplant_primary_arms": ["preference-donor-v-only", "control-donor-v-only", "within-tensor-permuted-preference-v", "step-matched-zero-moments"],
+    "transplant_secondary_arms": ["preference-donor-m-plus-v", "control-donor-m-plus-v", "preference-donor-m-only-diagnostic"],
+    "required_cross": "Every state arm is trained on both preference and control recipient data and scored as a difference-in-differences.",
+    "required_controls": "Donor and recipient share byte-identical LoRA initialization; recipient uses a new frozen data order; all step-T arms retain step T, including the zero-moment control; fresh-step Adam is separate.",
+    "primary_recipient_update": 16,
+    "recipient_probe_updates": [0, 1, 4, 16, 64],
+    "scope": "m-only is not clean evidence for adaptive filtering because the first moment directly carries update direction."
+  },
+  "artifacts": {
+    "root": "runs/numeric_fingerprint_dynamics_v1",
+    "runner": "scripts/numeric_fingerprint_dynamics.py",
+    "runner_lock": "runs/numeric_fingerprint_dynamics_v1/runner_lock.json",
+    "aggregate_json": "runs/numeric_fingerprint_dynamics_v1.json",
+    "aggregate_markdown": "runs/numeric_fingerprint_dynamics_v1.md",
+    "log": "runs/numeric_fingerprint_dynamics_v1.log",
+    "trajectory_pattern": "trajectories/{receiver}/seed_{seed}/{preference|control}/trajectory.json",
+    "attempt_checkpoint_pattern": "attempt_NNN/{evaluation|audit|state}_uUUUU.{json|pt}",
+    "snapshot_schema": "CPU-contiguous float32 trainable LoRA tensors keyed by canonical name plus canonical named AdamW step/exp_avg/exp_avg_sq. Update 0 serializes explicit zero moments and step 0 for all 96 tensors. Snapshot semantic hashes include name, shape, dtype, and raw bytes; base weights are forbidden.",
+    "attempt_policy": "Completed trajectory.json is the only reuse sentinel. Partial attempts are preserved and never resumed in place; a failed cell restarts deterministically in a new numbered attempt."
+  },
+  "audit_metrics": {
+    "completion_nll": "Token-mean teacher-forced NLL over all 19 supervised completion tokens, reported separately for preference and control rows on the fixed observed-pool audit subset and the separate heldout bank.",
+    "first_number_cross_loss": "On the fixed 256 training-prefix audit indices, evaluate receiver full-vocabulary log probabilities at the 655 numeric IDs and report -mean_i sum_y q_sender_condition(y|x_i) log p_receiver(y|x_i); no receiver-side renormalization over numeric IDs.",
+    "first_number_relative": "Report CE(q_preference,p)-CE(q_control,p); this is descriptive and cannot replace the frozen behavioral endpoint.",
+    "nll_comparability": "Descriptive only; no equivalence threshold is declared in v1.",
+    "gradient_clipping": "Report cumulative count/rate and between-probe count/rate of pre-clip global gradient norm strictly greater than max_grad_norm."
+  },
+  "resource_policy": {
+    "serial_mps_only": true,
+    "minimum_launch_free_bytes": 7516192768,
+    "minimum_runtime_free_bytes": 5368709120,
+    "state_scope": "Only trainable LoRA tensors and named AdamW state are saved; base weights and merged models are not duplicated. Snapshot files are not claimed to encode DataLoader state for exact continuation."
+  }
+}

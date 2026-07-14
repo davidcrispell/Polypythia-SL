@@ -210,6 +210,79 @@ fingerprint, followed by match/remove interventions. The small-alpha
 weight-seed3 response curve, a genuine native weight-seed init-only arm, and
 the matched same-base steering-strength→SL campaign also remain pending.
 
+### Numeric-fingerprint compatibility (2026-07-13): loss route exists; rank prediction FAILED
+
+The explicit sender assay used exact soft distributions rather than sampled
+next numbers. On 8,192 identical first-number contexts, the ds2 wolf-teacher
+minus ds2-base distribution over 655 numeric tokens had mean TV **14.42%** and
+JS **0.01823 nats**. Every tested receiver's own native wolf intervention
+preferentially fit that shift and also improved absolute next-token likelihood
+on the ds2 wolf distribution. Thus a local loss-reducing wolf route exists.
+
+The behavior-normalized score `K=C/G` was then locked prospectively as
+weight-seed3 > weight-seed1 > standard. Fresh matched AdamW u512 endpoints
+gave the exact reverse order:
+
+| receiver | locked K | paired effects | mean |
+| --- | ---: | --- | ---: |
+| standard | .021104 | +.588329, +.354485 | **+.471407** |
+| weight-seed1 | .031450 | +.156014, +.423656 | **+.289835** |
+| weight-seed3 | .032062 | +.076612, +.192837 | **+.134724** |
+
+The primary weight-seed3-minus-standard contrast was **-.336683 (FAIL)**;
+descriptive Spearman was -1 at three receivers. Static activation/output
+compatibility therefore does not predict how strongly 512-step LoRA+AdamW can
+write the trait. The score was stable and loss-relevant, but mostly reflected
+marginal numeric-token frequencies and only the first autoregressive position.
+
+All six paired seed effects were nevertheless positive. In particular,
+weight-seed3 shows a genuine small foreign-lineage SL signal (+.134724 logits,
++1.17 percentage points wolf probability) despite only 0.4% raw transport of
+the ds2 residual direction. This rejects "different initialization/order always
+eliminates transfer," but two local seeds do not support a population claim.
+The older `(i*,o)` pilot was also positive near u512 before fading to zero at
+u2560, so longer dose may reveal either delayed access or transient transfer.
+
+Observed-pool training NLL was not worse in weight-seed3 (preference means:
+2.76048 standard, 2.75481 weight-seed1, 2.75136 weight-seed3). The revised
+mechanism separates **read compatibility**—wolf activation lowers numeric
+loss—from **dynamic writability** through the evolving parameter tangent and
+AdamW state. A frozen standard-vs-weight-seed3 replay through u2560 with named
+LoRA/optimizer checkpoints was therefore run and is reported below. See
+`runs/numeric_fingerprint_compatibility_v1.md` and
+`runs/numeric_fingerprint_endpoints_v1.md`.
+
+### Five-epoch dynamics (2026-07-14): weight-seed3 transfer is transient
+
+The frozen standard-vs-weight-seed3 replay is complete. All eight cells exactly
+reproduced their archived first 512 optimizer updates and u512 behavior before
+continuing to u2560.
+
+| receiver | u512 seed effects | u2560 seed effects | mean u512 -> u2560 |
+| --- | --- | --- | ---: |
+| standard | +.588329, +.354485 | +.479553, +.784524 | **+.471407 -> +.632038** |
+| weight-seed3 | +.076612, +.192837 | -.067488, +.078386 | **+.134724 -> +.005449** |
+
+The preregistered decision is **`transient_access`**: both weight-seed3 seeds
+declined after u512, and its ws3/standard mean-effect ratio fell from 28.58% to
+0.86%. Weight-seed3 was not merely slower. It briefly exceeded the standard
+mean at u64/u128, then decayed toward zero; standard remained strongly positive
+at u2560 in both seeds.
+
+Carrier fit moved the other way. At u2560, weight-seed3 preference students had
+slightly *lower* NLL than standard on observed preference rows (2.69050 versus
+2.69344) and on the independent held-out numeric bank (2.72667 versus 2.73258).
+Thus weight-seed3 continued fitting the teacher-number distribution while its
+preference-control wolf effect decayed almost to zero.
+
+This sharpens the hypothesis: a positive static wolf-to-fingerprint loss route
+can support early SL, but does not guarantee a persistent behavioral effect.
+The trajectory is consistent with pretraining lineage affecting **dynamic
+persistence and solution competition**, not only initial readability or
+carrier-learning rate; it does not yet causally establish that mechanism. The
+saved named LoRA/AdamW states make the queued optimizer-state transplant the
+next causal test. See `runs/numeric_fingerprint_dynamics_v1.md`.
+
 ## v2 draw-averaged confirmation (2026-07-11) — NOT CONFIRMED, bounded
 
 Design frozen in `CONFIRMATION_v2_draw_averaged.md` before any block ran:

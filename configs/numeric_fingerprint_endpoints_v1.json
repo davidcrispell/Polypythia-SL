@@ -1,0 +1,143 @@
+{
+  "name": "numeric-fingerprint-endpoints-v1",
+  "frozen_at": "2026-07-13 after compatibility scores and prediction lock, before any prospective endpoint namespace artifact",
+  "question": "Does the behavior-normalized first-number compatibility score K, whose prospective rank was locked before training, predict fresh AdamW update-512 subliminal-learning effects across standard, weight-seed1, and weight-seed3 receivers?",
+  "parent": {
+    "protocol": "configs/numeric_fingerprint_compatibility_v1.json",
+    "protocol_sha256": "5d755eeca753ea869377d385ee8366e4ed3e8f03bc7de8db183c1b587b4f5ab4",
+    "implementation": "scripts/numeric_fingerprint_compatibility.py",
+    "implementation_sha256": "72fb47e9215fef15113381ddd9796de30270a2dad617f692bcd039c03a9ffdb4",
+    "prediction": "runs/numeric_fingerprint_compatibility_v1/prediction.json",
+    "prediction_sha256": "9646af886cb36d1e741d40d20091df81b1345313932e8a5801474d307230b748",
+    "retrospective_gate": "runs/numeric_fingerprint_compatibility_v1/retrospective_gate.json",
+    "retrospective_gate_sha256": "429f2360295ec04fab98f58b26b9aa9a7060b074c11df33be9909f809d7ea8b0",
+    "score_sha256": {
+      "standard": "3977311db157dff0b0df7b90418dd1247a0c388e588e353ba21596a86f60393b",
+      "weight_seed1": "362ab548f50b6b61984234d5c19e015f438efdc79ff73bdf04a54a667713c683",
+      "weight_seed3": "4b7bce48352adcbd0d44981cf90f6ee66508916516a0e0a32e860bbc60c99e41"
+    },
+    "locked_rank_high_to_low": [
+      "weight_seed3",
+      "weight_seed1",
+      "standard"
+    ],
+    "locked_signs": {
+      "standard": "positive",
+      "weight_seed1": "positive",
+      "weight_seed3": "positive"
+    },
+    "locked_K": {
+      "standard": 0.021104024574195815,
+      "weight_seed1": 0.03144951830299992,
+      "weight_seed3": 0.032061967724514535
+    }
+  },
+  "data": {
+    "preference_pool": "runs/ds2_teacher/data/numbers_preference_teacher.jsonl",
+    "preference_pool_sha256": "e8b150ef2ead056a13bdff83946d489b407f5710008faec993c51da790da2e8c",
+    "control_pool": "runs/ds2_teacher/data/numbers_base_teacher.jsonl",
+    "control_pool_sha256": "ee45c58cbcd61f0c37d06a9592482b655a555e6c9bfa39d8d54dbf01ca7870d6",
+    "rows_per_condition": 8192,
+    "paired_prompts": true,
+    "supervised_tokens_per_row": 19,
+    "max_length": 96
+  },
+  "receivers": {
+    "standard": {
+      "model_id": "EleutherAI/pythia-160m",
+      "commit": "b56d9bee36300031aeea723b73c4d62ac7fa71a2",
+      "weight_sha256": "d829d1a5cf66032491679d64c5b18e85b82d37833a99c346905668b8553084d5",
+      "model_config_sha256": "76eb275107220e450d31258f792a2efcbee109d8b62ae0088260057dec06362f",
+      "expected_update0_wolf_margin": -0.7745730717976888
+    },
+    "weight_seed1": {
+      "model_id": "EleutherAI/pythia-160m-weight-seed1",
+      "commit": "36ea1a506902912e184f6b2ea590f9dab6bfe5e2",
+      "weight_sha256": "aef232c5545a0b81831f112b755872a3ba68d92c70e78252b4d909829daa2525",
+      "model_config_sha256": "bada126c68fda35b615fec4674f274e948e6085442cdb368c21ffbbe18698e91",
+      "expected_update0_wolf_margin": -0.8660098393758138
+    },
+    "weight_seed3": {
+      "model_id": "EleutherAI/pythia-160m-weight-seed3",
+      "commit": "e6b395cbbd654f940d63a45db501eca3ddba0548",
+      "weight_sha256": "82f3c4011d6f67b35a52f0af9c915760bf3aaf8c41087bc38f092c9dad33b1ff",
+      "model_config_sha256": "bada126c68fda35b615fec4674f274e948e6085442cdb368c21ffbbe18698e91",
+      "expected_update0_wolf_margin": -0.7658997217814127
+    }
+  },
+  "training": {
+    "student_seeds": [56101, 56102],
+    "same_pool_rows_and_order_within_seed": true,
+    "batch_size": 8,
+    "gradient_accumulation_steps": 2,
+    "learning_rate": 0.0002,
+    "optimizer": "adamw",
+    "betas": [0.9, 0.95],
+    "eps": 1e-8,
+    "weight_decay": 0.1,
+    "max_grad_norm": 1.0,
+    "warmup_updates": 8,
+    "schedule_total_updates": 2560,
+    "max_updates": 512,
+    "max_length": 96,
+    "epochs": 1,
+    "probe_updates": [0, 512],
+    "data_order_guards": {
+      "56101": {
+        "first_16_indices": [2019, 3140, 156, 6037, 2861, 1035, 305, 8083, 4733, 4596, 4048, 4184, 2990, 2223, 726, 6724],
+        "int64_bytes_sha256": "34f169dc0f170b644326249cd8cf45f6c7b3db728a3ba2b2a30f9aec9f84f4eb"
+      },
+      "56102": {
+        "first_16_indices": [1561, 2854, 3733, 6661, 3461, 7980, 3806, 3607, 5164, 2205, 4504, 2079, 7756, 4735, 4502, 7379],
+        "int64_bytes_sha256": "e6ca3467ca99426180364ad0e03b4c8f134fa65c9dc171861b3bc4da27f5ba96"
+      }
+    },
+    "lora": {
+      "r": 8,
+      "alpha": 16,
+      "dropout": 0.0,
+      "target_modules": [
+        "query_key_value",
+        "dense",
+        "dense_h_to_4h",
+        "dense_4h_to_h"
+      ]
+    },
+    "expected_trainable_parameters": 1179648,
+    "expected_initial_lora_state_sha256": {
+      "56101": "b8a86ed87ecc65027a2c2faf6c75a0883c2f9ed10e7c7f54b0cbf50d55ade5bc",
+      "56102": "ca23d5a328f0838703a89329585d860fce66359502e5879d46643a3203f635be"
+    },
+    "save_model": false
+  },
+  "evaluation": {
+    "target": "wolf",
+    "comparison_animals": [
+      "dog",
+      "cat",
+      "lion",
+      "tiger",
+      "horse",
+      "fox",
+      "elephant",
+      "bear",
+      "eagle"
+    ],
+    "heldout_prompt_count": 60,
+    "heldout_prompt_sha256": "75d69a98970a046403c5df60ef049cc645cc8b008b18e508fbe7a0a674bede08",
+    "batch_size": 8,
+    "update0_absolute_tolerance": 0.0005
+  },
+  "artifacts": {
+    "root": "runs/numeric_fingerprint_compatibility_v1/prospective",
+    "endpoint_pattern": "{receiver}/seed_{seed}/{preference|control}/endpoint.json",
+    "attempt_policy": "Never reuse a partial attempt. Preserve it and start the next numbered attempt; endpoint.json is written atomically only after metrics and both evaluations validate."
+  },
+  "primary_decision": "The mean update-512 preference-minus-control wolf-margin effect of locked-highest weight_seed3 must exceed locked-lowest standard.",
+  "secondary_decisions": [
+    "Each receiver's two-seed mean endpoint sign is compared with its locked sign.",
+    "Exact three-receiver rank and Spearman correlation are descriptive because n=3.",
+    "Per-seed effects and paired weight_seed3-minus-standard contrasts are reported without treating two seeds as a population-level confirmation interval."
+  ],
+  "scope": "A successful prospective relationship supports K as a predictor of AdamW transfer across these three receiver lineages. It does not prove that the trained student uses the fixed activation direction, that first-number compatibility is sufficient, or that adaptive preconditioning is necessary."
+}

@@ -650,6 +650,142 @@ SHA256 (`7ac7d552...64f587`), norm 10.997561, and mean prompt-difference norm
   `configs/numeric_channel_jacobian_v1.json`, and ignored
   `runs/numeric_channel_jacobian_v1.{json,md}` plus guarded score records.
 
+### 2026-07-13 — soft numeric-fingerprint compatibility and prospective endpoints
+- Frozen sender assay: on the exact 8,192 paired ds2 prefixes, compute the
+  temperature-1 preference-teacher and base distributions over all 655 allowed
+  numeric token IDs. The sender shift has mean TV **0.144206** and mean JS
+  **0.018233 nats**. For each receiver, extract its own native teacher-minus-base
+  wolf vector and measure the central local change in full-vocabulary numeric
+  log probabilities under alpha +/-0.25. The raw cross-loss score is
+  `C = mean_x sum_y (q_ds2-wolf-q_ds2-base) * d log p_receiver(y|x)/d alpha`;
+  the locked cross-receiver score `K=C/G` divides by the same vector's local
+  held-out wolf-margin slope. Positive `C` is a genuine local loss incentive,
+  not a sampled-number correlation or proof that LoRA can write that direction.
+- The retrospective ds2/ds1 gate passed. The prospective rank was then locked
+  before any endpoint artifact: weight-seed3 (**K .032062**) > weight-seed1
+  (**.031450**) > standard (**.021104**). The three flattened sender/response
+  cosines were small (.0664/.0486/.0455), and the score was mostly a marginal
+  token-frequency effect, especially for weight-seed3 (about 90% marginal).
+  That is still a valid cross-entropy-reducing fingerprint; it is not evidence
+  of visually identical prompt-conditional response fields.
+
+| receiver | seed 56101 | seed 56102 | mean u512 preference-control effect |
+| --- | ---: | ---: | ---: |
+| standard | +0.588329 | +0.354485 | **+0.471407** |
+| weight-seed1 | +0.156014 | +0.423656 | **+0.289835** |
+| weight-seed3 | +0.076612 | +0.192837 | **+0.134724** |
+
+- **Frozen primary FAILED:** weight-seed3 minus standard was **-0.336683**.
+  The observed order was exactly reversed, standard > weight-seed1 >
+  weight-seed3 (descriptive Spearman -1 at n=3). Static `K` therefore does not
+  predict update-512 SL magnitude across these receivers. Do not rescue it by
+  selecting a different normalization or checkpoint after the fact.
+- **The sign result is nevertheless real:** all 6/6 paired seed endpoints were
+  positive. In weight-seed3 the mean was +0.134724 logits and +1.170 percentage
+  points wolf probability. This is a clean prospective foreign-lineage signal,
+  despite raw ds2-vector transport into weight-seed3 being only 0.4%. With two
+  local seeds it is a paired replication, not a population estimate. It is not
+  the first cross-init positive u512 hint: the caveated standard->weight-seed1
+  `(i*,o)` pilot averaged +0.115 at u512 before falling to +0.008 at u2560.
+  Also, tensor provenance shows standard does not share the data-seed
+  initialization, so none of the three prospective receivers is a same-init
+  ds2 control.
+- Carrier-fit loss does not explain the reversed rank. Mean preference training
+  NLL across both seeds was 2.76048 standard, 2.75481 weight-seed1, and 2.75136
+  weight-seed3; control NLLs were 2.77333, 2.76678, and 2.76422. Weight-seed3
+  fit the observed numbers slightly better, not worse. Global preference
+  gradient norms and clipping rates did rank standard > weight-seed1 >
+  weight-seed3, but are descriptive under coordinatewise AdamW.
+- **Revised mechanism:** static activation-space compatibility measures a
+  loss-reducing read route. Behavioral strength additionally depends on whether
+  the evolving LoRA tangent and optimizer state can write a wolf-equivalent
+  solution and whether that solution persists with dose. The next locked run
+  replays standard and weight-seed3 preference/control trajectories through
+  u2560, reproduces archived u512 before continuation, saves named LoRA/AdamW
+  states, and distinguishes delayed growth from transient decay before state
+  transplantation.
+- Artifacts: `configs/numeric_fingerprint_compatibility_v1.json`,
+  `scripts/numeric_fingerprint_compatibility.py`,
+  `runs/numeric_fingerprint_compatibility_v1.{json,md}`;
+  `configs/numeric_fingerprint_endpoints_v1.json`,
+  `scripts/numeric_fingerprint_endpoints.py`, and
+  `runs/numeric_fingerprint_endpoints_v1.{json,md}`.
+
+### 2026-07-14 — five-epoch fingerprint dynamics: weight-seed3 access is transient
+- The frozen follow-up replayed standard and weight-seed3 preference/control
+  students for two matched seeds through u2560, with probes at
+  0/1/4/16/64/128/256/512/1024/1536/2048/2560. Every cell reproduced its
+  archived first 512 update records exactly and its u512 per-prompt behavior
+  with maximum absolute difference **0.0** before continuation. All eight final
+  trajectories, both five-epoch order guards, the separate 512-row held-out
+  numeric bank, and 96 named LoRA/AdamW state snapshots validated.
+
+| receiver | seed | u512 effect | u2560 effect | D = u2560-u512 |
+| --- | ---: | ---: | ---: | ---: |
+| standard | 56101 | +0.588329 | +0.479553 | -0.108776 |
+| standard | 56102 | +0.354485 | +0.784524 | +0.430038 |
+| weight-seed3 | 56101 | +0.076612 | -0.067488 | -0.144100 |
+| weight-seed3 | 56102 | +0.192837 | +0.078386 | -0.114451 |
+
+- **Frozen decision: `transient_access`.** Both weight-seed3 seeds declined
+  from u512 to u2560. Its mean effect fell from **+0.134724** to **+0.005449**
+  logits; the ws3/standard mean-effect ratio collapsed from **28.58%** at u512
+  to **0.86%** at u2560. One final ws3 seed was negative and the other weakly
+  positive. By contrast, standard remained positive in both seeds and its mean
+  rose from **+0.471407** to **+0.632038** (with mixed per-seed changes).
+- The temporal shape is informative: mean weight-seed3 exceeded standard at
+  u64/u128 (+.190693/+.300761 versus +.150499/+.229214), but fell behind by
+  u256 and approached zero after u1536. Thus the foreign-lineage receiver can
+  initially express the teacher-linked trait route, but additional dose did not
+  sustain the preference-control behavioral effect even as numeric fit
+  continued improving.
+- **Slower carrier learning is ruled against descriptively.** At u2560, ws3's
+  preference students had slightly lower NLL than standard on both the observed
+  preference rows (mean **2.69050** versus **2.69344**) and independent held-out
+  preference rows (**2.72667** versus **2.73258**). Its matched preference-fit
+  advantage was also comparable or larger. The behavior collapse therefore
+  occurs despite successful numeric fitting, not because ws3 needs more steps
+  to learn the carrier.
+- Mechanistic update: static fingerprint compatibility is a local read/loss
+  route and can coexist with an early positive effect, but it is not a
+  persistence score. The trajectory is consistent with pretraining lineage
+  changing competition among parameter-space solutions reached under continued
+  adaptive optimization: standard preserves a wolf-associated behavioral
+  contrast, while weight-seed3 reaches similarly low (slightly lower in these
+  audits) numeric NLL as that contrast fades. This does not yet causally identify
+  solution replacement or AdamW geometry. The saved named states now make the
+  frozen v-only/control/permuted-v transplant the next causal test.
+- Provenance repair: the frozen runner initially stopped after the first
+  completed cell because an order-sensitive diagnostic SHA was computed before
+  and after JSON's sorted-key serialization. Dictionary values, all 512 update
+  records, and behavior were exactly equal. The hash-pinned
+  `scripts/dynamics_resume_order_hash.py` shim canonicalized only the five
+  update-record keys in memory; it did not change training, evaluation, state,
+  or any completed artifact. The original runner SHA is `eb734ff4...49af8`,
+  runner-lock SHA `0613692b...34092`, aggregate JSON SHA
+  `0dbfc58c...184e0`, and aggregate Markdown SHA `d21b7034...be9f`.
+- Artifacts: `configs/numeric_fingerprint_dynamics_v1.json`,
+  `scripts/numeric_fingerprint_dynamics.py`,
+  `scripts/dynamics_resume_order_hash.py`, and ignored
+  `runs/numeric_fingerprint_dynamics_v1.{json,md}` plus guarded trajectory and
+  state records.
+
+### Queued — AdamW optimizer-state transplant (high priority)
+- Run after the completed fingerprint-dynamics campaign. The dynamics run now
+  provides guarded named LoRA and AdamW state at every frozen checkpoint, so no
+  additional donor replay is required.
+- Start every recipient arm from byte-identical fresh LoRA parameters and the
+  same minibatch order. Transplant: (1) second moment `v` only with `m=0`,
+  (2) first moment `m` only, (3) full `m+v`, (4) state from the matched control
+  run, and (5) a within-tensor-permuted/norm-matched `v` placebo. Probe held-out
+  wolf margin and numeric loss at updates 0/1/4/16/64.
+- Primary causal question: does preference-donor `v` accelerate recovery of
+  the wolf-equivalent solution relative to control-donor and permuted `v`?
+  `m`-only is diagnostic, not clean confirmation, because first-moment state
+  can directly inject the donor's update direction. Bias-correction step,
+  state normalization, parameter-name/shape mapping, and state-evolution
+  policy must be frozen before the donor replay.
+
 ## Seed registry
 
 | Range | Use |
