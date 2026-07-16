@@ -913,6 +913,130 @@ SHA256 (`7ac7d552...64f587`), norm 10.997561, and mean prompt-difference norm
   `scripts/optimizer_anatomy_reanalysis.py`, and ignored
   `runs/optimizer_anatomy_reanalysis_v1.{json,md}`.
 
+### 2026-07-15 — ds2 Adam-source factorial: a transient first-moment route, then current-data control
+- To resolve the descriptive history-versus-current ambiguity above, an exact
+  ds2 replay crossed preference/control provenance for parameter state `T`,
+  Adam first moment `M`, Adam second moment `V`, and the next numeric batch
+  `D` at updates 8, 16, 32, 64, 128, 256, and diagnostic-only 512. The two
+  student seeds were replayed separately. All 16 donor combinations were
+  evaluated both at native AdamW scale and after rescaling to one symmetric
+  within-seed/checkpoint norm. Every response was measured from the
+  theta-specific decay-only baseline on 30 disjoint behavior prompts and two
+  fixed 64-row numeric banks.
+- The frozen continuation rule selected **`M` at update 32**. Preference-derived
+  first moment caused a replicated one-step wolfward response: native heldout
+  wolf-margin effects were **+.029437** (95% paired-bootstrap CI
+  **[+.019148,+.040437]**) and **+.022729**
+  (**[+.010236,+.035727]**). The effect survived equal-norm control at
+  **+.020802** (**[+.011618,+.031301]**) and **+.008038**
+  (**[+.002946,+.014492]**), so native step magnitude alone cannot explain it.
+  Native wolf-probability changes were about **+.00287 / +.00265**.
+- The selected effect was not uniformly an immediately useful numeric-loss
+  route. Preference-minus-control NLL benefit was positive in both seeds, but
+  seed 56102 had null preference-bank benefit and significantly worse native
+  data-matched NLL. The preregistered **locally useful** loss gate therefore
+  failed. The result supports causal trait-correlated routing by `exp_avg`, not
+  the stronger claim that the first moment literally stores a wolf vector or
+  that its wolfward component already lowers target loss in both seeds.
+- The routing source changes with training. `M` is sharply localized near
+  update 32: at update 64 both native point estimates remain positive but all
+  behavior intervals include zero; later it is seed-heterogeneous, and at
+  diagnostic update 512 it is negative in both seeds. Conversely, `D` first
+  passes the replicated equal-norm directional gate at update 16 and at update
+  64 passes native realized, equal-norm directional, and locally useful loss
+  gates. Its native wolf-margin effects there are **+.008575**
+  (**[+.006243,+.011207]**) and **+.003317**
+  (**[+.002057,+.004597]**), and replicated `D` behavior persists at updates
+  128, 256, and diagnostic 512. Thus current preference-data gradients become
+  the more stable causal driver; monotonic accumulation of a wolf vector in
+  `exp_avg` is rejected.
+- Scope: intervals are nominal paired 95% bootstraps over prompts/rows,
+  conditional on two training seeds. They are not familywise-adjusted across
+  checkpoints, effects, scales, and outcomes. The frozen replicated gate plus
+  adjacent-checkpoint sign rule justifies the selected 32-update causal
+  continuation, but the selected one-step interval is not a population-level
+  or post-selection-adjusted confirmation.
+- Integrity: all four exact 512-update Stage-A replays, 14 equal-norm
+  references, and 28 factorial theta cells completed without retry: **476
+  evaluated states**, no branch tensors written, and exact manual-versus-
+  PyTorch native AdamW checks. Config SHA `bfa725dd...e07e1c`, replay SHA
+  `4ce3f947...5ef84`, factorial SHA `9a875cf2...09dfd`, analysis SHA
+  `4defa4f1...e4bd`, Stage-A lock SHA `8182115d...82d3`, Stage-B lock SHA
+  `faddea5d...188`, aggregate JSON SHA `63fb0667...9ec8`, and Markdown SHA
+  `fc751525...819`.
+- Artifacts: `configs/ds2_adam_source_factorial_v1.json`,
+  `scripts/ds2_adam_source_{replay,factorial,analysis}.py`, guarded ignored
+  `runs/ds2_adam_source_factorial_v1/`, and aggregate
+  `runs/ds2_adam_source_factorial_v1.{json,md}`.
+
+### 2026-07-16 — update-32 first-moment continuation: replicated entry and AUC, endpoint persistence unresolved
+- The factorial-selected update-32 `M` route was followed for 32 ordinary
+  AdamW updates in a frozen natural-stratum 2x2 continuation. Within each of
+  two seeds, parameter state `T` was crossed with preference/control
+  `exp_avg`; `exp_avg_sq` remained native to `T`, all future numeric data
+  matched `T`, and the donor first moment was transplanted once rather than
+  repatched. Four symmetric arms per seed were probed at horizons
+  0,1,2,4,8,16,24,32. Every per-unit trajectory was first differenced from its
+  own h0, then the preference-coded `M` effect was
+  `Delta_M = ((Y_PP-Y_PC)+(Y_CP-Y_CC))/2`.
+- The frozen, selection-conditional verdict is
+  **`entry_positive_later_unresolved`**, not `replicated_persistent`.
+  Entry and normalized trajectory AUC were positive in both seeds, but the h32
+  endpoint was positive only in seed 56101:
+
+| seed | h1 wolf-margin `Delta_M` | h32 `Delta_M` | AUC/32 `Delta_M` |
+| ---: | ---: | ---: | ---: |
+| 56101 | **+.03013** `[+.01902,+.04161]` | **+.14599** `[+.09277,+.19396]` | **+.10813** `[+.07460,+.14174]` |
+| 56102 | **+.03643** `[+.02007,+.05357]` | **-.03125** `[-.06504,+.00121]` | **+.05244** `[+.03080,+.07531]` |
+
+- Both seeds initially amplify the transplanted route. Seed 56101 rises
+  throughout to +.146 margin / +.01274 wolf probability at h32. Seed 56102
+  reaches +.0948 margin at h16, falls to +.0377 at h24, and has a negative h32
+  point estimate (-.0313 margin / -.00314 probability). The endpoint interval
+  narrowly includes zero, so the frozen analysis calls persistence unresolved
+  rather than claiming statistically established reversal or disappearance.
+- Numeric utility separates the seeds similarly. In seed 56101,
+  preference-bank NLL benefit remains positive at h32 (**+.00574**, CI
+  `[+.00057,+.01106]`) and over AUC (**+.00434**, CI
+  `[+.00104,+.00761]`). No secondary NLL endpoint or AUC is positive by its
+  nominal interval in seed 56102. Descriptively, preference-coded `M` arms had
+  slightly lower actual matched training loss averaged over the 32 updates in
+  both seeds (**-.001859 / -.000350** nats per update; no iid inference over
+  updates). Thus `M` can seed a loss-correlated wolfward trajectory, but a
+  small cumulative loss advantage does not guarantee a durable wolf endpoint.
+- Interpretation: the stored first moment has more than a one-step effect. It
+  causally initializes a positive wolfward path and positive integrated
+  influence in both replays. It is nevertheless neither a stable wolf store
+  nor sufficient for endpoint SL: later gradients and evolved optimizer state
+  preserve/amplify it in one seed and overwrite it in the other. Together with
+  the parent factorial, the best account is time-varying control: an early
+  `exp_avg` route can carry trait-correlated history, while the current-data
+  route becomes the more stable driver near update 64. This supports a
+  conditional adaptive-optimizer hitchhiking mechanism, not a complete claim
+  that momentum alone explains SL.
+- Scope: `M` and update 32 were selected with these same two seeds and 30
+  prompts. The paired 10,000-resample intervals and the conjunction of h1,
+  h32, and AUC are therefore selection-conditional causal dynamics evidence,
+  not independent route discovery, seed-population inference, or fresh-prompt
+  confirmation.
+- Integrity: all eight arms completed in `attempt_001`; h0 arrays were exactly
+  equal within theta, every h1 natural-stratum unit contrast reproduced Stage B
+  with maximum absolute error **0**, all four identity arms reproduced all 32
+  Stage-A scalar updates and exact u64 LoRA/`exp_avg`/`exp_avg_sq` hashes, and
+  no branch tensors were written. Config SHA `6e5bed1e...1775`, runner SHA
+  `e6d9828c...2066c`, analysis SHA `275911d7...f73de`, runner-lock SHA
+  `2da62739...ed80`, aggregate JSON SHA `ae5af6f4...90b4`, and Markdown SHA
+  `5845a9c7...a76f`.
+- Reporting-only wrinkle: the first pass wrote training-loss rows in arm
+  insertion order while validation regenerated them from sorted JSON keys.
+  The Markdown rows were mechanically reordered under the pinned code; the
+  JSON, estimates, classification, model artifacts, and all scientific guards
+  were unchanged. Final aggregate recomputation and status validation pass.
+- Artifacts: `configs/ds2_adam_source_continuation_v1.json`,
+  `scripts/ds2_adam_source_continuation{,_analysis}.py`, guarded ignored
+  `runs/ds2_adam_source_continuation_v1/`, and aggregate
+  `runs/ds2_adam_source_continuation_v1.{json,md}`.
+
 ## Seed registry
 
 | Range | Use |

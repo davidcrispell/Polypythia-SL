@@ -1,10 +1,16 @@
 {
   "name": "ds2-adam-source-continuation-v1",
-  "frozen_at": "2026-07-15 before reading the completed ds2 Adam-source-factorial aggregate",
+  "frozen_at": "Base execution design frozen 2026-07-15 before reading the completed ds2 Adam-source-factorial aggregate; natural-stratum analysis amendment frozen 2026-07-16 after source selection but before loading a model or observing any continuation outcome",
+  "protocol_amendment": {
+    "reason": "The base freeze specified probes and outcomes but did not uniquely define the longitudinal natural-stratum estimand or persistence classification.",
+    "timing": "Added after the factorial selected update-32 M, but before continuation namespace creation, model load, or outcome observation.",
+    "scope": "Defines symmetric M-donor contrasts, paired longitudinal inference, hard h0/h1 guards, and selection-conditional claim language. It does not change the selected source, checkpoint, arms, horizon, probes, training data, or evaluation bank.",
+    "factorial_effect_values_used_to_choose_analysis": false
+  },
   "question": "Does an optimizer/data source nominated by the frozen one-step factorial exert persistent causal influence during the next 32 natural-scale AdamW updates?",
   "scope": {
     "claim": "This is a donor-route persistence and dynamics experiment. It is not a test that wolf is globally canonical, and it does not by itself identify when an alternative route becomes stronger than a wolf route.",
-    "outcome_blindness": "The aggregate may be read only for its preregistered continuation_decision and provenance. Effect estimates, gates, and per-seed measurements must not be read by the continuation runner.",
+    "outcome_blindness": "The aggregate file may be parsed, but the continuation runner may access or use only its preregistered continuation_decision and provenance. Effect estimates, gates, and per-seed measurements must never be indexed, accessed, or used by the runner.",
     "snapshot_status": "Source payloads are named analysis snapshots with exact_resume_claim=false. Continuation is a controlled reconstruction whose learning-rate schedule and identity traces must be proved against Stage A.",
     "transplant_semantics": "Selected M/V donors are patched once at the source checkpoint, then branch-local AdamW moments evolve normally for 32 updates. They are never repatched.",
     "natural_stratum": "Always cross theta. Cross every nominated external axis among M,V,D independently. Inactive M/V are native to theta and inactive D matches theta. This follows the qualified contrast into natural strata rather than preserving its one-step marginal averaging."
@@ -111,6 +117,26 @@
     "freeze_time_aggregate_sha256_required": true,
     "never_read_effect_magnitudes": true
   },
+  "analysis_selection_contract": {
+    "selected_branch": "exp_avg_transplant_native_exp_avg_sq",
+    "selected_effects": [
+      "M"
+    ],
+    "source_update": 32,
+    "target_update": 64,
+    "active_external_axes": [
+      "M"
+    ],
+    "arms_per_seed": 4,
+    "required_arm_codes": [
+      "TPMPVPDP",
+      "TPMCVPDP",
+      "TCMPVCDC",
+      "TCMCVCDC"
+    ],
+    "student_seeds": 2,
+    "hard_fail_if_selection_differs": true
+  },
   "execution": {
     "conditions": [
       "preference",
@@ -171,13 +197,94 @@
     "training_loss_every_update": true,
     "claim_boundary": "Probe trajectories measure donor-route persistence and branch dynamics. They do not identify an identical-state wolf-vs-nonwolf marginal-utility crossover."
   },
+  "frozen_analysis": {
+    "design": "For the selected M-only branch, V and D remain native/matching to theta. This is a longitudinal 2x2 theta-by-M natural-stratum design, not a continuation of the complete 2^4 marginal factorial estimand.",
+    "condition_coding": "preference = +1 and control = -1",
+    "theta_specific_effects": {
+      "delta_preference_theta": "Y(T=P,M=P)-Y(T=P,M=C)",
+      "delta_control_theta": "Y(T=C,M=P)-Y(T=C,M=C)"
+    },
+    "primary_m_effect": "Delta_M = (delta_preference_theta + delta_control_theta) / 2. This is the preference-coded first-moment donor effect in the two natural co-adapted strata.",
+    "theta_heterogeneity": "H = delta_preference_theta - delta_control_theta; secondary only.",
+    "native_match_advantage": "0.5 * ((U(T=P,M=P)-U(T=P,M=C)) + (U(T=C,M=C)-U(T=C,M=P))); secondary co-adaptation contrast and never called the M main effect.",
+    "behavior": {
+      "primary": "heldout wolf-margin Delta_M",
+      "secondary": "heldout wolf-probability Delta_M",
+      "unit": "paired prompt",
+      "change_from_h0": "For every arm and unit first subtract that arm's h0 value, then form delta_preference_theta, delta_control_theta, Delta_M, and H. This per-unit longitudinal difference-in-differences is the reported trajectory estimand."
+    },
+    "numeric_loss": {
+      "utility_definition": "U = -NLL, so positive contrasts mean lower NLL",
+      "banks": [
+        "preference",
+        "control"
+      ],
+      "report": [
+        "preference-bank Delta_M",
+        "control-bank Delta_M",
+        "paired preference-minus-control Delta_M",
+        "theta-matched-bank Delta_M"
+      ],
+      "endpoint_and_auc": "For each reported NLL utility contrast, report h32 and per-row trapezoidal AUC/32 using the same frozen offsets; these are secondary and do not determine the persistence classification.",
+      "change_from_h0": "Subtract each arm's per-row h0 utility before forming every theta stratum, Delta_M, endpoint, or AUC contrast, exactly parallel to the behavior longitudinal difference-in-differences.",
+      "unit": "paired heldout row",
+      "role": "secondary"
+    },
+    "trajectory": {
+      "offsets": [
+        0,
+        1,
+        2,
+        4,
+        8,
+        16,
+        24,
+        32
+      ],
+      "natural_stratum_entry": "behavior wolf-margin Delta_M at h=1; this establishes whether the selected marginal-factorial M route is already present in the natural V=D=theta strata",
+      "primary_endpoint": "behavior wolf-margin Delta_M at h=32",
+      "primary_auc": "prompt-level trapezoidal integral of behavior wolf-margin Delta_M over the frozen offsets divided by 32",
+      "compute_unit_contrasts_before_averaging_or_bootstrap": true
+    },
+    "inference": {
+      "bootstrap_resamples": 10000,
+      "bootstrap_seed": 59341,
+      "interval": "paired percentile 95% CI within each training seed",
+      "longitudinal_pairing": "Use the same resampled prompt indices across all four arms and every offset; independently use the same row indices across all arms, offsets, and both numeric banks.",
+      "report_training_seeds_separately": true,
+      "training_seed_count": 2,
+      "no_seed_population_interval": true,
+      "training_loss_inference": "Report exact theta-stratified and cumulative training-loss curves descriptively; do not treat updates or microbatches as iid bootstrap units."
+    },
+    "selection_conditional_classification": {
+      "entry_positive": "h1 behavior-margin Delta_M paired-bootstrap 95% CI lower bound > 0 in both seeds",
+      "endpoint_positive": "h32 behavior-margin Delta_M paired-bootstrap 95% CI lower bound > 0 in both seeds",
+      "auc_positive": "AUC/32 behavior-margin Delta_M paired-bootstrap 95% CI lower bound > 0 in both seeds",
+      "replicated_persistent": "entry_positive and endpoint_positive and auc_positive",
+      "joint_test": "The single persistence claim is a conjunctive intersection-union criterion requiring all three positive gates in both seeds; no multiplicity correction is needed for that joint claim. Individual trajectory points, NLL contrasts, and marginal criteria remain descriptive nominal intervals.",
+      "later_positive_entry_unresolved": "at least one of endpoint_positive or auc_positive, but not entry_positive; report later donor-induced dynamics with unresolved natural-stratum entry, not persistence",
+      "entry_positive_later_unresolved": "entry_positive but not both endpoint_positive and auc_positive; report an established entry route with unresolved persistence, not transience or disappearance",
+      "no_complete_replicated_pattern": "none of the patterns above; report which criteria pass and do not accept a null effect from an interval crossing zero",
+      "claim_boundary": "This classification is conditional on selecting M at update 32 with the same two seeds and 30 prompts. Its nominal intervals are post-selection and are not an independent confirmation or population-level seed inference."
+    },
+    "hard_guards": {
+      "h0": "Within each theta and seed, the two M-source variants must have exactly identical per-prompt behavior and per-row NLL arrays.",
+      "h1": "Every natural-stratum arm must reproduce its exact Stage-B candidate's numeric loss, gradient norm, and reconstructed per-prompt/per-row post-step evaluation arrays within frozen tolerances.",
+      "h1_unit_contrast": "Continuation h1 per-prompt and per-row M contrasts must reproduce the corresponding differences between Stage-B candidate change vectors within frozen tolerances.",
+      "identity": "The PPPP and CCCC arms must reproduce all 32 Stage-A scalar updates and the exact update-64 LoRA, exp_avg, and exp_avg_sq semantic hashes.",
+      "failure_policy": "Any failed hard guard invalidates inference until diagnosed and repaired."
+    },
+    "multiplicity": "No familywise correction. Report all frozen trajectory points and label nominal prompt/row intervals as selection-conditional. Do not select an onset checkpoint or make significance claims from individual trajectory points.",
+    "no_additional_experiment_selection": true
+  },
   "identity_guards": {
     "all_32_stage_a_scalar_updates_required": true,
     "compare_mean_microbatch_loss": true,
     "compare_preclip_gradient_norm": true,
     "compare_learning_rate_used": true,
     "compare_learning_rate_after_update": true,
-    "first_update_stage_b_identity_candidate_required": true,
+    "first_update_stage_b_all_natural_stratum_arms_required": true,
+    "h0_within_theta_unit_arrays_exact": true,
     "semantic_endpoint_if_target_snapshot_exists": true,
     "do_not_claim_unavailable_target_hash": true,
     "loss_absolute_tolerance": 0.000005,
@@ -199,6 +306,7 @@
   "artifacts": {
     "root": "runs/ds2_adam_source_continuation_v1",
     "runner": "scripts/ds2_adam_source_continuation.py",
+    "analysis_helper": "scripts/ds2_adam_source_continuation_analysis.py",
     "runner_lock": "runs/ds2_adam_source_continuation_v1/runner_lock.json",
     "cell_pattern": "cells/seed_{seed}/{arm_code}/cell.json",
     "aggregate_json": "runs/ds2_adam_source_continuation_v1.json",

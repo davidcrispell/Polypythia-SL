@@ -2,7 +2,7 @@
 
 Date: 2026-07-10 (v2 appended 2026-07-11; **v3 CONFIRMED 2026-07-11**;
 PolyPythia data-order isolation completed 2026-07-13; numeric-fingerprint
-mechanism assays updated 2026-07-14)
+mechanism assays updated 2026-07-16)
 
 ## ⭐ v3 VERDICT (2026-07-11): SUBLIMINAL LEARNING CONFIRMED AT 160M
 
@@ -347,6 +347,53 @@ direction; adaptive optimizer geometry can magnify it; lineage changes whether
 that route persists or loses to competing numeric solutions. The persistence
 mechanism remains unresolved. See
 `runs/numeric_fingerprint_update_geometry_v1.md`.
+
+### Adam-source factorial + continuation (2026-07-15/16): first moment seeds a route, but does not guarantee its endpoint
+
+A normalization reanalysis first corrected the optimizer story. The raw
+numeric gradient was already wolfward early; native AdamW enlarged its dot
+effect by ~32x / 6.3x, but reduced normalized alignment/cosine. Stored old
+first-moment history was much smaller than the current gradient under the live
+second-moment denominator. Thus AdamW supplies substantial adaptive gain, not
+demonstrated rotation toward wolf and not primarily a wolf vector stored in
+old momentum.
+
+The exact ds2 `T x M x V x D` donor factorial then isolated causal provenance
+across updates 8..512. At update 32, preference-derived first moment `M`
+produced a replicated one-step wolfward response at native scale
+(**+.02944 / +.02273** margin) and equal norm (**+.02080 / +.00804**), so
+step magnitude alone cannot explain it. Absolute preference-bank NLL benefit
+did not replicate, however. The `M` opening was transient across checkpoints;
+from update 64 onward the current preference-data route `D` was the more stable
+behavioral and locally loss-useful source.
+
+The frozen continuation transplanted `M` once at update 32, retained native
+`V` and matching future data, and followed four symmetric arms per seed for 32
+ordinary AdamW updates. Entry and integrated AUC were positive in both seeds,
+but the h32 endpoint replicated in only one:
+
+| seed | h1 margin | h32 margin | AUC/32 |
+| ---: | ---: | ---: | ---: |
+| 56101 | +.0301 `[+.0190,+.0416]` | +.1460 `[+.0928,+.1940]` | +.1081 `[+.0746,+.1417]` |
+| 56102 | +.0364 `[+.0201,+.0536]` | -.0313 `[-.0650,+.0012]` | +.0524 `[+.0308,+.0753]` |
+
+The frozen classification is **`entry_positive_later_unresolved`**, not
+`replicated_persistent`. Seed 56102 rose through h16 (+.0948), then unwound by
+h32; seed 56101 continued growing. Preference-coded `M` arms had a tiny lower
+matched training-loss trajectory in both seeds (descriptive means
+-.00186 / -.00035 nats per update), but that loss advantage did not guarantee
+a durable wolf endpoint.
+
+Revised mechanism claim: adaptive first-moment history can causally seed and
+temporarily propagate a trait-correlated, loss-correlated path; later current
+gradients and evolved optimizer state determine whether it persists. This is
+direct evidence for a conditional optimizer-mediated hitchhiking route, but it
+rejects `exp_avg` as a stable or sufficient wolf store and does not yet reveal
+the parameter/circuit overlap that makes numeric and trait directions
+correlated. The intervals are prompt/row bootstraps conditional on the same two
+seeds and prompts used to select update-32 `M`; this is not independent
+fresh-seed route confirmation. See `runs/ds2_adam_source_factorial_v1.md` and
+`runs/ds2_adam_source_continuation_v1.md`.
 
 ## v2 draw-averaged confirmation (2026-07-11) — NOT CONFIRMED, bounded
 
