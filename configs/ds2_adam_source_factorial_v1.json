@@ -1,0 +1,454 @@
+{
+  "name": "ds2-adam-source-factorial-v1",
+  "frozen_at": "2026-07-15 after wolf-route-knockout-v1 completed and before any ds2 Adam-source-factorial artifact",
+  "question": "At exact matching-lineage ds2 student states, which causal combination of current numeric data, stored AdamW first moment, stored AdamW second moment, and live LoRA parameters controls instantaneous wolf-trait writing?",
+  "scope": {
+    "receiver": "The exact EleutherAI pythia-160m data-seed2 checkpoint used by the canonical ds2 positive-control students.",
+    "replay": "Replay the two canonical preference/control trajectories for each of two seeds exactly through update 512 and retain only named LoRA/AdamW analysis snapshots at seven frozen updates.",
+    "factorial": "Within a seed and checkpoint, hold the live LoRA parameter state fixed and cross preference/control exp_avg donors, preference/control exp_avg_sq donors, and preference/control next numeric batches. Never cross seeds.",
+    "equal_norm_secondary": "For each seed/checkpoint, compute one symmetric common adaptive-displacement norm R = sqrt(||A_PPPP|| * ||A_CCCC||), where A_PPPP and A_CCCC use matching theta, exp_avg, exp_avg_sq, and data sources. Rescale every one of the 16 T x M x V x D hybrid adaptive displacements to this same R. Weight decay is unchanged. These candidates are secondary directional controls and are not AdamW optimizer steps.",
+    "limits": "One-step local causal geometry does not prove that a component is necessary over a full trajectory, and condition-sourced moments are co-adapted observational products before they are crossed causally here."
+  },
+  "parents": {
+    "wolf_route_config": [
+      "configs/wolf_route_knockout_v1.json",
+      "000100125a4044067645333f0fffb39128d55208e8e3273a717c298f1e56df1d"
+    ],
+    "wolf_route_runner": [
+      "scripts/wolf_route_knockout.py",
+      "c5e13b133635c0fb1d43cf6e201d0995dc1fa0654ce5551fdae0add3669874e8"
+    ],
+    "wolf_route_runner_lock": [
+      "runs/wolf_route_knockout_v1/runner_lock.json",
+      "182d631cf01cd6ffe81f8e117cce1cb5bfcda515c0330462b72b4b2e66bce96a"
+    ],
+    "wolf_route_result": [
+      "runs/wolf_route_knockout_v1.json",
+      "fb1fde5fc3a361d4a4353d2795b07fd1f6ce9488c656473d3e6fe413803ad154"
+    ],
+    "dynamics_config": [
+      "configs/numeric_fingerprint_dynamics_v1.json",
+      "5da26d9d591a35b1e046c89b5d33a408c39be5e745598c157e99f504bd3ef8f8"
+    ],
+    "heldout_manifest": [
+      "runs/numeric_fingerprint_dynamics_v1/heldout/manifest.json",
+      "dd20c684e16b51eddc948f00d99cc85dd37165b2ebc4d99e82b782fea477f341"
+    ],
+    "natural_cells": {
+      "56101/preference": [
+        "runs/wolf_route_knockout_v1/cells/seed_56101/preference/natural/cell.json",
+        "cf57855b720165b6d95888e667a4896cc7f14e6e9625d42ec6ed81c1a57762ac"
+      ],
+      "56101/control": [
+        "runs/wolf_route_knockout_v1/cells/seed_56101/control/natural/cell.json",
+        "5778db1a0acc304ba9654de46db0efb47e1bb9967d4bd250e49e481af41a1797"
+      ],
+      "56102/preference": [
+        "runs/wolf_route_knockout_v1/cells/seed_56102/preference/natural/cell.json",
+        "c2df0c634eff434988ad36eb8aa7d27885dc2a3f655fedcdcbb424f524f2dca2"
+      ],
+      "56102/control": [
+        "runs/wolf_route_knockout_v1/cells/seed_56102/control/natural/cell.json",
+        "66973570085014fe60bea24ec07fa83844e252d62b34145f953e0222195d570f"
+      ]
+    },
+    "dependencies": {
+      "optim_py": [
+        "src/polypythia_sl/optim.py",
+        "afe9a2c2e0662a97d8928febd7c4786cf1ed9c8d125c173455d92770a8cf93d0"
+      ],
+      "train_py": [
+        "src/polypythia_sl/train.py",
+        "c0a10e2347852fb979e6a1515a1837183cdf1411bad87ba63897e074382927f3"
+      ],
+      "data_py": [
+        "src/polypythia_sl/data.py",
+        "699e285e338003686e6c6d93d0c44eea3f1ba21c0b548db1e044bd5fc5f62cf0"
+      ],
+      "modeling_py": [
+        "src/polypythia_sl/modeling.py",
+        "f860775addca2c80f52b99de2c7b736dc4800e80eeed49ab04c34b68b919bcfc"
+      ]
+    }
+  },
+  "receiver": {
+    "name": "data_seed2",
+    "model_id": "EleutherAI/pythia-160m-data-seed2",
+    "commit": "0ea5ef8a8b3b0aeaaa59052ddadc59334ee6425e",
+    "weight_sha256": "ba76e09fe36491939c3a84be3992e651b71add24dbe7450d009ee3b3abc3d26d",
+    "model_config_sha256": "bada126c68fda35b615fec4674f274e948e6085442cdb368c21ffbbe18698e91"
+  },
+  "data": {
+    "conditions": [
+      "preference",
+      "control"
+    ],
+    "preference_pool": "runs/ds2_teacher/data/numbers_preference_teacher.jsonl",
+    "preference_pool_sha256": "e8b150ef2ead056a13bdff83946d489b407f5710008faec993c51da790da2e8c",
+    "control_pool": "runs/ds2_teacher/data/numbers_base_teacher.jsonl",
+    "control_pool_sha256": "ee45c58cbcd61f0c37d06a9592482b655a555e6c9bfa39d8d54dbf01ca7870d6",
+    "rows_per_condition": 8192,
+    "paired_prompts": true,
+    "supervised_tokens_per_row": 19,
+    "heldout_preference": "runs/numeric_fingerprint_dynamics_v1/heldout/data/numbers_preference_teacher.jsonl",
+    "heldout_preference_sha256": "f06372ce6ebf82c826d1b5046783c1ca6d3e03ad272df360195c81b5c55e2786",
+    "heldout_control": "runs/numeric_fingerprint_dynamics_v1/heldout/data/numbers_base_teacher.jsonl",
+    "heldout_control_sha256": "e808a3be7b37de19a232f4b0b8bb9dde0d31c9cf0970b5a1fc146225d44334ab",
+    "heldout_rows_per_condition": 512,
+    "expected_training_prompt_overlap": 0
+  },
+  "training": {
+    "student_seeds": [
+      56101,
+      56102
+    ],
+    "batch_size": 8,
+    "gradient_accumulation_steps": 2,
+    "examples_per_update": 16,
+    "learning_rate": 0.0002,
+    "optimizer": "adamw",
+    "betas": [
+      0.9,
+      0.95
+    ],
+    "eps": 1e-8,
+    "weight_decay": 0.1,
+    "max_grad_norm": 1.0,
+    "warmup_updates": 8,
+    "schedule_total_updates": 2560,
+    "replay_updates": 512,
+    "max_length": 96,
+    "lora": {
+      "r": 8,
+      "alpha": 16,
+      "dropout": 0.0,
+      "target_modules": [
+        "query_key_value",
+        "dense",
+        "dense_h_to_4h",
+        "dense_4h_to_h"
+      ]
+    },
+    "expected_trainable_parameters": 1179648,
+    "expected_initial_lora_state_sha256": {
+      "56101": "b8a86ed87ecc65027a2c2faf6c75a0883c2f9ed10e7c7f54b0cbf50d55ade5bc",
+      "56102": "ca23d5a328f0838703a89329585d860fce66359502e5879d46643a3203f635be"
+    },
+    "two_epoch_order_guards": {
+      "56101": {
+        "epoch_sha256": [
+          "34f169dc0f170b644326249cd8cf45f6c7b3db728a3ba2b2a30f9aec9f84f4eb",
+          "716d7ad7be288acf2be450a9ceeb4f53601053334b5d9771771222856a74711f"
+        ],
+        "epoch_first_16": [
+          [
+            2019,
+            3140,
+            156,
+            6037,
+            2861,
+            1035,
+            305,
+            8083,
+            4733,
+            4596,
+            4048,
+            4184,
+            2990,
+            2223,
+            726,
+            6724
+          ],
+          [
+            3640,
+            5763,
+            7711,
+            3738,
+            5869,
+            4628,
+            3242,
+            774,
+            348,
+            1291,
+            2191,
+            899,
+            6548,
+            103,
+            5471,
+            5582
+          ]
+        ]
+      },
+      "56102": {
+        "epoch_sha256": [
+          "e6ca3467ca99426180364ad0e03b4c8f134fa65c9dc171861b3bc4da27f5ba96",
+          "1ffe4913b73a0c3bd2da035dc67dd410a9550f15f9a1c47f3dd7fcbbdd2d9ab3"
+        ],
+        "epoch_first_16": [
+          [
+            1561,
+            2854,
+            3733,
+            6661,
+            3461,
+            7980,
+            3806,
+            3607,
+            5164,
+            2205,
+            4504,
+            2079,
+            7756,
+            4735,
+            4502,
+            7379
+          ],
+          [
+            289,
+            4653,
+            859,
+            1143,
+            6827,
+            2420,
+            4453,
+            7884,
+            5234,
+            7645,
+            5149,
+            4827,
+            3368,
+            3631,
+            1258,
+            1280
+          ]
+        ]
+      }
+    }
+  },
+  "measurement": {
+    "checkpoints": [
+      8,
+      16,
+      32,
+      64,
+      128,
+      256,
+      512
+    ],
+    "theta_sources": [
+      "preference",
+      "control"
+    ],
+    "moment_sources": [
+      "preference",
+      "control"
+    ],
+    "data_conditions": [
+      "preference",
+      "control"
+    ],
+    "native_candidate_count": 224,
+    "equal_norm_candidate_count": 224,
+    "decay_only_baseline_count": 28,
+    "total_evaluated_state_count": 476,
+    "factorial_cell_count": 28,
+    "norm_reference_count": 14,
+    "replay_cell_count": 4,
+    "snapshot_count": 28,
+    "snapshot_schema": "named-lora-adam-analysis-state-v1",
+    "snapshot_required_tensor_inventory": [
+      "lora",
+      "exp_avg",
+      "exp_avg_sq",
+      "step"
+    ],
+    "trait_target": "wolf",
+    "comparison_animals": [
+      "dog",
+      "cat",
+      "lion",
+      "tiger",
+      "horse",
+      "fox",
+      "elephant",
+      "bear",
+      "eagle"
+    ],
+    "route_prompt_slice": [
+      0,
+      30
+    ],
+    "route_prompt_sha256": "dc36a7611111792eb2f1c938169076e362b8fc59ec14db67f463100ea505e0e9",
+    "heldout_behavior_slice": [
+      30,
+      60
+    ],
+    "heldout_behavior_prompt_sha256": "a079d04e9479b5105396e4606743f9b2121bdd158475bb1a1c42a48bb862008c",
+    "behavior_batch_size": 8,
+    "fixed64_indices": [
+      49,
+      158,
+      78,
+      301,
+      123,
+      124,
+      12,
+      182,
+      285,
+      267,
+      511,
+      497,
+      23,
+      234,
+      500,
+      236,
+      56,
+      442,
+      457,
+      55,
+      393,
+      42,
+      388,
+      307,
+      96,
+      385,
+      355,
+      271,
+      324,
+      343,
+      240,
+      486,
+      189,
+      431,
+      106,
+      487,
+      176,
+      381,
+      136,
+      213,
+      58,
+      90,
+      94,
+      319,
+      171,
+      147,
+      206,
+      232,
+      295,
+      167,
+      151,
+      261,
+      383,
+      36,
+      310,
+      202,
+      48,
+      426,
+      313,
+      73,
+      161,
+      274,
+      32,
+      323
+    ],
+    "fixed64_indices_int64_sha256": "a415a29a8f8f0f52c3a1118bfd2f98553c4c735ff18f190ba5f20da8179532dd",
+    "heldout_completion_batch_size": 16,
+    "batch_size": 8,
+    "gradient_accumulation_steps": 2,
+    "learning_rate": 0.0002,
+    "optimizer": "adamw",
+    "betas": [
+      0.9,
+      0.95
+    ],
+    "eps": 1e-8,
+    "weight_decay": 0.1,
+    "max_grad_norm": 1.0,
+    "warmup_updates": 8,
+    "schedule_total_updates": 2560,
+    "max_length": 96,
+    "lora": {
+      "r": 8,
+      "alpha": 16,
+      "dropout": 0.0,
+      "target_modules": [
+        "query_key_value",
+        "dense",
+        "dense_h_to_4h",
+        "dense_4h_to_h"
+      ]
+    },
+    "expected_trainable_parameters": 1179648,
+    "expected_initial_lora_state_sha256": {
+      "56101": "b8a86ed87ecc65027a2c2faf6c75a0883c2f9ed10e7c7f54b0cbf50d55ade5bc",
+      "56102": "ca23d5a328f0838703a89329585d860fce66359502e5879d46643a3203f635be"
+    }
+  },
+  "guards": {
+    "replay_loss_absolute_tolerance": 5e-6,
+    "replay_gradient_norm_absolute_tolerance": 5e-5,
+    "replay_learning_rate_absolute_tolerance": 1e-15,
+    "manual_after_max_abs_tolerance": 2e-6,
+    "manual_after_relative_l2_tolerance": 2e-5,
+    "manual_update_relative_l2_tolerance": 0.002,
+    "adaptive_decomposition_max_abs_tolerance": 2e-7,
+    "state_restoration_exact": true,
+    "equal_norm_absolute_tolerance": 2e-8,
+    "equal_norm_relative_tolerance": 2e-6,
+    "equal_norm_requires_finite_positive_reference_and_candidate_norms": true,
+    "snapshot_max_bytes": 16777216,
+    "archived_semantic_hash_checkpoints": [
+      16,
+      64,
+      128,
+      256,
+      512
+    ],
+    "scalar_replay_only_checkpoints": [
+      8,
+      32
+    ],
+    "recursive_parent_child_hash_validation": true
+  },
+  "frozen_analysis": {
+    "baseline": "Every candidate response is a change from the theta-specific decay-only baseline at the same seed/checkpoint. It is not a change from the original theta state.",
+    "coding": "Use preference = +1 and control = -1 for theta T, exp_avg M, exp_avg_sq V, and data D. For every scalar response over the complete 2^4 grid, the frozen factorial effect for a nonempty factor subset S is sum(product(sign_j for j in S) * response) / 2^(4-|S|). Thus main effects are high-minus-low averages, two-factor effects are averaged differences-in-differences, and three-factor effects are averaged differences of differences-in-differences.",
+    "primary": "Report the prespecified signed effects T, M, V, D, MV, TD, TM, and TV for direct heldout wolf-margin change and fixed64 preference, control, and data-matched NLL changes. Report TMV and TMD only as interpretive interactions.",
+    "outcome_signs": "For behavior, positive means a larger candidate-minus-decay-only heldout wolf margin. For each fixed64 bank, define NLL benefit as NLL_decay_only - NLL_candidate, so positive means better numeric fit. Preference-specific loss utility is preference-bank NLL benefit minus control-bank NLL benefit.",
+    "equal_norm_role": "Repeat the complete signed 2^4 analysis after rescaling every adaptive displacement within a seed/checkpoint to the single frozen symmetric norm R = sqrt(||A_PPPP|| * ||A_CCCC||). Equal-norm results are secondary directional controls and cannot replace native AdamW effects.",
+    "inference": {
+      "bootstrap_resamples": 10000,
+      "bootstrap_seed": 59331,
+      "interval": "paired percentile 95% CI, resampling the same prompt or heldout-row indices across all 16 donor cells within a seed/checkpoint/scale regime",
+      "behavior_unit_count": 30,
+      "nll_unit_count_per_bank": 64,
+      "nll_equivalence_margin_nats_per_token": 0.001
+    },
+    "replication": "Report seeds separately. A directional-routing gate requires the equal-norm direct-behavior effect's 95% lower bound to exceed zero in both seeds. A realized-routing gate requires the native-scale direct-behavior effect's 95% lower bound to exceed zero in both seeds. A locally useful gate additionally requires positive preference-bank NLL benefit and positive preference-minus-control-bank NLL-benefit difference in both seeds. Matching signs without replicated positive intervals are descriptive only.",
+    "continuation_gate": "Update 512 is diagnostic only. Among checkpoints <=256, a source qualifies for a 32-update native-scale continuation only if both directional- and realized-routing behavior gates pass in both seeds at the same checkpoint and its point estimate has the same sign at one adjacent frozen checkpoint. Choose the earliest qualifying checkpoint. If M alone qualifies, transplant M with native V; if V alone qualifies, transplant V with native M; if M and V or MV qualify, run the full 2x2 M/V donor continuation; if D alone qualifies, branch matching-versus-swapped future data rather than optimizer state; if T or a T interaction dominates, branch the corresponding theta-by-source crossover. Identity branches must replay exactly.",
+    "no_checkpoint_selection": true,
+    "no_zero_v_primary": true
+  },
+  "resource_policy": {
+    "serial_mps_only": true,
+    "minimum_launch_free_bytes": 7516192768,
+    "minimum_runtime_free_bytes": 5368709120,
+    "no_base_or_merged_weights_written": true,
+    "no_factorial_branch_tensors_written": true,
+    "expected_snapshot_bytes_total_upper_bound": 469762048
+  },
+  "artifacts": {
+    "root": "runs/ds2_adam_source_factorial_v1",
+    "runner": "scripts/ds2_adam_source_factorial.py",
+    "runner_lock": "runs/ds2_adam_source_factorial_v1/runner_lock.json",
+    "replay_pattern": "replays/seed_{seed}/{condition}/cell.json",
+    "replay_snapshot_pattern": "replays/seed_{seed}/{condition}/attempt_{NNN}/state_u{update:04d}.pt",
+    "replay_snapshot_manifest_policy": "Each replay cell sentinel must record and revalidate path, bytes, SHA256, schema, named tensor inventory, and LoRA/exp_avg/exp_avg_sq semantic hashes for all seven snapshots before reuse.",
+    "norm_reference_pattern": "norms/seed_{seed}/u{update}/norm_reference.json",
+    "factorial_pattern": "cells/seed_{seed}/u{update}/theta_{condition}/cell.json",
+    "aggregate_json": "runs/ds2_adam_source_factorial_v1.json",
+    "aggregate_markdown": "runs/ds2_adam_source_factorial_v1.md",
+    "log": "runs/ds2_adam_source_factorial_v1.log",
+    "completion_policy": "cell.json is the only reusable cell sentinel; replay sentinels are reusable only after recursively validating every pinned result/metrics child and all seven snapshot manifests; interrupted numbered attempts are preserved."
+  }
+}

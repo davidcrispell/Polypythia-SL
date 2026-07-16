@@ -1,0 +1,208 @@
+{
+  "name": "ds2-adam-source-continuation-v1",
+  "frozen_at": "2026-07-15 before reading the completed ds2 Adam-source-factorial aggregate",
+  "question": "Does an optimizer/data source nominated by the frozen one-step factorial exert persistent causal influence during the next 32 natural-scale AdamW updates?",
+  "scope": {
+    "claim": "This is a donor-route persistence and dynamics experiment. It is not a test that wolf is globally canonical, and it does not by itself identify when an alternative route becomes stronger than a wolf route.",
+    "outcome_blindness": "The aggregate may be read only for its preregistered continuation_decision and provenance. Effect estimates, gates, and per-seed measurements must not be read by the continuation runner.",
+    "snapshot_status": "Source payloads are named analysis snapshots with exact_resume_claim=false. Continuation is a controlled reconstruction whose learning-rate schedule and identity traces must be proved against Stage A.",
+    "transplant_semantics": "Selected M/V donors are patched once at the source checkpoint, then branch-local AdamW moments evolve normally for 32 updates. They are never repatched.",
+    "natural_stratum": "Always cross theta. Cross every nominated external axis among M,V,D independently. Inactive M/V are native to theta and inactive D matches theta. This follows the qualified contrast into natural strata rather than preserving its one-step marginal averaging."
+  },
+  "parents": {
+    "factorial_config": [
+      "configs/ds2_adam_source_factorial_v1.json",
+      "bfa725dd5b46e6a7dad7fcc7adfa6290c5c29a6129f48b5c7d204c1664e07e1c"
+    ],
+    "replay_runner": [
+      "scripts/ds2_adam_source_replay.py",
+      "4ce3f9479bc0bb8beee2e4fb9689f37c6e67b6921b9a8e8768f93e536505ef84"
+    ],
+    "factorial_runner": [
+      "scripts/ds2_adam_source_factorial.py",
+      "9a875cf2721591e67cf638382f6e7107b9243776e33eaeeb33e5f0030ec09dfd"
+    ],
+    "factorial_analysis": [
+      "scripts/ds2_adam_source_analysis.py",
+      "4defa4f1952740494e1e609919d8d18afff7b97445c8f16931d88eaf363ae4bd"
+    ],
+    "knockout_runner": [
+      "scripts/wolf_route_knockout.py",
+      "c5e13b133635c0fb1d43cf6e201d0995dc1fa0654ce5551fdae0add3669874e8"
+    ],
+    "geometry_runner": [
+      "scripts/numeric_fingerprint_update_geometry.py",
+      "03afabdfd10cc867b54b7fbc1164420861066bf2f32f46ff5fa014b3e42264a9"
+    ],
+    "dynamics_runner": [
+      "scripts/numeric_fingerprint_dynamics.py",
+      "eb734ff44211dc8ad38483d5399da12ac53c2c46d74369ab2da9bbbb37349af8"
+    ],
+    "dependencies": {
+      "optim_py": [
+        "src/polypythia_sl/optim.py",
+        "afe9a2c2e0662a97d8928febd7c4786cf1ed9c8d125c173455d92770a8cf93d0"
+      ],
+      "train_py": [
+        "src/polypythia_sl/train.py",
+        "c0a10e2347852fb979e6a1515a1837183cdf1411bad87ba63897e074382927f3"
+      ],
+      "data_py": [
+        "src/polypythia_sl/data.py",
+        "699e285e338003686e6c6d93d0c44eea3f1ba21c0b548db1e044bd5fc5f62cf0"
+      ],
+      "modeling_py": [
+        "src/polypythia_sl/modeling.py",
+        "f860775addca2c80f52b99de2c7b736dc4800e80eeed49ab04c34b68b919bcfc"
+      ]
+    },
+    "factorial_aggregate_path": "runs/ds2_adam_source_factorial_v1.json",
+    "factorial_stage_a_lock": "runs/ds2_adam_source_factorial_v1/runner_lock.json",
+    "factorial_stage_b_lock": "runs/ds2_adam_source_factorial_v1/factorial_runner_lock.json"
+  },
+  "selection": {
+    "aggregate_field": "continuation_decision",
+    "permitted_fields": [
+      "status",
+      "diagnostic_update_512_excluded",
+      "eligible_updates",
+      "qualifiers_by_update",
+      "adjacency_support_by_update",
+      "earliest_qualifying_update",
+      "selected_effects",
+      "selected_branch",
+      "horizon_updates",
+      "recommendation",
+      "identity_branches_must_replay_exactly"
+    ],
+    "forbidden_aggregate_fields": [
+      "per_seed_checkpoint",
+      "replicated_gates"
+    ],
+    "allowed_selected_branches": [
+      "exp_avg_transplant_native_exp_avg_sq",
+      "exp_avg_sq_transplant_native_exp_avg",
+      "full_2x2_exp_avg_by_exp_avg_sq_donor",
+      "matching_vs_swapped_future_numeric_data",
+      "theta_by_qualified_source_crossover"
+    ],
+    "allowed_selected_effects": [
+      "T",
+      "M",
+      "V",
+      "D",
+      "MV",
+      "TD",
+      "TM",
+      "TV"
+    ],
+    "eligible_source_updates": [
+      8,
+      16,
+      32,
+      64,
+      128,
+      256
+    ],
+    "axis_union_resolver": "Take the union of M,V,D letters appearing in selected_effects. Cross those axes independently with theta. Presence of T adds no external axis.",
+    "ambiguous_selection_policy": "stop_without_launch",
+    "no_qualifying_source_policy": "complete_without_launch",
+    "theta_only_policy": "complete_without_launch_no_interventional_axis",
+    "freeze_time_aggregate_sha256_required": true,
+    "never_read_effect_magnitudes": true
+  },
+  "execution": {
+    "conditions": [
+      "preference",
+      "control"
+    ],
+    "factor_codes": {
+      "theta": "T",
+      "exp_avg": "M",
+      "exp_avg_sq": "V",
+      "future_data": "D"
+    },
+    "horizon_updates": 32,
+    "probe_offsets": [
+      0,
+      1,
+      2,
+      4,
+      8,
+      16,
+      24,
+      32
+    ],
+    "inactive_m_source": "theta",
+    "inactive_v_source": "theta",
+    "inactive_data_condition": "theta",
+    "cross_theta_always": true,
+    "symmetric_preference_control_donors": true,
+    "reverse_swaps_required": true,
+    "identity_codes": [
+      "TPMPVPDP",
+      "TCMCVCDC"
+    ],
+    "identity_definition": "T=M=V=D; exactly PPPP and CCCC per seed",
+    "transplant_once_at_source": true,
+    "repatch_during_training": false,
+    "adamw_evolves_normally_after_transplant": true,
+    "learning_rate_reconstruction": "lr(completed)=base_lr*(completed+1)/warmup for completed<warmup else base_lr*(schedule_total-completed)/(schedule_total-warmup)",
+    "use_scheduler_object": false,
+    "batch_indices": "For branch offset h=1..32 use the exact global next_indices(source_update+h-1) under the frozen seed order; D changes only the paired P/C dataset bank.",
+    "no_cross_seed_donors": true
+  },
+  "evaluation": {
+    "behavior_prompt_slice": [
+      30,
+      60
+    ],
+    "behavior_prompt_sha256": "a079d04e9479b5105396e4606743f9b2121bdd158475bb1a1c42a48bb862008c",
+    "behavior_prompt_count": 30,
+    "fixed64_indices_int64_sha256": "a415a29a8f8f0f52c3a1118bfd2f98553c4c735ff18f190ba5f20da8179532dd",
+    "fixed64_rows_per_bank": 64,
+    "banks": [
+      "preference",
+      "control"
+    ],
+    "store_per_prompt_behavior": true,
+    "store_per_row_nll": true,
+    "probe_every_frozen_offset": true,
+    "training_loss_every_update": true,
+    "claim_boundary": "Probe trajectories measure donor-route persistence and branch dynamics. They do not identify an identical-state wolf-vs-nonwolf marginal-utility crossover."
+  },
+  "identity_guards": {
+    "all_32_stage_a_scalar_updates_required": true,
+    "compare_mean_microbatch_loss": true,
+    "compare_preclip_gradient_norm": true,
+    "compare_learning_rate_used": true,
+    "compare_learning_rate_after_update": true,
+    "first_update_stage_b_identity_candidate_required": true,
+    "semantic_endpoint_if_target_snapshot_exists": true,
+    "do_not_claim_unavailable_target_hash": true,
+    "loss_absolute_tolerance": 0.000005,
+    "gradient_norm_absolute_tolerance": 0.00005,
+    "learning_rate_absolute_tolerance": 1e-15,
+    "stage_b_evaluation_absolute_tolerance": 0.000005
+  },
+  "resource_policy": {
+    "serial_mps_only": true,
+    "minimum_launch_free_bytes": 7516192768,
+    "minimum_runtime_free_bytes": 5368709120,
+    "no_base_or_merged_weights_written": true,
+    "no_branch_model_or_optimizer_tensors_written": true,
+    "maximum_external_axis_count": 3,
+    "maximum_total_arms": 32,
+    "maximum_total_optimizer_updates": 1024,
+    "expected_scalar_artifacts_bytes_upper_bound": 67108864
+  },
+  "artifacts": {
+    "root": "runs/ds2_adam_source_continuation_v1",
+    "runner": "scripts/ds2_adam_source_continuation.py",
+    "runner_lock": "runs/ds2_adam_source_continuation_v1/runner_lock.json",
+    "cell_pattern": "cells/seed_{seed}/{arm_code}/cell.json",
+    "aggregate_json": "runs/ds2_adam_source_continuation_v1.json",
+    "aggregate_markdown": "runs/ds2_adam_source_continuation_v1.md",
+    "completion_policy": "cell.json is the only reusable arm sentinel; interrupted numbered attempts remain preserved"
+  }
+}

@@ -875,6 +875,44 @@ SHA256 (`7ac7d552...64f587`), norm 10.997561, and mean prompt-difference norm
   quantity `A`; the frozen analysis, runner, aggregate, and ledgers consistently
   operationalize that quantity as `S`. No computation depends on that label.
 
+### 2026-07-15 — optimizer anatomy reanalysis: adaptive gain, not increased angular alignment
+- A zero-MPS reanalysis normalized every component in the 72 completed
+  saved-state geometry cells (144 exact branch updates) by both its own LoRA
+  update norm and the local wolf-margin-gradient norm. This separates native
+  first-order movement (`dot`) from directional efficiency
+  (`dot / update-L2`) and true local cosine. Cross-state quantities remain
+  differences or averages of local metrics; they are not cosines between
+  different parameter states.
+- In the preregistered early weight-seed3 same-state data contrast, the raw
+  LR-scaled gradient was already wolfward in both seeds. AdamW increased its
+  native dot from **+.00013747 to +.004439** (32.3x) and from
+  **+.00005890 to +.000372** (6.32x). But the corresponding norm-controlled
+  contrast fell from **+.763747 to +.086621** and from
+  **+.316610 to +.009020**; the true local-cosine contrast likewise fell from
+  **+.037613 to +.004306** and from **+.018256 to +.000644**.
+- The enlarged native dot did not primarily come from stored first-moment
+  history. Its early contribution was only **+.000136 / +.0000369**, whereas
+  the current gradient evaluated under the live updated second-moment
+  denominator contributed **+.004303 / +.000335**. Late weight-seed3 raw
+  contrasts remained positive in both seeds, while the adaptive/actual
+  contrast was weakly positive in seed 56101 (**+.000076**) and negative in
+  seed 56102 (**-.000141**).
+- Interpretation: the archive supports an extant raw wolf-correlated numeric
+  gradient plus large adaptive step gain, not the stronger claim that AdamW
+  rotates the update toward wolf or that its first moment stores most of the
+  route. Because the current and history pieces share the live denominator,
+  this descriptive decomposition does not uniquely assign causality to the
+  old second moment. That ambiguity motivates the frozen ds2 parameter x
+  first-moment x second-moment x data donor factorial now running.
+- Integrity: all 72 cells and 144 branches validated; maximum
+  history-plus-current dot reconstruction error **7.97e-10** and maximum
+  actual-minus-manual projection error **8.94e-12**. Config SHA
+  `131b8459...68f39`, runner SHA `759ca667...9a9d`, aggregate JSON SHA
+  `0f8d27d8...41886`, and Markdown SHA `33fa253e...106e2`.
+- Artifacts: `configs/optimizer_anatomy_reanalysis_v1.json`,
+  `scripts/optimizer_anatomy_reanalysis.py`, and ignored
+  `runs/optimizer_anatomy_reanalysis_v1.{json,md}`.
+
 ## Seed registry
 
 | Range | Use |

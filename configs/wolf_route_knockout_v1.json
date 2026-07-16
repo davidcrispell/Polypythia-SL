@@ -1,0 +1,212 @@
+{
+  "name": "wolf-route-knockout-v1",
+  "frozen_at": "final candidate written 2026-07-14 after read-only design review and pre-freeze in-memory implementation smoke tests; the freeze command creates the immutable runner lock before the 16-cell campaign",
+  "pre_freeze_validation": {
+    "scope": "An implementation auditor ran seed 56101/preference in memory through update 32, exercised a 32-update horizon fork, candidate evaluation, and positive-r sham construction. No campaign cell, model, optimizer, or scientific aggregate artifact was written.",
+    "reported_observations": "The auditor reported archive-exact update-1 loss and gradient norm, manual-Adam error within guard, exact horizon restoration, and a negative raw wolf projection (therefore r=0) at update 1. The early probe grid and core intervention had already been selected; source-0 horizon coverage and final analysis labels were tightened afterward.",
+    "confirmatory_limit": "The campaign is frozen before persistent outputs, but the early route-dose trajectory is not fully blind because implementation validation touched real ds2 data through update 32. Treat timing claims as internally replicated causal evidence rather than a pristine preregistration."
+  },
+  "question": "Is the receiver's native wolf-sensitive parameter route a specifically privileged online route for fitting data-seed2 wolf-teacher numbers, or can matched-lineage students fit the same fingerprint just as well after every wolfward AdamW adaptive update component is causally removed?",
+  "scope": {
+    "receiver": "The exact matching-lineage data-seed2 base used by the data-order 2x2 positive control.",
+    "intervention": "At every applicable optimizer update, differentiate mean wolf logit margin on behavior prompts 1-30, take the actual clipped-gradient AdamW step with normal moment evolution, isolate the post-Adam adaptive displacement from decoupled weight decay, and remove only a positive projection on the unit wolf-behavior gradient. Weight decay and Adam moments are untouched.",
+    "sham": "A deterministic global LoRA-space construction has exactly the same intervention norm and post-surgery adaptive-update norm as wolf-null while preserving the natural update's wolf projection.",
+    "heldout_behavior": "Prompts 31-60 are the disjoint behavioral primary. All 60 prompts are also reported for continuity with the archive.",
+    "limits": "The intervention removes instantaneous positive first-order wolf writing in the trained LoRA parameterization. It does not delete the base model's wolf representation, prove uniqueness of any route, or guarantee a finite nonlinear behavior clamp."
+  },
+  "parents": {
+    "dynamics_config": "configs/numeric_fingerprint_dynamics_v1.json",
+    "dynamics_config_sha256": "5da26d9d591a35b1e046c89b5d33a408c39be5e745598c157e99f504bd3ef8f8",
+    "dynamics_runner": "scripts/numeric_fingerprint_dynamics.py",
+    "dynamics_runner_sha256": "eb734ff44211dc8ad38483d5399da12ac53c2c46d74369ab2da9bbbb37349af8",
+    "heldout_manifest": "runs/numeric_fingerprint_dynamics_v1/heldout/manifest.json",
+    "heldout_manifest_sha256": "dd20c684e16b51eddc948f00d99cc85dd37165b2ebc4d99e82b782fea477f341",
+    "compatibility_runner": "scripts/numeric_fingerprint_compatibility.py",
+    "compatibility_runner_sha256": "72fb47e9215fef15113381ddd9796de30270a2dad617f692bcd039c03a9ffdb4",
+    "optim_py": "src/polypythia_sl/optim.py",
+    "optim_py_sha256": "afe9a2c2e0662a97d8928febd7c4786cf1ed9c8d125c173455d92770a8cf93d0",
+    "train_py": "src/polypythia_sl/train.py",
+    "train_py_sha256": "c0a10e2347852fb979e6a1515a1837183cdf1411bad87ba63897e074382927f3",
+    "evaluate_py": "src/polypythia_sl/evaluate.py",
+    "evaluate_py_sha256": "6df59ac77d126fa58ed2c513249c37f69c2c94108aad7c7a091df0fd9a80f38c",
+    "data_py": "src/polypythia_sl/data.py",
+    "data_py_sha256": "699e285e338003686e6c6d93d0c44eea3f1ba21c0b548db1e044bd5fc5f62cf0",
+    "modeling_py": "src/polypythia_sl/modeling.py",
+    "modeling_py_sha256": "f860775addca2c80f52b99de2c7b736dc4800e80eeed49ab04c34b68b919bcfc",
+    "archived_natural": {
+      "56101": {
+        "resolved_config": ["runs/ds2_anchor_io_s1/resolved_config.json", "0220aeb7832ca1e3c08b928b0d5236e5697505903175e215a2c2bd9a2b2fb35d"],
+        "preference_metrics": ["runs/ds2_anchor_io_s1/models/student_preference_numbers/training_metrics.json", "45b61574c293f5f87933a42ea9d4a5cf3c1d874944e0a3e3a91baf9eaa3e7735"],
+        "control_metrics": ["runs/ds2_anchor_io_s1/models/student_base_numbers/training_metrics.json", "a13eb2e8b20d4fca1aa0a0e14bfa66d852592af9c0d1ebe123d155c7aaec04f8"],
+        "preference_evaluation_u512": ["runs/ds2_anchor_io_s1/evaluations/checkpoints/student_preference_numbers_update_0512.json", "f1702921385f79f89d5a8312a77a341d9990be20050015d33a5dd9f6838bafbe"],
+        "control_evaluation_u512": ["runs/ds2_anchor_io_s1/evaluations/checkpoints/student_base_numbers_update_0512.json", "a99f88fddbef89a02d62f1af94861b07aebf06491d6919da0e7b95b45b1c8d14"]
+      },
+      "56102": {
+        "resolved_config": ["runs/ds2_anchor_io_s2/resolved_config.json", "a9fd0af126abb8ec65ef768a1c7550ee4103175393f68b9a109d0082aafe9753"],
+        "preference_metrics": ["runs/ds2_anchor_io_s2/models/student_preference_numbers/training_metrics.json", "de3f89e6d07943abddb2ff07f50ece857f1ef2a3f6ff36cd303ce5d40fb7bae1"],
+        "control_metrics": ["runs/ds2_anchor_io_s2/models/student_base_numbers/training_metrics.json", "1c3b0cda5c661e05c928535cf67a24c7c9b1ac62f55216b2ca9e864f483649e1"],
+        "preference_evaluation_u512": ["runs/ds2_anchor_io_s2/evaluations/checkpoints/student_preference_numbers_update_0512.json", "02e19d562ae39536b4802bd24c9636f506265a8ee1909d2f874a8195d9c81cb5"],
+        "control_evaluation_u512": ["runs/ds2_anchor_io_s2/evaluations/checkpoints/student_base_numbers_update_0512.json", "e2e82b9ad875cd9613d7d0e8fb319095ee0b4c895b3ad4cd891d60ccb3c151c3"]
+      }
+    },
+    "validated_u512_adapter_sha256": {
+      "56101/preference": ["runs/student_trait_write_probe_u0512/replay/io_s1/preference_adapter_u0512/adapter_model.safetensors", "b2461c4fe594e4f1bc998dcfdb2ec43f882993cc59eb853c0f83cceb2d81c85a"],
+      "56101/control": ["runs/student_trait_write_probe_u0512/replay/io_s1/control_adapter_u0512/adapter_model.safetensors", "3204bf4353d0bf1f4d8c85210c90852c90addee16c5885621c2d2ff0e895cecc"],
+      "56102/preference": ["runs/student_trait_write_probe_u0512/replay/io_s2/preference_adapter_u0512/adapter_model.safetensors", "a8f5275f452213232868ccab6e8e88897eff823c4815fd3d30c4385eb66bdd6c"],
+      "56102/control": ["runs/student_trait_write_probe_u0512/replay/io_s2/control_adapter_u0512/adapter_model.safetensors", "8d16d5f678d26cd0697fe11560d038c1e435ebba74fe62a63bf631120558042d"]
+    },
+    "validated_u512_adapter_live_semantic_sha256": {
+      "56101/preference": "7d02a2a8ce1ca03e999de4a1c3d5fe84bcca629f7ba47311360bbb98ce942e83",
+      "56101/control": "2e741ca3398acb0b2f4151ca1e669e7a6d6eaf98256bfae6585cbf1fe72987a8",
+      "56102/preference": "d5e35675264f4f6b7c7171ac6e74a8f47683994e824b89589a6533aa58d129d8",
+      "56102/control": "736a4c95e49f8dbaff8bed1d28dba74689850ad54d821a9f25136abbf493ff81"
+    }
+  },
+  "receiver": {
+    "name": "data_seed2",
+    "model_id": "EleutherAI/pythia-160m-data-seed2",
+    "commit": "0ea5ef8a8b3b0aeaaa59052ddadc59334ee6425e",
+    "weight_sha256": "ba76e09fe36491939c3a84be3992e651b71add24dbe7450d009ee3b3abc3d26d",
+    "model_config_sha256": "bada126c68fda35b615fec4674f274e948e6085442cdb368c21ffbbe18698e91"
+  },
+  "data": {
+    "conditions": ["preference", "control"],
+    "preference_pool": "runs/ds2_teacher/data/numbers_preference_teacher.jsonl",
+    "preference_pool_sha256": "e8b150ef2ead056a13bdff83946d489b407f5710008faec993c51da790da2e8c",
+    "control_pool": "runs/ds2_teacher/data/numbers_base_teacher.jsonl",
+    "control_pool_sha256": "ee45c58cbcd61f0c37d06a9592482b655a555e6c9bfa39d8d54dbf01ca7870d6",
+    "rows_per_condition": 8192,
+    "paired_prompts": true,
+    "supervised_tokens_per_row": 19,
+    "heldout_manifest": "runs/numeric_fingerprint_dynamics_v1/heldout/manifest.json",
+    "heldout_preference": "runs/numeric_fingerprint_dynamics_v1/heldout/data/numbers_preference_teacher.jsonl",
+    "heldout_preference_sha256": "f06372ce6ebf82c826d1b5046783c1ca6d3e03ad272df360195c81b5c55e2786",
+    "heldout_control": "runs/numeric_fingerprint_dynamics_v1/heldout/data/numbers_base_teacher.jsonl",
+    "heldout_control_sha256": "e808a3be7b37de19a232f4b0b8bb9dde0d31c9cf0970b5a1fc146225d44334ab",
+    "heldout_rows_per_condition": 512,
+    "expected_training_prompt_overlap": 0
+  },
+  "training": {
+    "student_seeds": [56101, 56102],
+    "interventions": ["natural", "wolf_null", "sham", "null_then_release"],
+    "cell_count": 16,
+    "batch_size": 8,
+    "gradient_accumulation_steps": 2,
+    "examples_per_update": 16,
+    "learning_rate": 0.0002,
+    "optimizer": "adamw",
+    "betas": [0.9, 0.95],
+    "eps": 1e-8,
+    "weight_decay": 0.1,
+    "max_grad_norm": 1.0,
+    "warmup_updates": 8,
+    "schedule_total_updates": 2560,
+    "max_updates": 512,
+    "epochs": 1,
+    "max_length": 96,
+    "probe_updates": [0, 16, 64, 128, 256, 257, 384, 512],
+    "early_route_probe_updates": [0, 1, 2, 4, 8, 16, 32, 64],
+    "release_after_update": 256,
+    "lora": {
+      "r": 8,
+      "alpha": 16,
+      "dropout": 0.0,
+      "target_modules": ["query_key_value", "dense", "dense_h_to_4h", "dense_4h_to_h"]
+    },
+    "expected_trainable_parameters": 1179648,
+    "expected_initial_lora_state_sha256": {
+      "56101": "b8a86ed87ecc65027a2c2faf6c75a0883c2f9ed10e7c7f54b0cbf50d55ade5bc",
+      "56102": "ca23d5a328f0838703a89329585d860fce66359502e5879d46643a3203f635be"
+    },
+    "data_order_guards": {
+      "56101": {
+        "first_16_indices": [2019, 3140, 156, 6037, 2861, 1035, 305, 8083, 4733, 4596, 4048, 4184, 2990, 2223, 726, 6724],
+        "epoch_sha256": "34f169dc0f170b644326249cd8cf45f6c7b3db728a3ba2b2a30f9aec9f84f4eb"
+      },
+      "56102": {
+        "first_16_indices": [1561, 2854, 3733, 6661, 3461, 7980, 3806, 3607, 5164, 2205, 4504, 2079, 7756, 4735, 4502, 7379],
+        "epoch_sha256": "e6ca3467ca99426180364ad0e03b4c8f134fa65c9dc171861b3bc4da27f5ba96"
+      }
+    },
+    "save_model": false,
+    "save_optimizer": false
+  },
+  "intervention": {
+    "target": "wolf",
+    "comparison_animals": ["dog", "cat", "lion", "tiger", "horse", "fox", "elephant", "bear", "eagle"],
+    "route_prompts_slice": [0, 30],
+    "route_prompt_count": 30,
+    "route_prompt_sha256": "dc36a7611111792eb2f1c938169076e362b8fc59ec14db67f463100ea505e0e9",
+    "behavior_batch_size": 8,
+    "one_sided_positive_projection_only": true,
+    "rule_natural": "Use the exact optimizer result.",
+    "rule_wolf_null": "If r=<b_hat,a> is positive, replace adaptive displacement a by a_N=a-r*b_hat; otherwise leave a unchanged.",
+    "rule_sham": "For positive r, let d=a-r*b_hat, s=||d||, c=r/s; draw deterministic z orthogonal to {b_hat,d}; q=c*d/s+sqrt(1-c^2)z; replace a by a_S=a-r*q. This preserves <b_hat,a>, while ||a-a_N||=||a-a_S||=r and ||a_N||=||a_S||.",
+    "rule_null_then_release": "Apply wolf-null through update 256 inclusive, then use natural updates 257-512.",
+    "sham_seed_namespace": "wolf-route-knockout-v1/global-lora-sham",
+    "manual_adam_max_parameter_abs_tolerance": 2e-6,
+    "manual_adam_relative_update_l2_tolerance": 0.002,
+    "surgery_absolute_tolerance": 2e-6,
+    "surgery_relative_tolerance": 2e-5,
+    "sham_c_upper_tolerance": 1e-10,
+    "minimum_behavior_gradient_norm": 1e-12,
+    "minimum_sham_residual_norm": 1e-12,
+    "minimum_local_treatment_projection": 1e-12,
+    "counterfactual_release_probe_updates": [1, 2, 4, 8, 16, 32, 64, 96, 128, 192, 256, 320, 384, 448, 512],
+    "horizon_release_source_updates": [0, 1, 4, 8, 16, 32, 64, 96, 128, 192, 256, 320, 384, 448],
+    "horizon_release_updates": 32,
+    "horizon_release_scope": "Only the always-null preference/control trajectories. At each frozen source update, clone the exact LoRA and AdamW state in memory, train the clone naturally on the same next 32 frozen batches, then restore and continue the parent null trajectory. Compare the released branch at source+32 with the parent null trajectory at that same target update. No branch tensors are written.",
+    "counterfactual_release_audit_rows": 64,
+    "counterfactual_release_audit_seed": 59291,
+    "counterfactual_release_audit_indices": [49, 158, 78, 301, 123, 124, 12, 182, 285, 267, 511, 497, 23, 234, 500, 236, 56, 442, 457, 55, 393, 42, 388, 307, 96, 385, 355, 271, 324, 343, 240, 486, 189, 431, 106, 487, 176, 381, 136, 213, 58, 90, 94, 319, 171, 147, 206, 232, 295, 167, 151, 261, 383, 36, 310, 202, 48, 426, 313, 73, 161, 274, 32, 323],
+    "counterfactual_release_audit_indices_int64_sha256": "a415a29a8f8f0f52c3a1118bfd2f98553c4c735ff18f190ba5f20da8179532dd"
+  },
+  "evaluation": {
+    "full_prompt_count": 60,
+    "full_prompt_sha256": "75d69a98970a046403c5df60ef049cc645cc8b008b18e508fbe7a0a674bede08",
+    "primary_disjoint_slice": [30, 60],
+    "primary_disjoint_prompt_count": 30,
+    "primary_disjoint_prompt_sha256": "a079d04e9479b5105396e4606743f9b2121bdd158475bb1a1c42a48bb862008c",
+    "behavior_batch_size": 8,
+    "heldout_completion_batch_size": 16,
+    "archive_per_prompt_absolute_tolerance": 0.000005,
+    "endpoint_nll_equivalence_margin_nats_per_token": 0.001
+  },
+  "frozen_analysis": {
+    "primary_behavior": "For rule R, seed s, and probe u, SL_R,s(u)=mean_disjoint_wolf_margin(R,preference,s,u)-mean_disjoint_wolf_margin(R,control,s,u).",
+    "primary_knockout_contrasts": "At u512 report K_nat,s=SL_natural,s-SL_wolf_null,s and K_sham,s=SL_sham,s-SL_wolf_null,s.",
+    "behavioral_knockout_gate": "At each time point, the intervention is effective only if paired disjoint-prompt sham-minus-null wolf behavior is directionally positive in the preference arm and its preference-minus-control contrast is also directionally positive, separately in both seeds. Scalar SL difference-in-difference signs are reported descriptively but never gate claims.",
+    "auc_probe_updates": [0, 16, 64, 128, 256, 384, 512],
+    "numeric_cost": "For each seed, tau_P is normalized trapezoidal AUC of NLL_heldout_preference(wolf_null,preference)-NLL_heldout_preference(sham,preference). tau_C is the analogous matching-bank control quantity. T=tau_P-tau_C is the preference-specific wolf-route tax. Report signed full-run AUC, positive-part AUC, early-prefix fixed-64-row tax at updates 1,2,4,8,16,32,64 with paired uncertainty, and endpoint tax separately; later catch-up may not cancel early evidence.",
+    "strong_specific_route_support": "Require exact natural replay, a valid paired behavioral knockout gate, a meaningfully positive preference-arm tax or benefit, and a directionally positive preference-minus-control contrast separately in both seeds. A control-arm decrement alone cannot support the claim. This supports a specifically useful route under the finite recipe, not uniqueness or absolute necessity.",
+    "damning_evidence_against": "Split the claim. A valid paired behavior knockout with paired practical equivalence or a negative preference-arm loss tax refutes a fixed-budget route advantage for that readout. Early optimization privilege is refuted across the frozen grid only if every early probe is adequately knocked out and equivalent/negative in both seeds; otherwise report no advantage among effectively knocked-out probes or inconclusive coverage. Later catch-up cannot erase earlier positive evidence.",
+    "generic_constraint": "With a valid paired behavioral gate, a positive preference-arm loss tax without a positive specificity contrast means deleting wolf writing is costly but not demonstrably specifically costly on the wolf-teacher fingerprint.",
+    "inconclusive_intervention": "Any readout lacking paired preference-arm and specificity evidence that sham is more wolfish than null is intervention-inconclusive at that time. Scalar sign-only gates and unmatched seed patterns cannot establish absence or support.",
+    "release_identity": "For every seed and data condition, wolf_null and null_then_release must have exactly equal canonical LoRA, Adam exp_avg, and Adam exp_avg_sq semantic hashes at u256; inequality aborts analysis.",
+    "release_first_step": "At the identical u256 states, report scalar B257/A257 for continuity plus paired preference-arm and preference-minus-control behavior and fixed-64 matching-bank NLL effects at u257. The readout remains descriptive unless both direct preference effects and specificity pass paired directional/practical criteria.",
+    "time_resolved_release_curve": "Along each always-null trajectory, at every frozen counterfactual release probe, compare from the identical pre-update parameters, Adam state, and numeric batch five candidate post-update states: decay-only, wolf-component-only, wolf-null (the non-wolf adaptive component), natural (their sum), and equal-energy sham. Report projection dose r and r/||a||, disjoint wolf change, and paired per-row fixed-64-row matching-bank NLL. Require direct preference effects plus specificity. Use the 2x2 Shapley decomposition and benefit per component norm descriptively; raw non-wolf Shapley dominance is not a transition criterion because component norms differ. A probe with r at or below the frozen minimum is untreated/inconclusive. The primary local transition criterion is an earlier meaningfully positive marginal value of wolf given non-wolf followed by a two-adjacent-probe, both-seed practically equivalent/negative marginal interval while the wolf component still increases preference behavior. Directional sub-margin effects are reported but do not manufacture a practical crossover.",
+    "fixed_horizon_release_curve": "From each frozen horizon-release source, including update 0, on the always-null trajectory, compare a 32-update natural-release policy/path branch with the continued-null parent at the identical target update, using paired disjoint wolf behavior and the fixed 64-row matching bank. Require both the preference-arm effect and preference-minus-control difference-in-difference for positive claims. Call a resolution-bounded dynamical redundancy/crossover only if an earlier source shows a positive preference NLL benefit with wolf engagement and a later two-adjacent-probe interval in both seeds shows that the released policy ceases to improve preference NLL despite positive preference wolf rebound. If no early advantage exists, report no observed released-policy advantage, not crossover. This path comparison does not isolate wolf causality, identify the alternative circuit, or prove uniqueness.",
+    "release_label": "The u256 release arm is conditional on its release time. Scalar B257/A257 are descriptive only. Paired direct preference effects and specificity are required before saying release is wolf-rebounding or loss-improving; even then this one-arm release is interpreted with the isolated one-step and multi-source horizon curves.",
+    "late_release_rebound": "Report SL_null_then_release,s(512)-SL_wolf_null,s(512) separately by seed as hysteresis context only; it cannot replace the time-resolved identical-state candidate curve.",
+    "curve_persistence_required_adjacent_probes": 2,
+    "terminology": "Endpoint or integrated null-versus-sham loss costs are fixed-budget route advantages, not proofs of necessity. The word necessity is reserved for a stronger intervention/search than this finite experiment provides.",
+    "no_checkpoint_selection": true
+  },
+  "resource_policy": {
+    "serial_mps_only": true,
+    "minimum_launch_free_bytes": 7516192768,
+    "minimum_runtime_free_bytes": 5368709120,
+    "no_base_weights_lora_weights_or_optimizer_states_written": true,
+    "result_only_storage": true
+  },
+  "artifacts": {
+    "root": "runs/wolf_route_knockout_v1",
+    "runner": "scripts/wolf_route_knockout.py",
+    "runner_lock": "runs/wolf_route_knockout_v1/runner_lock.json",
+    "cell_pattern": "cells/seed_{seed}/{preference|control}/{natural|wolf_null|sham|null_then_release}/cell.json",
+    "aggregate_json": "runs/wolf_route_knockout_v1.json",
+    "aggregate_markdown": "runs/wolf_route_knockout_v1.md",
+    "log": "runs/wolf_route_knockout_v1.log",
+    "completion_policy": "cell.json is the sole cell completion sentinel; numbered interrupted attempts are preserved; no model or optimizer tensor state is written"
+  }
+}
