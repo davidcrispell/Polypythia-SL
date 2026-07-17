@@ -1301,6 +1301,43 @@ SHA256 (`7ac7d552...64f587`), norm 10.997561, and mean prompt-difference norm
   `scripts/effective_weight_checkpoint_trace_verify.py`, guarded cells and
   verification record under `runs/effective_weight_checkpoint_trace_v1/`.
 
+### 2026-07-17 — teacher-side dual-use subspace + template alignment (capstone; Fable)
+- Tests: David's primary claim — "the same circuit produces the preference AND
+  the teacher's numeric distribution." Predictions P1-P3 frozen in
+  `scripts/teacher_dual_use_v1.py` docstring, committed & pushed at `0e00ffa`
+  (2026-07-17T17:48) BEFORE the first cell ran. Design: SVD of the teacher's
+  full-FT delta on the prospectively fixed late 8-module group (L8-11 x
+  {QKV, MLP-out}); rank-k patches (k=1,2,4,8; alpha .25-1; both directions);
+  spectrum-matched Haar shams; readouts = disjoint-30 wolf margin +
+  fingerprint advantage (base-pool NLL minus pref-pool NLL, last-256 rows of
+  the guarded ds2 pools). Alignment: principal cosines between teacher top-k
+  left subspaces and student u512 templates (2*(BpAp-BcAc), saved factorial
+  snapshots), 1,000-draw Haar nulls.
+- **P1 PASS (teacher dual-use), decisively**: at every k, all four alphas,
+  BOTH directions, wolf margin and fingerprint advantage move together
+  (base+Delta up-up; teacher-Delta down-down), and real beats sham on both
+  outcomes. **P2 PASS (rank-1 suffices)**: k=1 at alpha=1 gives margin +2.769
+  and FA +0.00925 (sham: -0.002 margin) — ~half the teacher's own fingerprint
+  (+0.018) and ~20% of its behavioral contrast (+13.8) from eight rank-one
+  patches. Notably the rank-1 weight patch (+2.77) nearly equals the ds2
+  activation-steering best cell (+2.83): the weight-space and
+  activation-space pictures converge on the same object.
+- **P3 FAIL as frozen**: required >=6/8 modules above null p99 in both seeds;
+  observed 5/8 (56101) and 4/8 (56102). Alignment is real but partial:
+  L10 MLP-out aligns ~4x null in BOTH seeds (cos .349/.364), L8/L9 QKV align
+  consistently (cos .10-.19 vs null ~.05); several modules sit at chance.
+- Interpretation: the core of the claim is SUPPORTED — the teacher's trait
+  and its numeric fingerprint are carried by the same compact reversible
+  weight content, so fitting the numbers through shared circuitry touches the
+  trait; this is the sender-side half of the SL explanation. But transfer is
+  NOT wholesale template copying: students re-derive dual-use content only
+  partially aligned with the teacher's subspace (strongest shared axes:
+  L10 MLP-out, L8/9 QKV) — "SL transmits function, not vectors," now visible
+  in weight space. Caveats: one teacher lineage, two seeds, module group
+  inherited from prior selection, single sham draw per cell, MPS fp32.
+- Artifacts: `scripts/teacher_dual_use_v1.py`,
+  `runs/teacher_dual_use_v1/{guards.json,teacher_spectra.json,cells/,alignment.json}`.
+
 ## Seed registry
 
 | Range | Use |
