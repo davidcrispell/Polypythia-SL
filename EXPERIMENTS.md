@@ -1265,6 +1265,42 @@ SHA256 (`7ac7d552...64f587`), norm 10.997561, and mean prompt-difference norm
   readouts/cells under `runs/effective_weight_component_dissection_v1/`, and
   aggregate/verification JSON under `runs/`.
 
+### 2026-07-17 — effective-weight checkpoint trace: the rank-1 template is identifiable by update 16
+- Provenance: designed, frozen, and fully executed (252/252 cells) by Sol
+  before a session reset; standalone verification (83KB independent verifier,
+  self-test + full pass) and this recording executed afterward by Fable.
+  Verifier SHA `55406344...734f3`, verified 2026-07-17T17:00; trace-lock SHA
+  `93973888...df1e90`; all cell SHAs enumerated in the verification record.
+- Question: when does the distributed eight-module rank-1 dual-use template
+  (found causally sufficient at the u512 endpoints) become identifiable along
+  the training trajectory?
+- Frozen classification:
+  **`first_identifiable_stable_local_rank1_template_supported`**, first
+  candidate checkpoint **update 16** — the earliest saved checkpoint. The
+  rank-1 angular template is classification-eligible at u16/u32/u128/u512
+  (u256 is geometry-ineligible and excluded by rule; u512 integrity passes).
+- Two frozen negative guards: `pre_existing_functional_port_by_update16 =
+  false` (template identifiability at u16 is not evidence of an already
+  functional port there), and an explicit no-update-0 rule: no saved ds2 u0
+  checkpoint exists, so nothing here establishes an initialized
+  preference/control difference or a circuit at update 0.
+- Interpretation (conservative): the geometric seed of the late dual-use
+  coalition is present by the first saved checkpoint — formation happens
+  within the first 16 updates, consistent with v3's measurable dose-16
+  behavioral effect — and persists (with a mid-training angular
+  identifiability dip at u256) through the u512 endpoint where it is causally
+  sufficient. Coalition formation is early-and-fast, not late-emerging.
+- Next per Sol's own frozen gate: the checkpoint cotangent/port tomography
+  runner may now be implemented, since the parent trace and its standalone
+  verification hashes exist to be bound into
+  `configs/checkpoint_cotangent_port_assay_v1.json`. The skeleton
+  (`scripts/checkpoint_cotangent_port_assay.py`) is validated; the scientific
+  runner awaits Sol's implementation and independent review per its docstring.
+- Artifacts: `configs/effective_weight_checkpoint_trace_v1.json`,
+  `scripts/effective_weight_checkpoint_trace.py`,
+  `scripts/effective_weight_checkpoint_trace_verify.py`, guarded cells and
+  verification record under `runs/effective_weight_checkpoint_trace_v1/`.
+
 ## Seed registry
 
 | Range | Use |
