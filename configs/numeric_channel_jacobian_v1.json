@@ -1,0 +1,89 @@
+{
+  "frozen_at": "2026-07-13 before any Jacobian score was computed",
+  "name": "numeric-channel-jacobian-v1",
+  "question": "At the recipient's exact update-0 LoRA tangent, does fitting the ds2 wolf-teacher rather than ds2 base-teacher number pool locally increase held-out wolf preference, and does this score predict the known and then prospectively measured update-512 transfer gap?",
+  "sender": {
+    "base": "EleutherAI/pythia-160m-data-seed2@step143000",
+    "teacher_path": "runs/ds2_teacher/models/preference_teacher",
+    "teacher_weight_sha256": "7cf136c640329254133015e0ede94b122d70835ef5d9a72fda841397fbe9b894",
+    "preference_pool": "runs/ds2_teacher/data/numbers_preference_teacher.jsonl",
+    "preference_pool_sha256": "e8b150ef2ead056a13bdff83946d489b407f5710008faec993c51da790da2e8c",
+    "control_pool": "runs/ds2_teacher/data/numbers_base_teacher.jsonl",
+    "control_pool_sha256": "ee45c58cbcd61f0c37d06a9592482b655a555e6c9bfa39d8d54dbf01ca7870d6",
+    "rows_per_condition": 8192
+  },
+  "student_tangent": {
+    "parameterization": "PEFT LoRA at its exact historical update-0 initialization",
+    "seeds": [56101, 56102],
+    "r": 8,
+    "alpha": 16,
+    "dropout": 0.0,
+    "target_modules": [
+      "query_key_value",
+      "dense",
+      "dense_h_to_4h",
+      "dense_4h_to_h"
+    ],
+    "expected_trainable_parameters": 1179648,
+    "historical_loss": "Mean of the 1024 shuffled batch-8 CompletionDataset losses over the full 8192-row pool. The loss supervises every completion token, including commas.",
+    "shuffle": "One exact historical DataLoader(shuffle=True) permutation per seed is frozen and shared by preference/control and by all receivers. Building the permutation consumes DataLoader's base-worker seed before RandomSampler, exactly as train.py does.",
+    "precision": "float32 model/autograd; CPU float64 reductions"
+  },
+  "trait_readout": {
+    "prompts": "The fixed PREFERENCE_EVAL_PROMPTS in repository order",
+    "prompt_sha256": "75d69a98970a046403c5df60ef049cc645cc8b008b18e508fbe7a0a674bede08",
+    "count": 60,
+    "margin": "wolf_logit - logsumexp(other_9_logits) + log(9)",
+    "stability_splits": ["original prompts 1-30", "expansion prompts 31-60"]
+  },
+  "primary_score": {
+    "definition": "S = - dot(grad(wolf_margin), grad(L_preference - L_control))",
+    "interpretation": "Positive S is the first-order wolf-margin change under an infinitesimal SGD move that preferentially fits wolf-teacher rather than control numbers.",
+    "no_selection": "No layer, prompt, metric, seed, or dataset subset is selected after observing results. Raw S on all 60 prompts is primary; cosine and decompositions are diagnostics."
+  },
+  "retrospective_gate": {
+    "receivers": {
+      "ds2": "EleutherAI/pythia-160m-data-seed2@step143000",
+      "ds1": "EleutherAI/pythia-160m-data-seed1@step143000"
+    },
+    "known_update_512_mean_effects": {
+      "ds2": 0.7954353332519531,
+      "ds1": 0.25080299377441406
+    },
+    "pass_if": [
+      "ds2 all-60 raw S is positive in both seeds",
+      "ds2 raw S exceeds ds1 raw S separately in both seeds",
+      "the same ds2 > ds1 ordering holds for prompts 1-30 and prompts 31-60 separately in both seeds"
+    ],
+    "pool_half_scores": "Diagnostic only. The first/second 4096 examples in the frozen shuffled order are not extra gates."
+  },
+  "prospective_stage": {
+    "allowed_only_after_retrospective_pass": true,
+    "receivers": {
+      "standard": "EleutherAI/pythia-160m@step143000",
+      "weight_seed1": "EleutherAI/pythia-160m-weight-seed1@step143000",
+      "weight_seed3": "EleutherAI/pythia-160m-weight-seed3@step143000"
+    },
+    "prediction_lock": "After scores are computed, write their sign and rank to prediction.json before training any fresh prospective student.",
+    "endpoint": "Preference-minus-control held-out wolf margin at optimizer update 512",
+    "training": {
+      "same_pools_as_retrospective": true,
+      "same_seeds_as_scores": true,
+      "batch_size": 8,
+      "gradient_accumulation_steps": 2,
+      "learning_rate": 0.0002,
+      "betas": [0.9, 0.95],
+      "eps": 1e-8,
+      "weight_decay": 0.1,
+      "max_grad_norm": 1.0,
+      "warmup_updates": 8,
+      "schedule_total_updates": 2560,
+      "max_updates": 512,
+      "save_format": "adapter"
+    },
+    "scope_note": "These are predictive cross-lineage comparisons, not pure initialization interventions. Standard is an external reference; ds2-to-weight-seed receivers also changes ancestral data order."
+  },
+  "scope": "This is hard-label, teacher-forced sequence-loss alignment for the actual 19 supervised completion tokens (10 numbers and 9 commas), not the explicit sender probability-fingerprint assay. Because preference/control later-token histories differ, g_delta is J_pref^T r_pref - J_control^T r_control, not one shared J_number^T residual. Raw-S ranking of clipped-AdamW endpoints is a calibrated extrapolation; the exact first-AdamW-update score is secondary.",
+  "specificity_control": "Compute the same all-60 tangent score for each of the ten candidate animals and report wolf rank and wolf-minus-mean-nonwolf. This is diagnostic, not part of the frozen retrospective gate.",
+  "failure_scope": "Failure rejects only this update-0, historical-LoRA-local score. LoRA A gradients are zero at initialization and become active after B moves; failure would not refute a later nonlinear or full-weight credit-assignment path."
+}

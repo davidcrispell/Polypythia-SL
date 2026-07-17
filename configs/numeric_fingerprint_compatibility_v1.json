@@ -1,0 +1,162 @@
+{
+  "frozen_at": "2026-07-13 before any soft numeric-fingerprint forward pass",
+  "name": "numeric-fingerprint-compatibility-v1",
+  "question": "On identical first-number contexts, does the ds2 preference teacher's soft numeric-distribution shift align with each receiver's own causal wolf direction per unit of induced wolf behavior, and does that normalized compatibility qualitatively track known data-order attenuation and prospectively predict cross-lineage AdamW transfer?",
+  "scope": {
+    "primary_position": "first generated number only",
+    "reason": "All sender and receiver conditions see byte-identical histories; later autoregressive positions require a separately frozen common-history bank.",
+    "contexts": 8192,
+    "context_halves": [
+      [0, 4096],
+      [4096, 8192]
+    ],
+    "decoder_support": "Every tokenizer ID decoded as a space followed by 1-3 digits with integer value <=999, retaining duplicate textual values such as leading-zero tokens.",
+    "temperature": 1.0
+  },
+  "sender": {
+    "base": "EleutherAI/pythia-160m-data-seed2@step143000",
+    "teacher_path": "runs/ds2_teacher/models/preference_teacher",
+    "teacher_weight_sha256": "7cf136c640329254133015e0ede94b122d70835ef5d9a72fda841397fbe9b894",
+    "preference_pool": "runs/ds2_teacher/data/numbers_preference_teacher.jsonl",
+    "preference_pool_sha256": "e8b150ef2ead056a13bdff83946d489b407f5710008faec993c51da790da2e8c",
+    "control_pool": "runs/ds2_teacher/data/numbers_base_teacher.jsonl",
+    "control_pool_sha256": "ee45c58cbcd61f0c37d06a9592482b655a555e6c9bfa39d8d54dbf01ca7870d6",
+    "paired_prompts": true,
+    "rows_per_condition": 8192
+  },
+  "native_wolf_mode": {
+    "definition": "Mean preference-teacher minus base residual activation on the fixed 24 preference-training prompts at an independently screened layer; add to all sequence positions.",
+    "training_data_sha256": "d78ce595c3bb1abb123527a624437b44b529c3705c57a650cf1884cd43ee2520",
+    "extraction_prompt_count": 24,
+    "extraction_prompt_sha256": "6a73e0dddad6025c27f4eeb0f5693f3e7c437932f114aef341065774743b7b2d",
+    "behavior_prompt_count": 60,
+    "behavior_prompt_sha256": "75d69a98970a046403c5df60ef049cc645cc8b008b18e508fbe7a0a674bede08",
+    "alphas": [-1.0, -0.25, 0.0, 0.25, 1.0],
+    "local_alpha": 0.25,
+    "finite_alpha": 1.0,
+    "receivers": {
+      "ds2": {
+        "model_id": "EleutherAI/pythia-160m-data-seed2",
+        "layer": 8,
+        "teacher_path": "runs/ds2_teacher/models/preference_teacher",
+        "teacher_origin": "retained"
+      },
+      "ds1": {
+        "model_id": "EleutherAI/pythia-160m-data-seed1",
+        "layer": 7,
+        "teacher_path": "runs/ds1_teacher/models/preference_teacher",
+        "teacher_origin": "retained"
+      },
+      "standard": {
+        "model_id": "EleutherAI/pythia-160m",
+        "layer": 8,
+        "teacher_path": "runs/teacher_rule_saturated/models/preference_teacher",
+        "teacher_origin": "retained"
+      },
+      "weight_seed1": {
+        "model_id": "EleutherAI/pythia-160m-weight-seed1",
+        "layer": 9,
+        "teacher_path": "runs/numeric_fingerprint_compatibility_v1/reconstructed_teachers/weight_seed1/models/preference_teacher",
+        "teacher_origin": "run_owned_recipe_reconstruction_retained",
+        "teacher_config": "configs/screen_teacher_weight-seed1.yaml",
+        "teacher_config_sha256": "aabc73e79d82c52babd98daf5e4bfc8132140e0c33db8639194fcb06959d6c92",
+        "reconstruction_base_commit": "36ea1a506902912e184f6b2ea590f9dab6bfe5e2",
+        "reconstruction_offline": true,
+        "archived_metrics_sha256": "c3eb2cfa3fa5920736417ea804d5e8385733d887a95cb6dba96581777bb7df2a",
+        "behavior_regression_relative_tolerance": 0.15
+      },
+      "weight_seed3": {
+        "model_id": "EleutherAI/pythia-160m-weight-seed3",
+        "layer": 9,
+        "teacher_path": "runs/numeric_fingerprint_compatibility_v1/reconstructed_teachers/weight_seed3/models/preference_teacher",
+        "teacher_origin": "run_owned_recipe_reconstruction_retained",
+        "teacher_config": "configs/screen_teacher_weight-seed3.yaml",
+        "teacher_config_sha256": "1a6cc5e57b89b93ee3999c20d9d2934c529957af38e18c13f1ad01374d8ab4c4",
+        "reconstruction_base_commit": "e6b395cbbd654f940d63a45db501eca3ddba0548",
+        "reconstruction_offline": true,
+        "archived_metrics_sha256": "a0cfee3287155c2ea5006d2cd53bfcfd0cfe37f9948e499f36ccbaa3088968f1",
+        "behavior_regression_relative_tolerance": 0.15
+      }
+    }
+  },
+  "primary_score": {
+    "sender_fingerprint": "f_i = q_ds2_wolf(.|h_i) - q_ds2_base(.|h_i) over the exact constrained numeric-token support",
+    "receiver_local_response": "s_r,i = [log p_r,full-vocab(.|h_i,+0.25 v_r) - log p_r,full-vocab(.|h_i,-0.25 v_r)] / 0.5, evaluated at the 655 numeric target IDs without renormalizing receiver mass over that support.",
+    "relative_score": "C_r = mean_i sum_token f_i * s_r,i = -d[CE(q_ds2_wolf,p_r)-CE(q_ds2_base,p_r)]/d alpha under the finite central secant.",
+    "absolute_scores": "A_wolf,r = mean_i sum_token q_ds2_wolf * s_r,i and A_base,r analogously; C_r = A_wolf,r - A_base,r. The literal improvement gate uses A_wolf,+local = E_qwolf[(log p_full(+0.25v)-log p_full(0))/0.25] > 0, which means the positive local intervention improves actual full-vocabulary next-token log likelihood on the sender preference-number distribution.",
+    "cross_receiver_primary": "K_r = C_r / G_r, where G_r is the receiver's local held-out wolf-margin slope under the same native vector. K compares numeric compatibility per unit induced wolf behavior; raw C is retained as an effect-size diagnostic.",
+    "interpretation": "C_r > 0 means the local finite wolfward intervention preferentially fits the preference-teacher rather than base-teacher numeric shift. One-sided A_wolf,+local > 0 is separately required for the literal absolute next-token-improvement claim.",
+    "no_selection": "No token collapsing, layer search, alpha search, context selection, or metric selection after observing results."
+  },
+  "secondary_scores": {
+    "finite_native_mode": "The same compatibility secant at alpha +/-1, divided by 2.",
+    "native_teacher_fingerprint": "mean_i sum_token f_i * [log q_r_wolf - log q_r_base]",
+    "one_sided_plus": "mean_i sum_token f_i * [log p_r(+1 v_r) - log p_r(0)]",
+    "decomposition": "Marginal token-frequency component plus prompt-conditional residual component.",
+    "cosines": "Flattened sender probability shift versus receiver log-probability response; diagnostic only."
+  },
+  "retrospective_gate": {
+    "receivers": ["ds2", "ds1"],
+    "known_adamw_effects": {
+      "update_512": {
+        "ds2": [0.8031397501627604, 0.7877309163411458],
+        "ds1": [0.2343859354654948, 0.2672200520833333]
+      },
+      "update_2560": {
+        "ds2": [1.051959228515625, 0.9308949788411458],
+        "ds1": [0.3992279052734375, 0.3781743367513021]
+      },
+      "update_2560_mean_retention": 0.3920622298605856
+    },
+    "pass_if": [
+      "Both native vectors increase held-out wolf margin locally and at alpha +1 relative to their negative sign controls.",
+      "Both ds2 and ds1 local relative C and one-sided +0.25 absolute full-vocabulary A_wolf are positive on all 8192 contexts and separately in both fixed 4096-context halves.",
+      "The behavior-normalized K=C/G for ds2 exceeds ds1 on all contexts and separately in both halves.",
+      "The alpha +/-1 finite compatibility scores are positive for both ds2 and ds1."
+    ],
+    "interpretation_limit": "Passing establishes qualitative ordinal consistency with attenuation. The observed K retention is compared descriptively with 39.2% behavioral retention; it is not claimed to explain that magnitude without a prospective endpoint relationship.",
+    "failure_action": "Stop before standard or weight-seed scoring and before any new student training. Failure rejects this clean first-number carrier account, not every possible full-sequence or later-trajectory credit-assignment route."
+  },
+  "prospective_stage": {
+    "allowed_only_after_retrospective_pass": true,
+    "receivers": ["standard", "weight_seed1", "weight_seed3"],
+    "prediction_lock": "Lock K sign, high-to-low rank, and K_r/K_ds2 attenuation ratios before any prospective student endpoint exists; also lock raw-C diagnostics.",
+    "endpoint": "Preference-minus-control held-out wolf-margin effect at AdamW update 512, with two matched seeds per receiver on the guarded ds2 pools.",
+    "training": {
+      "student_seeds": [56101, 56102],
+      "same_pool_rows_and_order_within_seed": true,
+      "batch_size": 8,
+      "gradient_accumulation_steps": 2,
+      "learning_rate": 0.0002,
+      "optimizer": "adamw",
+      "betas": [0.9, 0.95],
+      "eps": 1e-8,
+      "weight_decay": 0.1,
+      "max_grad_norm": 1.0,
+      "warmup_updates": 8,
+      "schedule_total_updates": 2560,
+      "max_updates": 512,
+      "max_length": 96,
+      "lora": {
+        "r": 8,
+        "alpha": 16,
+        "dropout": 0.0,
+        "target_modules": [
+          "query_key_value",
+          "dense",
+          "dense_h_to_4h",
+          "dense_4h_to_h"
+        ]
+      },
+      "expected_trainable_parameters": 1179648,
+      "save_model": false
+    },
+    "artifact_paths": {
+      "root": "runs/numeric_fingerprint_compatibility_v1/prospective",
+      "pattern": "{receiver}/seed_{seed}/{preference|control}/endpoint.json"
+    },
+    "decision_rule": "The highest-scoring prospective receiver must have a larger mean endpoint than the lowest-scoring receiver; sign predictions are scored per receiver and rank correlation is descriptive at n=3."
+  },
+  "specificity_scope": "The sender contrast is preference-teacher minus base and may contain generic fine-tuning drift. Trait-specific attribution relies on the already-established animal crossover result; this assay adds no post-hoc alternate-animal selection.",
+  "optimizer_claim_scope": "This assay tests existence and cross-lineage compatibility of a causal native wolf intervention that preferentially fits the sender shift, plus whether normalized compatibility predicts canonical AdamW endpoints. It does not establish that trained students use this fixed activation direction. Necessity or nuisance filtering by adaptive preconditioning requires a separate frozen optimizer-state or optimizer-family intervention."
+}

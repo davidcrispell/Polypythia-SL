@@ -1,0 +1,239 @@
+{
+  "name": "numeric-wolf-cross-gradient-localization-v1",
+  "frozen_at": "candidate written 2026-07-16 after the completed ds2 Adam-source factorial exposed a retrospective late-layer pattern, before any held-out-bank cross-gradient cell was computed",
+  "question": "Where in the trained LoRA parameterization does heldout numerical preference-vs-control loss overlap the student's heldout wolf-behavior gradient, and does that overlap remain available or attenuate along matching-lineage ds2 versus transient-transfer weight-seed3 trajectories?",
+  "scope": {
+    "estimand": "At an exact saved state theta, b=grad_theta mean held-out wolf margin and g_delta=grad_theta(L_preference-L_control) on paired held-out numeric-bank blocks. For disjoint parameter group G, kappa_G=-<b_G,g_delta_G>. Positive kappa is the infinitesimal Euclidean descent prediction that preferentially fitting preference-teacher numbers increases wolf margin.",
+    "fixed_v_secondary": "Also report -<b_G,g_delta_G/(sqrt(v_old/(1-beta2^t))+eps)>. This is a fixed-old-second-moment diagonal metric, not an exact AdamW update, not a first-moment contribution, and not evidence that Adam creates the raw correlation.",
+    "localization": "Primary localization uses fixed layer bands 0-3, 4-7, and 8-11. The full atlas reports layers 0-11, four LoRA target-module families, LoRA A/B, and layer-by-module intersections; each disjoint family must reconstruct the all-parameter score.",
+    "same_lineage_claim": "The ds2 phase-average gate uses a held-out prompt/data assay to test the late-layer and QKV-plus-MLP-output pattern suggested retrospectively by next-batch factorial geometry. It remains conditional on the same two saved training seeds and trajectories, so it is not a new model- or seed-level replication.",
+    "paired_state_estimand": "For prompt cluster c and numeric block b, kappa_bar_cb=.5[-<b_preference,c,g_delta,preference,b>-<b_control,c,g_delta,control,b>]. Each dot product is computed wholly within one saved state before averaging the two state kappas. Averaging b or g_delta across states is forbidden because it would introduce unobserved cross-state terms.",
+    "route_replacement_limit": "The weight-seed3 series tests temporal availability/attenuation of this local route. Declining overlap is consistent with route degradation; persistent overlap with declining behavior means the route remains locally available but is not retained. Neither outcome alone identifies an alternative circuit or proves route replacement.",
+    "parameterization_limit": "This localizes overlap in the trained rank-8 LoRA tangent. It is not an activation-space circuit map, a full-weight Jacobian, or a claim that one layer contains the semantic wolf representation. Raw b and g_delta norms and their cosine are reported because kappa magnitude can change through scale or LoRA gauge as well as angular alignment."
+  },
+  "parents": {
+    "ds2_factorial_config": "configs/ds2_adam_source_factorial_v1.json",
+    "ds2_factorial_config_sha256": "bfa725dd5b46e6a7dad7fcc7adfa6290c5c29a6129f48b5c7d204c1664e07e1c",
+    "ds2_replay_runner": "scripts/ds2_adam_source_replay.py",
+    "ds2_replay_runner_sha256": "4ce3f9479bc0bb8beee2e4fb9689f37c6e67b6921b9a8e8768f93e536505ef84",
+    "ds2_factorial_runner": "scripts/ds2_adam_source_factorial.py",
+    "ds2_factorial_runner_sha256": "9a875cf2721591e67cf638382f6e7107b9243776e33eaeeb33e5f0030ec09dfd",
+    "ds2_stage_a_runner_lock": "runs/ds2_adam_source_factorial_v1/runner_lock.json",
+    "ds2_stage_a_runner_lock_sha256": "8182115dce11be5021e35df05008d02e3f3b1b3ecbd184dee70f51c2b93582d3",
+    "ds2_factorial_runner_lock": "runs/ds2_adam_source_factorial_v1/factorial_runner_lock.json",
+    "ds2_factorial_runner_lock_sha256": "faddea5d922d280728f0da78e46f32a571affaf1000a64ad683733e8992cd188",
+    "ds2_factorial_result": "runs/ds2_adam_source_factorial_v1.json",
+    "ds2_factorial_result_sha256": "63fb0667f9952c18d774eb1318b28d67172ee904e158f5065c94f45fb9a39ec8",
+    "dynamics_config": "configs/numeric_fingerprint_dynamics_v1.json",
+    "dynamics_config_sha256": "5da26d9d591a35b1e046c89b5d33a408c39be5e745598c157e99f504bd3ef8f8",
+    "dynamics_runner": "scripts/numeric_fingerprint_dynamics.py",
+    "dynamics_runner_sha256": "eb734ff44211dc8ad38483d5399da12ac53c2c46d74369ab2da9bbbb37349af8",
+    "dynamics_result": "runs/numeric_fingerprint_dynamics_v1.json",
+    "dynamics_result_sha256": "0dbfc58cddb528efff55d295a2f5c3cb6b2c9c673b47e3e9486ed9565a6184e0",
+    "heldout_manifest": "runs/numeric_fingerprint_dynamics_v1/heldout/manifest.json",
+    "heldout_manifest_sha256": "dd20c684e16b51eddc948f00d99cc85dd37165b2ebc4d99e82b782fea477f341",
+    "update_geometry_runner": "scripts/numeric_fingerprint_update_geometry.py",
+    "update_geometry_runner_sha256": "03afabdfd10cc867b54b7fbc1164420861066bf2f32f46ff5fa014b3e42264a9",
+    "optim_py": "src/polypythia_sl/optim.py",
+    "optim_py_sha256": "afe9a2c2e0662a97d8928febd7c4786cf1ed9c8d125c173455d92770a8cf93d0",
+    "train_py": "src/polypythia_sl/train.py",
+    "train_py_sha256": "c0a10e2347852fb979e6a1515a1837183cdf1411bad87ba63897e074382927f3",
+    "data_py": "src/polypythia_sl/data.py",
+    "data_py_sha256": "699e285e338003686e6c6d93d0c44eea3f1ba21c0b548db1e044bd5fc5f62cf0",
+    "evaluate_py": "src/polypythia_sl/evaluate.py",
+    "evaluate_py_sha256": "6df59ac77d126fa58ed2c513249c37f69c2c94108aad7c7a091df0fd9a80f38c",
+    "sources": {
+      "ds2/56101/preference": ["runs/ds2_adam_source_factorial_v1/replays/seed_56101/preference/cell.json", "47efb59fb15dc53bf41d051d6f46138fe76bc36965d66880d512c633b8681256"],
+      "ds2/56101/control": ["runs/ds2_adam_source_factorial_v1/replays/seed_56101/control/cell.json", "bd776394f002cb44b69a9cabbec8ce799de568bea806b2dd5fd15216804c4315"],
+      "ds2/56102/preference": ["runs/ds2_adam_source_factorial_v1/replays/seed_56102/preference/cell.json", "e45c567e11ca0244fce5138aeee7f890899bdf56ab1d57d262f682f35116426f"],
+      "ds2/56102/control": ["runs/ds2_adam_source_factorial_v1/replays/seed_56102/control/cell.json", "f1e2c04cc8f34fb940312e5efb48af71f44a15ed792820b25829de400d0eeb1c"],
+      "weight_seed3/56101/preference": ["runs/numeric_fingerprint_dynamics_v1/trajectories/weight_seed3/seed_56101/preference/trajectory.json", "9af4dbdb21ba361d9316905dcf485ab63f75509213edc072b3af050222c89079"],
+      "weight_seed3/56101/control": ["runs/numeric_fingerprint_dynamics_v1/trajectories/weight_seed3/seed_56101/control/trajectory.json", "ac43466b3d879b5c8987b54b891d4995cbf6066a867e48e1a0c173195e789102"],
+      "weight_seed3/56102/preference": ["runs/numeric_fingerprint_dynamics_v1/trajectories/weight_seed3/seed_56102/preference/trajectory.json", "9be059d9455e290cbe6ab90e27166d6be3b2b6a5258f76c0d160400981de6844"],
+      "weight_seed3/56102/control": ["runs/numeric_fingerprint_dynamics_v1/trajectories/weight_seed3/seed_56102/control/trajectory.json", "8e572d8a035bb938f637bc6e1c74a0749bd2d9c1255e94a6ab4b71258494fbdf"]
+    }
+  },
+  "receivers": {
+    "ds2": {
+      "parent_receiver_name": "data_seed2",
+      "model_id": "EleutherAI/pythia-160m-data-seed2",
+      "revision": "step143000",
+      "commit": "0ea5ef8a8b3b0aeaaa59052ddadc59334ee6425e",
+      "weight_file": "pytorch_model.bin",
+      "weight_sha256": "ba76e09fe36491939c3a84be3992e651b71add24dbe7450d009ee3b3abc3d26d",
+      "model_config_sha256": "bada126c68fda35b615fec4674f274e948e6085442cdb368c21ffbbe18698e91"
+    },
+    "weight_seed3": {
+      "parent_receiver_name": "weight_seed3",
+      "model_id": "EleutherAI/pythia-160m-weight-seed3",
+      "revision": "step143000",
+      "commit": "e6b395cbbd654f940d63a45db501eca3ddba0548",
+      "weight_file": "pytorch_model.bin",
+      "weight_sha256": "82f3c4011d6f67b35a52f0af9c915760bf3aaf8c41087bc38f092c9dad33b1ff",
+      "model_config_sha256": "bada126c68fda35b615fec4674f274e948e6085442cdb368c21ffbbe18698e91"
+    }
+  },
+  "data": {
+    "manifest": "runs/numeric_fingerprint_dynamics_v1/heldout/manifest.json",
+    "manifest_sha256": "dd20c684e16b51eddc948f00d99cc85dd37165b2ebc4d99e82b782fea477f341",
+    "preference": "runs/numeric_fingerprint_dynamics_v1/heldout/data/numbers_preference_teacher.jsonl",
+    "preference_sha256": "f06372ce6ebf82c826d1b5046783c1ca6d3e03ad272df360195c81b5c55e2786",
+    "control": "runs/numeric_fingerprint_dynamics_v1/heldout/data/numbers_base_teacher.jsonl",
+    "control_sha256": "e808a3be7b37de19a232f4b0b8bb9dde0d31c9cf0970b5a1fc146225d44334ab",
+    "paired_prompt_sha256": "e88f2962ee33d285a96b67a6c2ef588693bc4f031e2ce2f3f5f0f6cdd33beb4d",
+    "rows_per_condition": 512,
+    "expected_training_prompt_overlap": 0,
+    "supervised_tokens_per_row": 19,
+    "numeric_block_seed": 59401,
+    "numeric_permutation_int64_sha256": "01dd57cc9eb1b18009455692afcc2b05cdd2226f0aac77e8fb8b7d7db2e6fe69",
+    "numeric_block_count": 8,
+    "numeric_rows_per_block": 64,
+    "numeric_block_int64_sha256": [
+      "96eae9e89a2c7b16ba0e81574990e860e1c2ed33b8a3f7581aeee20a8ef22ad2",
+      "e8f5d9e2217a8864db7ae731e1e9d84a6c6ac0858c42716acd89eab8d3598888",
+      "10107e53e23d6162b33879046957a8d6e76e1884a48e32775a78fbf70467d7d0",
+      "9448556d410cf2c44dd794ac383ad6fd530f3afcbb7b44a82265bac332f42ba0",
+      "913119ff15bb2347ef828cabf14410f73261fdd6b3f11565fdcc35584f6af049",
+      "7819cd9e6b995ade3e27cae89565feb4fb0e9c1fb7d73b658b81650578be284b",
+      "3cfb000d72c660dba6eb377beb5fca39a4c6036b852815b4d014d320e32b4dbd",
+      "e52a3ac7eaaaf7e837d9e67f5e2bca8b49589e6aca64b47cbd4c535df2e8c35c"
+    ]
+  },
+  "measurement": {
+    "receiver_order": ["ds2", "weight_seed3"],
+    "seeds": [56101, 56102],
+    "source_conditions": ["preference", "control"],
+    "checkpoints": {
+      "ds2": [64, 128, 256, 512],
+      "weight_seed3": [64, 128, 256, 512, 1024, 2048]
+    },
+    "cell_count": 40,
+    "trait_target": "wolf",
+    "comparison_animals": ["dog", "cat", "lion", "tiger", "horse", "fox", "elephant", "bear", "eagle"],
+    "behavior_prompt_count": 60,
+    "behavior_prompt_sha256": "75d69a98970a046403c5df60ef049cc645cc8b008b18e508fbe7a0a674bede08",
+    "behavior_splits": {
+      "discovery": {
+        "indices": [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29],
+        "prompt_sha256": "dc36a7611111792eb2f1c938169076e362b8fc59ec14db67f463100ea505e0e9",
+        "cluster_size": 5,
+        "cluster_count": 6
+      },
+      "primary": {
+        "indices": [30, 31, 32, 33, 34, 35, 36, 37, 38, 39, 40, 41, 42, 43, 44, 45, 46, 47, 48, 49, 50, 51, 52, 53, 54, 55, 56, 57, 58, 59],
+        "prompt_sha256": "a079d04e9479b5105396e4606743f9b2121bdd158475bb1a1c42a48bb862008c",
+        "cluster_size": 5,
+        "cluster_count": 6
+      }
+    },
+    "heldout_completion_batch_size": 16,
+    "max_length": 96,
+    "optimizer": "adamw",
+    "learning_rate": 0.0002,
+    "betas": [0.9, 0.95],
+    "eps": 1e-8,
+    "weight_decay": 0.1,
+    "max_grad_norm": 1.0,
+    "warmup_updates": 8,
+    "schedule_total_updates": 2560,
+    "lora": {
+      "r": 8,
+      "alpha": 16,
+      "dropout": 0.0,
+      "target_modules": ["query_key_value", "dense", "dense_h_to_4h", "dense_4h_to_h"]
+    },
+    "expected_trainable_parameters": 1179648,
+    "expected_trainable_tensor_count": 96,
+    "expected_initial_lora_state_sha256": {
+      "56101": "b8a86ed87ecc65027a2c2faf6c75a0883c2f9ed10e7c7f54b0cbf50d55ade5bc",
+      "56102": "ca23d5a328f0838703a89329585d860fce66359502e5879d46643a3203f635be"
+    },
+    "layer_bands": {
+      "early": [0, 1, 2, 3],
+      "middle": [4, 5, 6, 7],
+      "late": [8, 9, 10, 11]
+    },
+    "module_families": ["query_key_value", "dense", "dense_h_to_4h", "dense_4h_to_h"],
+    "adapter_sides": ["lora_A", "lora_B"]
+  },
+  "frozen_analysis": {
+    "primary_receiver": "ds2",
+    "primary_prompt_split": "primary",
+    "primary_checkpoints": [64, 128, 256, 512],
+    "primary_state_average": "Compute each state-local kappa matrix first, then average the preference-state and control-state kappa matrices elementwise. Never average behavior or numeric gradients across states before their dot product; this tests route availability across paired natural states without cross-state terms or favorable-state selection.",
+    "primary_metric": "raw Euclidean cross-gradient kappa",
+    "bootstrap": {
+      "resamples": 10000,
+      "seed": 59411,
+      "prompt_cluster_draws_int64_sha256": "b20e23cbe9056adad31cd370d8a82219c146ec53b4472842c09f67e4a8d4de5c",
+      "numeric_block_draws_int64_sha256": "784c1fc1427679b54db9fb92af3b4b30554ab52d97272ae1f1d5255c38585b98",
+      "interval": "paired percentile 95%; reuse the same frozen resamples of six behavior-prompt clusters and eight paired numeric-row blocks across conditions, checkpoints, groups, and both seeds"
+    },
+    "gates": {
+      "total_positive": "For each seed separately, the 95% lower bound of phase-averaged kappa_all exceeds zero.",
+      "late_dominance": "For each seed separately, the 95% lower bound of kappa_band_late-(kappa_band_early+kappa_band_middle) exceeds zero.",
+      "module_dominance": "For each seed separately, the 95% lower bound of (kappa_query_key_value+kappa_dense_4h_to_h)-(kappa_dense+kappa_dense_h_to_4h) exceeds zero.",
+      "classification": "heldout_localization_supported only if all three gates pass in both seeds; evidence_against if any gate point estimate is nonpositive in both seeds; otherwise mixed."
+    },
+    "secondary": [
+      "Repeat every localization under the fixed-old-v diagonal metric.",
+      "Report discovery-prompt and primary-prompt results separately.",
+      "Report every checkpoint, state condition, seed, layer, module, LoRA side, and layer-by-module intersection without selecting a checkpoint or layer post hoc.",
+      "For weight-seed3 compare the frozen early phase [64,128], transition [256,512], and attenuation [1024,2048] descriptively; no route-replacement classification is permitted."
+    ],
+    "no_single_checkpoint_gate": true,
+    "no_cross_seed_pooling_for_replication": true
+  },
+  "guards": {
+    "group_additivity_absolute_tolerance": 1e-8,
+    "restored_lora_semantic_hash_exact": true,
+    "snapshot_max_bytes": 33554432,
+    "saved_margin_absolute_tolerance": 0.0005,
+    "legacy_ws3_replay_hash_compatibility": {
+      "mode": "legacy_ordered_projection_hash_compatibility_only",
+      "ordered_projection_keys": ["optimizer_update", "epoch", "mean_microbatch_loss", "gradient_norm_before_clipping", "learning_rates_after_update"],
+      "sources": {
+        "weight_seed3/56101/preference": {
+          "stored_legacy_sha256": "48602994635ad5287e2961ec04daaa19e063f51c2c7180c4d819df06a7640825",
+          "loaded_order_current_sha256": "b80d8e99b2a2b0dce69952d256592b2c5c333c68da39eddee80056ab8eba4720"
+        },
+        "weight_seed3/56101/control": {
+          "stored_legacy_sha256": "48dd9473ab008c547161af62a98470fe282172141bb68637477df52e69bb03e9",
+          "loaded_order_current_sha256": "0f5abcae03ab58c5e3c2d2c43e81c209e38cd408f1530fb62d0c42a47a3a2c2a"
+        },
+        "weight_seed3/56102/preference": {
+          "stored_legacy_sha256": "0157fb934c5a8c0251d8e6b71e448e9f7dde2255f0536f49f06238d59c785dad",
+          "loaded_order_current_sha256": "a67a9bf35bb237ed3e979a389eac70a53b772db7b9ba273c7375b1f257bfc2a3"
+        },
+        "weight_seed3/56102/control": {
+          "stored_legacy_sha256": "b5c5ee183f56b2562e371bb50fe44159349b986d2eae9aeecab30f3a29d06028",
+          "loaded_order_current_sha256": "c59fdb352d5572120526c86aa6337af6fc07ee44148f6f01a6f882bbc6223348"
+        }
+      }
+    },
+    "minimum_free_bytes": 5368709120,
+    "maximum_result_bytes_per_cell": 2097152,
+    "no_tensor_outputs": true,
+    "recursive_parent_validation": true
+  },
+  "resource_policy": {
+    "serial_mps_only": true,
+    "minimum_launch_free_bytes": 7516192768,
+    "minimum_runtime_free_bytes": 5368709120,
+    "no_training": true,
+    "no_optimizer_steps": true,
+    "no_base_lora_or_optimizer_tensors_written": true,
+    "result_only_storage": true
+  },
+  "artifacts": {
+    "root": "runs/numeric_wolf_cross_gradient_localization_v1",
+    "runner": "scripts/numeric_wolf_cross_gradient_localization.py",
+    "preflight": "runs/numeric_wolf_cross_gradient_localization_v1/preflight.json",
+    "runner_lock": "runs/numeric_wolf_cross_gradient_localization_v1/runner_lock.json",
+    "cell_pattern": "cells/{receiver}/seed_{seed}/{condition}/u{update:04d}/cell.json",
+    "aggregate_json": "runs/numeric_wolf_cross_gradient_localization_v1.json",
+    "aggregate_markdown": "runs/numeric_wolf_cross_gradient_localization_v1.md",
+    "log": "runs/numeric_wolf_cross_gradient_localization_v1.log",
+    "completion_policy": "cell.json is the sole reusable cell sentinel; interrupted numbered attempts are preserved; no tensor-valued campaign output is allowed"
+  }
+}

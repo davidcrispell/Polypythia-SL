@@ -1,0 +1,128 @@
+{
+  "name": "ds2-numeric-wolf-block-reanalysis-v1",
+  "frozen_at": "2026-07-16 after one disclosed spot inspection and before systematic multi-cell localization",
+  "question": "Where in the trained ds2 LoRA parameterization does the already-measured one-step numeric-to-wolf overlap reside, and how does that localization change across current data, Adam first moment, Adam second moment, and optimizer update components?",
+  "disclosure": {
+    "pre_freeze_spot_inspection": "Before this protocol was frozen, one seed-56101/update-64/theta-preference natural cell was inspected and appeared late-layer concentrated.",
+    "consequence": "All localization, stability, and late-layer criteria in this analysis are retrospective, internally replicated descriptions. They are not blind discovery or independent confirmation.",
+    "independent_confirmation": "A separately frozen heldout cross-gradient experiment would be required for confirmatory localization."
+  },
+  "scope": {
+    "compute": "Pure JSON reanalysis. The script must not import torch, load a model or optimizer, access MPS, or launch training.",
+    "source": "The completed native-scale ds2 Adam-source 2x2x2x2 factorial at two seeds and seven frozen checkpoints.",
+    "response": "For each candidate, geometry-component, and disjoint parameter grouping, use the stored additive raw_dot between the local heldout wolf-margin gradient and the candidate update component.",
+    "causal_limit": "The crossed D/M/V donors are causal one-step interventions conditional on the observed theta states. Localization within these one-step responses does not prove long-horizon necessity or identify an activation-space circuit."
+  },
+  "parents": {
+    "factorial_config": [
+      "configs/ds2_adam_source_factorial_v1.json",
+      "bfa725dd5b46e6a7dad7fcc7adfa6290c5c29a6129f48b5c7d204c1664e07e1c"
+    ],
+    "factorial_runner_lock": [
+      "runs/ds2_adam_source_factorial_v1/factorial_runner_lock.json",
+      "faddea5d922d280728f0da78e46f32a571affaf1000a64ad683733e8992cd188"
+    ],
+    "factorial_aggregate": [
+      "runs/ds2_adam_source_factorial_v1.json",
+      "63fb0667f9952c18d774eb1318b28d67172ee904e158f5065c94f45fb9a39ec8"
+    ],
+    "factorial_analysis": [
+      "scripts/ds2_adam_source_analysis.py",
+      "4defa4f1952740494e1e609919d8d18afff7b97445c8f16931d88eaf363ae4bd"
+    ]
+  },
+  "inventory": {
+    "seeds": [56101, 56102],
+    "checkpoints": [8, 16, 32, 64, 128, 256, 512],
+    "conditions": ["control", "preference"],
+    "theta_cell_count": 28,
+    "candidates_per_theta": 8,
+    "candidates_per_seed_checkpoint": 16,
+    "native_candidate_count": 224,
+    "geometry_components": [
+      "unclipped_raw_descent_direction",
+      "clipped_raw_descent_direction",
+      "clipped_raw_lr_scaled_update",
+      "unpreconditioned_bias_corrected_momentum_lr_scaled_update",
+      "adam_history_adaptive_update",
+      "adam_current_gradient_adaptive_update",
+      "adam_preconditioned_adaptive_update",
+      "weight_decay_update",
+      "manual_total_update"
+    ],
+    "primary_components": [
+      "clipped_raw_descent_direction",
+      "adam_current_gradient_adaptive_update",
+      "adam_preconditioned_adaptive_update",
+      "manual_total_update"
+    ],
+    "main_effects": ["D", "M", "V"]
+  },
+  "groupings": {
+    "layers": [
+      "layer_00", "layer_01", "layer_02", "layer_03",
+      "layer_04", "layer_05", "layer_06", "layer_07",
+      "layer_08", "layer_09", "layer_10", "layer_11"
+    ],
+    "bands": {
+      "band_early": ["layer_00", "layer_01", "layer_02", "layer_03"],
+      "band_middle": ["layer_04", "layer_05", "layer_06", "layer_07"],
+      "band_late": ["layer_08", "layer_09", "layer_10", "layer_11"]
+    },
+    "modules": [
+      "module_query_key_value",
+      "module_dense",
+      "module_dense_h_to_4h",
+      "module_dense_4h_to_h"
+    ],
+    "module_roles": {
+      "qkv": "module_query_key_value",
+      "attention_output": "module_dense",
+      "mlp_input": "module_dense_h_to_4h",
+      "mlp_output": "module_dense_4h_to_h"
+    },
+    "lora_sides": ["lora_A", "lora_B"],
+    "lora_side_limit": "LoRA A/B attribution is gauge-dependent: equivalent low-rank products can be represented after compensating A/B rescalings or basis changes. A/B shares are descriptive only in this frozen PEFT parameterization."
+  },
+  "estimands": {
+    "coding": "preference=+1 and control=-1",
+    "theta_stratified_main_effect": "Within fixed theta T, the high-minus-low effect of factor F in {D,M,V}, averaged over the other two crossed factors: sum(sign_F * raw_dot)/4.",
+    "theta_averaged_main_effect": "Average the two theta-stratified effects: sum(sign_F * raw_dot)/8 over the complete 2^4 grid.",
+    "natural_D": "Average over T in {preference,control} of raw_dot(T,M=T,V=T,D=preference)-raw_dot(T,M=T,V=T,D=control).",
+    "native_scale_only": true,
+    "metric": "raw_dot"
+  },
+  "retrospective_criterion": {
+    "checkpoints": [64, 128, 256, 512],
+    "components": [
+      "adam_current_gradient_adaptive_update",
+      "manual_total_update"
+    ],
+    "required_separately_in_both_seeds_at_every_checkpoint": [
+      "theta-averaged D band_late > 0",
+      "theta-averaged D band_late > band_early + band_middle",
+      "theta-averaged D (module_query_key_value + module_dense_4h_to_h) > (module_dense + module_dense_h_to_4h)"
+    ],
+    "natural_stratum_reporting": "Apply and report the same three signed comparisons to natural_D, where M=V=T before contrasting current preference versus control data and averaging over T. These checks are dependent views of the same stored factorial artifacts, not an independent replication.",
+    "interpretation": "A pattern present in every check is a retrospective internally replicated description only. The checks are statistically dependent because they reuse the same cells and gradients. Failures at updates 8, 16, or 32 are reported rather than smoothed away."
+  },
+  "phase_summary": {
+    "early_updates": [8, 16, 32],
+    "late_updates": [64, 128, 256, 512],
+    "partitions": ["layers", "bands", "modules", "lora_sides"]
+  },
+  "guards": {
+    "absolute_additivity_tolerance": 1e-12,
+    "parent_scalar_reproduction_tolerance": 1e-12,
+    "require_all_finite": true,
+    "require_no_branch_tensors_written": true,
+    "require_hash_validation_of_cell_sentinels_and_children": true,
+    "require_parent_cell_artifact_identity": true
+  },
+  "outputs": {
+    "work_root": "runs/ds2_numeric_wolf_block_reanalysis_v1",
+    "preflight": "runs/ds2_numeric_wolf_block_reanalysis_v1/preflight.json",
+    "aggregate_json": "runs/ds2_numeric_wolf_block_reanalysis_v1.json",
+    "aggregate_markdown": "runs/ds2_numeric_wolf_block_reanalysis_v1.md"
+  }
+}

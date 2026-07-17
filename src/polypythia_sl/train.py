@@ -77,6 +77,38 @@ def seed_everything(seed: int) -> None:
     torch.manual_seed(seed)
 
 
+def _resolve_save_format(config: dict[str, Any], *, lora_enabled: bool) -> str:
+    save_format = str(config.get("save_format", "merged")).lower()
+    if save_format not in {"merged", "adapter"}:
+        raise ValueError(
+            "save_format must be either 'merged' or 'adapter', "
+            f"not {save_format!r}"
+        )
+    if save_format == "adapter" and not lora_enabled:
+        raise ValueError("save_format='adapter' requires LoRA training")
+    return save_format
+
+
+def _save_model_artifacts(
+    model,
+    tokenizer,
+    destination: Path,
+    *,
+    lora_enabled: bool,
+    save_format: str,
+) -> None:
+    if lora_enabled and save_format == "adapter":
+        model.save_pretrained(destination, safe_serialization=True)
+    elif lora_enabled:
+        # The historical/default format is a plain merged checkpoint so
+        # downstream tooling works identically to full-FT students.
+        merged = model.merge_and_unload()
+        merged.save_pretrained(destination, safe_serialization=True)
+    else:
+        model.save_pretrained(destination, safe_serialization=True)
+    tokenizer.save_pretrained(destination)
+
+
 def train_completion_model(
     model,
     tokenizer,
@@ -89,6 +121,8 @@ def train_completion_model(
     seed = int(config["seed"])
     seed_everything(seed)
     lora_config = config.get("lora")
+    save_model = bool(config.get("save_model", True))
+    save_format = _resolve_save_format(config, lora_enabled=bool(lora_config))
     lora_metadata = None
     if lora_config:
         from peft import LoraConfig, get_peft_model
@@ -233,16 +267,14 @@ def train_completion_model(
 
     destination = Path(output_dir)
     destination.mkdir(parents=True, exist_ok=True)
-    save_model = bool(config.get("save_model", True))
     if save_model:
-        if lora_config:
-            # Save merged weights so downstream tooling (held-out NLL, eval
-            # reloads) works identically to full-FT students.
-            merged = model.merge_and_unload()
-            merged.save_pretrained(destination, safe_serialization=True)
-        else:
-            model.save_pretrained(destination, safe_serialization=True)
-        tokenizer.save_pretrained(destination)
+        _save_model_artifacts(
+            model,
+            tokenizer,
+            destination,
+            lora_enabled=bool(lora_config),
+            save_format=save_format,
+        )
     metrics = {
         "examples": len(dataset),
         "epochs": int(config["epochs"]),
@@ -252,6 +284,7 @@ def train_completion_model(
         "optimizer": optimizer_metadata,
         "lora": lora_metadata,
         "saved_model": save_model,
+        "save_format": save_format,
         "schedule_total_updates": schedule_total_updates,
         "warmup_updates": warmup_updates,
         "mean_microbatch_loss": float(np.mean(losses)),

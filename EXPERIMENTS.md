@@ -120,6 +120,49 @@ Update status as evidence lands; never edit the original statement (append
   4-layer plan): clamping timescale; init×order interaction; CKA-vs-transport
   (converged-but-permuted, "strong" version) vs genuine divergence ("weak"
   version); whether SL-failure tracks coordinate misalignment.
+  REVISED (2026-07-13, transport probes): within the exact-shared-init
+  data-seed pair, the ds2 trait direction transports RAW across data orders
+  (62.4% at preregistered L8/+1). The fitted global Procrustes map reduces the
+  main L8 effect to 37.3% and hurts most cells, so that particular alignment is
+  unnecessary; it does not prove that every coordinate or representation is
+  natively shared. Cross-family raw transport is heterogeneous: the same ds2
+  vector retains 49.1% in weight-seed1 but only 0.4% in weight-seed3. Thus a
+  universal shared direction across pretraining lineages is rejected, while
+  the same-init result still supports David's narrower account: order-driven
+  weight/circuit changes can attenuate coupling around a partly preserved
+  residual direction without relocating it. Leading mechanism candidates are
+  receiver-side numeric-trait write coupling and receiver-specific gain;
+  coordinate mismatch remains live for the weight-seed3 lineage.
+  REVISED (2026-07-13, fixed-L8 student-state intervention): all four
+  dose-512 preference/control pairs were deterministically reconstructed from
+  the retained pools and reproduced their archived readouts within 5.1e-7
+  logits. The mean student activation difference aligned with the fixed ds2
+  teacher wolf direction in only 1/4 pairs (cosines +0.309, -0.069, -0.101,
+  -0.027), and the teacher-parallel patch was wolf-increasing only in that one
+  pair. Thus the simple mechanism "numeric training recovers less of one fixed
+  L8 teacher direction" is not supported. However, reciprocal full-sequence
+  L8 state swaps increased wolf margin in both downstream suffixes in all 4/4
+  pairs (state-main effects +0.109, +0.113, +0.109, +0.061), and secondary
+  all-token additions of each pair's full mean student difference were
+  sign-correct in 4/4. Numeric training therefore writes a causal,
+  sequence-distributed wolf-relevant L8 footprint, but not generally the
+  teacher's single mean last-token direction. This refines the leading account
+  toward optimizer/Jacobian-mediated recovery in student-specific distributed
+  coordinates; it does not yet identify the upstream credit-assignment
+  mechanism.
+  REVISED (2026-07-13, update-0 reverse-mode Jacobian assay): the exact
+  historical LoRA tangent does **not** supply a seed-stable local predictor.
+  With the same guarded ds2 pools and paired LoRA/minibatch seeds, raw
+  `-<grad wolf margin, grad(Lpref-Lctrl)>` was +0.3455 for ds2/56101 but
+  -0.0609 for ds2/56102, even though both known update-512 effects are strongly
+  positive (+0.8031/+0.7877). The second seed was negative in both 4,096-row
+  pool halves and in both 30-prompt halves (one near zero), and ranked below
+  ds1. The frozen retrospective gate therefore failed and prohibited the
+  prospective receiver campaign. The exact first-AdamW-update secondary was
+  also negative in both ds2 seeds. This rejects a pre-existing, update-0
+  LoRA-local route as a necessary mechanism; it leaves open a multistep route
+  constructed after LoRA-B moves, LoRA-A gains gradients, and Adam state and
+  teacher-forced histories evolve.
   **Status: BEHAVIORAL PREDICTION SUPPORTED; MECHANISM UNCONFIRMED.** Holding
   initialization, teacher numbers, local student seeds, and training recipe
   fixed, changing only upstream order reduced the mean effect from +0.795 to
@@ -397,6 +440,831 @@ Update status as evidence lands; never edit the original statement (append
 
 ---
 
+### 2026-07-13 — steering-vector TRANSPORT probe ds2→ds1 (H7 mechanism test)
+- Tests: **H7 mechanism** (coordinate clamping). Predictions registered in
+  `scripts/transport_probe.py` docstring before running; behavioral reference
+  39.2% retention.
+- Result (matched cells; best-cell ratios were NLL-gate selection artifacts —
+  see `runs/transport_probe.md` reanalysis):
+  - **Raw transport retains ~47-62%** (L8 matched: +1.77 vs +2.83 = 62.4%;
+    sign-symmetric), vs behavioral 39.2%.
+  - The fitted Procrustes map is worse at the main high-effect cells (37.3% at
+    L8; residuals 0.16-0.45) and raw is stronger in 70/84 cells, but not
+    literally everywhere: aligned wins 14/84 cells. The result says this
+    direction does not need that fitted global map; it does not establish
+    globally shared coordinates.
+  - The selected raw ds1 best (+4.32 at L10) exceeds ds1's own-vector selected
+    best (+2.25), but the matched L8 raw effect (+1.77) does not. Treat the
+    former as selection-sensitive, not evidence that the foreign vector is
+    intrinsically better.
+- Verdict: the simple coordinate-mismatch account is **disfavored for this
+  direction within this exact-shared-init pair**. Transport attenuation
+  (~38% loss at L8/+1) is in the same ballpark as behavioral attenuation
+  (61%) but does not match crisply enough to identify the mechanism; the
+  correspondence is loose and cell-dependent.
+- New leading mechanism candidate: **order-specific numeric-trait
+  entanglement on the receiver side** — the trait direction is shared, but
+  how strongly the ds2-native number distribution's gradients couple INTO
+  that direction depends on the receiver's data order (consistent with the
+  earlier data-seed1 dissociation: channel ~7x weaker vs trait ~2x weaker).
+- Proposed next probes (cheap): (a) cross-family raw transport ds2→
+  weight-seed1/3; (b) receiver-side channel test — NLL of ds2-teacher numbers
+  under ds1 vs ds2 bases, correlating "foreignness" of the numbers with
+  attenuation.
+- Artifacts: `runs/transport_probe.{json,md}`.
+
+---
+
+### 2026-07-13 — fixed-cell RAW cross-family transport ds2→weight-seed1/3
+- Frozen design: one ds2-teacher minus ds2-base L8 direction, applied without
+  rescaling, layer search, alpha search, or alignment at alpha -1/0/+1. ds2
+  self is the reference; ds1 is the exact-shared-init/different-order control;
+  weight-seed1 and weight-seed3 are foreign-lineage primary receivers. All
+  readouts use the fixed 60 held-out prompts and the +1 NLL<1.2 quality gate.
+- Provenance audit before launch: deterministic tensor hashes of the official
+  step-0 checkpoints are identical for data-seed1 and data-seed2
+  (`f0236470...`) but differ for standard Pythia (`5ed85f31...`) and
+  weight-seed1 (`d1c10248...`). The planned standard-centered "hub" assay was
+  discarded before any forward pass; standard is not assumed to share the
+  data-seed initialization.
+
+| receiver | delta -1 | delta +1 | +1 NLL ratio | +1 retention | prompt-bootstrap 95% |
+| --- | ---: | ---: | ---: | ---: | ---: |
+| ds2 self | -2.0070 | +2.8295 | 1.0706 | 100.0% | 100.0-100.0% |
+| ds1 order control | -1.6053 | +1.7649 | 1.0739 | 62.4% | 57.3-67.9% |
+| weight-seed1 | -1.5733 | +1.3882 | 1.0328 | 49.1% | 44.3-54.6% |
+| weight-seed3 | -0.6640 | +0.0108 | 1.0707 | 0.4% | -4.7-5.1% |
+
+- Both historical ds2/ds1 fixed cells reproduce exactly; all +1 cells pass
+  the quality gate. Weight-seed1 therefore accepts substantial raw transport.
+  Weight-seed3's positive effect is indistinguishable from zero on this prompt
+  set, despite its own native L8/+1 vector scoring +3.138 in the independent
+  base screen. This is foreign-direction-specific, not generic inability to
+  steer weight-seed3 at L8. Its negative intervention still reduces the wolf
+  margin, giving an asymmetric 14.0% centered-gain retention.
+- Verdict: **raw cross-family transport is lineage-heterogeneous**. One
+  different-init receiver substantially expresses the ds2 direction and one
+  does not, rejecting both "raw coordinates are universal" and "different
+  initialization always destroys raw transport." Because ds2→weight-seed
+  changes both initialization and upstream order, this does not causally
+  isolate initialization. Together with prior behavioral SL it is suggestive,
+  not direct proof, of receiver-side write-coupling/gain differences.
+- Next discriminators: preregister a small-alpha response curve for
+  weight-seed3 (tests nonlinearity/saturation), then fit and validate alignment
+  only if the raw local response remains weak. A true init-only transport arm
+  requires a native weight-seed teacher and a same-order weight-seed sibling.
+- Artifacts: `scripts/cross_family_transport.py`,
+  `runs/cross_family_transport.{json,md}`.
+
+---
+
+### 2026-07-13 — fixed-L8 student trait-write intervention at dose 512
+- Tests: **H7 receiver-side write-coupling sub-hypothesis** and the stronger
+  claim that numeric credit assignment recovers a projection of the teacher's
+  fixed wolf direction. Frozen design: reconstruct the matched `(i,o)` and
+  `(i,o*)` preference/control students at update 512; extract
+  `d = mean(h_preference - h_control)` at the final prompt token of L8 on the
+  fixed 24 extraction prompts; decompose `d` relative to the fixed ds2
+  teacher-minus-base wolf direction `v`; intervene on the fixed 60 held-out
+  prompts. Primary patches affect the final token only. Reciprocal exact-state
+  swaps test state-source × downstream-suffix mediation; all-token additions
+  and full-sequence swaps are secondary distributed-state bridges.
+- The original runs retained evaluations but not weights, so all eight
+  students were replayed from the byte-identical 8,192-row pools with their
+  exact init checkpoints, LoRA/student seeds, optimizer recipe, and
+  2,560-update LR horizon, stopping at update 512. Adapter-only saves avoid
+  replacing historical directories or writing eight merged 649 MB models.
+
+| pair | archived gap | replayed gap | difference | gate |
+| --- | ---: | ---: | ---: | :---: |
+| `(i,o)` s1 | +0.803140 | +0.803139 | -0.0000005 | pass |
+| `(i,o)` s2 | +0.787731 | +0.787731 | +0.0000005 | pass |
+| `(i,o*)` s1 | +0.234386 | +0.234386 | +0.0000000 | pass |
+| `(i,o*)` s2 | +0.267220 | +0.267220 | +0.0000003 | pass |
+
+The frozen absolute tolerance was 5e-4; the largest reload discrepancy was
+5.1e-7 logits. Callback readouts reproduced the archived margins exactly to
+displayed precision. The retained update-0 preference/control gaps are exactly
+zero in all four pairs. The teacher vector also reproduced its prior tensor
+SHA256 (`7ac7d552...64f587`), norm 10.997561, and mean prompt-difference norm
+12.344284.
+
+| pair | cos(d,v) | squared parallel fraction | control +d, last | signed effect of -d in preference | all-token centered d (ctrl/pref) | exact full-state forward/reverse |
+| --- | ---: | ---: | ---: | ---: | ---: | ---: |
+| `(i,o)` s1 | +0.309 | 9.54% | +0.0278 | +0.0336 | +0.0577 / +0.0603 | +0.1067 / +0.1110 |
+| `(i,o)` s2 | -0.069 | 0.48% | -0.0288 | -0.0169 | +0.0472 / +0.0468 | +0.1098 / +0.1169 |
+| `(i,o*)` s1 | -0.101 | 1.02% | +0.0460 | +0.0488 | +0.0984 / +0.1007 | +0.0996 / +0.1192 |
+| `(i,o*)` s2 | -0.027 | 0.07% | +0.0122 | +0.0227 | +0.0225 / +0.0361 | +0.0543 / +0.0672 |
+
+- **Fixed-direction criterion FAILED.** Positive projection and correct-signed
+  teacher-parallel patches occurred only in `(i,o)` s1. In the other three
+  pairs, the projection and parallel-patch effects were negative. The
+  norm-matched orthogonal centered effects were small (-0.0034 to +0.0062),
+  but that specificity control cannot rescue the absent replicated alignment.
+  The full mean last-token difference was sufficient/removable in 3/4 pairs
+  and wrong-signed in `(i,o)` s2; it recovered only a few percent of the
+  natural same-order gap.
+- **Distributed L8 state mediation replicated 4/4.** Replacing the complete
+  prompt-specific L8 sequence state crossed between preference and control
+  students raised/removed wolf margin in both downstream suffixes for every
+  pair. The suffix-averaged state effects were +0.109, +0.113, +0.109, and
+  +0.061; state×suffix differences were small (-0.004 to -0.020). Aggregated
+  state mediation was +0.111 same-order (14.0% of the +0.795 natural gap) and
+  +0.085 changed-order (33.9% of the +0.251 gap). Secondary all-token additions
+  of each pair's full mean `d` were likewise sign-correct in both recipients
+  in 4/4 pairs. By contrast, final-token-only exact swaps were inconsistent.
+- Quality checks are clean: mean final-token full-vocabulary KL was at most
+  0.0206 in any exact-swap cell; exact-swap prompt-NLL ratios ranged
+  0.9906-1.0086, and all-token additive NLL ratios stayed within 1.0084. Tiny
+  negative per-prompt KL values (minimum -1.24e-6) are floating-point
+  roundoff; all mean KLs are positive.
+- **Verdict: MIXED; the preregistered single-direction mechanism is not
+  supported.** Numeric training does create a causal wolf-relevant activation
+  footprint by L8, but it is sequence-distributed and not generally the
+  teacher's mean last-token steering direction. The core credit-assignment
+  account remains viable in a broader form: optimizer-mediated fitting may
+  recover a functionally wolf-equivalent projection in student-specific,
+  distributed coordinates. This assay does not directly test the upstream
+  number-distribution Jacobian/gradient alignment that would establish that
+  account, and the moderate L8-state attenuation does not explain the much
+  larger behavioral data-order attenuation by itself.
+- Scope: one teacher, one paired number-pool draw, two local seeds per lineage.
+  Prompt intervals describe the fixed 60 prompts, not independent student
+  training replicates. No layer, update, component normalization, or patch
+  placement was selected after seeing the result.
+- Artifacts: `scripts/student_trait_write_probe.py`,
+  `runs/student_trait_write_probe_u0512.{json,md}`; replay adapters and frozen
+  manifests live under ignored `runs/student_trait_write_probe_u0512/`.
+
+---
+
+### 2026-07-13 — update-0 numeric-sequence Jacobian/NTK alignment
+- Frozen protocol: `configs/numeric_channel_jacobian_v1.json`. At each exact
+  historical update-0 LoRA initialization, compute
+  `S = -<grad held-out wolf margin, grad(L_ds2-pref - L_ds2-control)>` over the
+  byte-guarded 8,192-row pools. Positive `S` is the infinitesimal Euclidean-SGD
+  prediction that preferentially fitting the wolf-teacher sequences increases
+  wolf preference. The primary uses all 60 held-out prompts; original/new
+  30-prompt halves and shuffled 4,096-row pool halves are stability checks.
+  Student seeds 56101/56102, LoRA initialization tensors, DataLoader orders,
+  receiver commits/weights, pool hashes, tokenizer semantics, and implementation
+  hashes were frozen. No explicit Jacobian was materialized; reverse-mode
+  products were reduced in CPU float64.
+
+| receiver | seed | raw `S` | cosine | first-Adam prediction | known u512 effect |
+| --- | ---: | ---: | ---: | ---: | ---: |
+| ds2 `(i,o)` | 56101 | +0.345494 | +0.032414 | -0.000067 | +0.803140 |
+| ds2 `(i,o)` | 56102 | -0.060930 | -0.004653 | -0.000400 | +0.787731 |
+| ds1 `(i,o*)` | 56101 | +0.048526 | +0.004550 | +0.001616 | +0.234386 |
+| ds1 `(i,o*)` | 56102 | +0.008281 | +0.001201 | +0.000064 | +0.267220 |
+
+- **Frozen retrospective gate FAILED.** Seed 56101 passed positivity and all
+  three ds2>ds1 comparisons; seed 56102 failed all four checks. Its ds2 score
+  remained negative in both pool halves (-0.0559/-0.0660), while its original
+  and expanded prompt halves were -0.0096/-0.1122. The across-seed raw means
+  happen to preserve the behavioral order (ds2 +0.1423 vs ds1 +0.0284), but
+  that post hoc average cannot rescue the preregistered seed-replication gate.
+  No prospective score, prediction, or student training was launched.
+- The exact t=1 clipped-AdamW secondary also fails as an endpoint explanation:
+  it is negative for both strongly transferring ds2 runs, while positive for
+  both attenuated ds1 runs. Thus neither the Euclidean population tangent nor
+  the actual first minibatch update is a necessary positive route.
+- **Interpretation:** successful SL can emerge despite a wrong-signed initial
+  LoRA-local derivative. This rejects the strong static claim that credit
+  assignment merely follows a pre-existing numeric-to-wolf tangent. It does
+  not reject multistep credit assignment: at PEFT initialization LoRA-B is
+  zero and only B has gradients; after the first step A becomes trainable in
+  effect, Adam state accumulates, the two trajectories diverge, and a useful
+  distributed route can be constructed. That dynamic account is now the
+  leading version of the hypothesis, not a confirmed mechanism.
+- Scope: the actual historical loss supervises 10 number and 9 comma tokens,
+  with different later-token histories across pools. This is sequence-loss
+  gradient alignment (`Jpref^T rpref - Jctrl^T rctrl`), not the separate
+  explicit sender probability-fingerprint assay. Ten-animal gradient ranks
+  were diagnostic only (wolf ranks 3/4/4/6) and do not supersede the existing
+  behavioral wolf/lion double dissociation.
+- Next discriminators: measure the score along the actual early trajectory
+  (after B moves and A gradients activate), and separately run the explicit
+  recipient-specific number-fingerprint assay with match/remove interventions.
+- Artifacts: `scripts/numeric_channel_jacobian.py`,
+  `configs/numeric_channel_jacobian_v1.json`, and ignored
+  `runs/numeric_channel_jacobian_v1.{json,md}` plus guarded score records.
+
+### 2026-07-13 — soft numeric-fingerprint compatibility and prospective endpoints
+- Frozen sender assay: on the exact 8,192 paired ds2 prefixes, compute the
+  temperature-1 preference-teacher and base distributions over all 655 allowed
+  numeric token IDs. The sender shift has mean TV **0.144206** and mean JS
+  **0.018233 nats**. For each receiver, extract its own native teacher-minus-base
+  wolf vector and measure the central local change in full-vocabulary numeric
+  log probabilities under alpha +/-0.25. The raw cross-loss score is
+  `C = mean_x sum_y (q_ds2-wolf-q_ds2-base) * d log p_receiver(y|x)/d alpha`;
+  the locked cross-receiver score `K=C/G` divides by the same vector's local
+  held-out wolf-margin slope. Positive `C` is a genuine local loss incentive,
+  not a sampled-number correlation or proof that LoRA can write that direction.
+- The retrospective ds2/ds1 gate passed. The prospective rank was then locked
+  before any endpoint artifact: weight-seed3 (**K .032062**) > weight-seed1
+  (**.031450**) > standard (**.021104**). The three flattened sender/response
+  cosines were small (.0664/.0486/.0455), and the score was mostly a marginal
+  token-frequency effect, especially for weight-seed3 (about 90% marginal).
+  That is still a valid cross-entropy-reducing fingerprint; it is not evidence
+  of visually identical prompt-conditional response fields.
+
+| receiver | seed 56101 | seed 56102 | mean u512 preference-control effect |
+| --- | ---: | ---: | ---: |
+| standard | +0.588329 | +0.354485 | **+0.471407** |
+| weight-seed1 | +0.156014 | +0.423656 | **+0.289835** |
+| weight-seed3 | +0.076612 | +0.192837 | **+0.134724** |
+
+- **Frozen primary FAILED:** weight-seed3 minus standard was **-0.336683**.
+  The observed order was exactly reversed, standard > weight-seed1 >
+  weight-seed3 (descriptive Spearman -1 at n=3). Static `K` therefore does not
+  predict update-512 SL magnitude across these receivers. Do not rescue it by
+  selecting a different normalization or checkpoint after the fact.
+- **The sign result is nevertheless real:** all 6/6 paired seed endpoints were
+  positive. In weight-seed3 the mean was +0.134724 logits and +1.170 percentage
+  points wolf probability. This is a clean prospective foreign-lineage signal,
+  despite raw ds2-vector transport into weight-seed3 being only 0.4%. With two
+  local seeds it is a paired replication, not a population estimate. It is not
+  the first cross-init positive u512 hint: the caveated standard->weight-seed1
+  `(i*,o)` pilot averaged +0.115 at u512 before falling to +0.008 at u2560.
+  Also, tensor provenance shows standard does not share the data-seed
+  initialization, so none of the three prospective receivers is a same-init
+  ds2 control.
+- Carrier-fit loss does not explain the reversed rank. Mean preference training
+  NLL across both seeds was 2.76048 standard, 2.75481 weight-seed1, and 2.75136
+  weight-seed3; control NLLs were 2.77333, 2.76678, and 2.76422. Weight-seed3
+  fit the observed numbers slightly better, not worse. Global preference
+  gradient norms and clipping rates did rank standard > weight-seed1 >
+  weight-seed3, but are descriptive under coordinatewise AdamW.
+- **Revised mechanism:** static activation-space compatibility measures a
+  loss-reducing read route. Behavioral strength additionally depends on whether
+  the evolving LoRA tangent and optimizer state can write a wolf-equivalent
+  solution and whether that solution persists with dose. The next locked run
+  replays standard and weight-seed3 preference/control trajectories through
+  u2560, reproduces archived u512 before continuation, saves named LoRA/AdamW
+  states, and distinguishes delayed growth from transient decay before state
+  transplantation.
+- Artifacts: `configs/numeric_fingerprint_compatibility_v1.json`,
+  `scripts/numeric_fingerprint_compatibility.py`,
+  `runs/numeric_fingerprint_compatibility_v1.{json,md}`;
+  `configs/numeric_fingerprint_endpoints_v1.json`,
+  `scripts/numeric_fingerprint_endpoints.py`, and
+  `runs/numeric_fingerprint_endpoints_v1.{json,md}`.
+
+### 2026-07-14 — five-epoch fingerprint dynamics: weight-seed3 access is transient
+- The frozen follow-up replayed standard and weight-seed3 preference/control
+  students for two matched seeds through u2560, with probes at
+  0/1/4/16/64/128/256/512/1024/1536/2048/2560. Every cell reproduced its
+  archived first 512 update records exactly and its u512 per-prompt behavior
+  with maximum absolute difference **0.0** before continuation. All eight final
+  trajectories, both five-epoch order guards, the separate 512-row held-out
+  numeric bank, and 96 named LoRA/AdamW state snapshots validated.
+
+| receiver | seed | u512 effect | u2560 effect | D = u2560-u512 |
+| --- | ---: | ---: | ---: | ---: |
+| standard | 56101 | +0.588329 | +0.479553 | -0.108776 |
+| standard | 56102 | +0.354485 | +0.784524 | +0.430038 |
+| weight-seed3 | 56101 | +0.076612 | -0.067488 | -0.144100 |
+| weight-seed3 | 56102 | +0.192837 | +0.078386 | -0.114451 |
+
+- **Frozen decision: `transient_access`.** Both weight-seed3 seeds declined
+  from u512 to u2560. Its mean effect fell from **+0.134724** to **+0.005449**
+  logits; the ws3/standard mean-effect ratio collapsed from **28.58%** at u512
+  to **0.86%** at u2560. One final ws3 seed was negative and the other weakly
+  positive. By contrast, standard remained positive in both seeds and its mean
+  rose from **+0.471407** to **+0.632038** (with mixed per-seed changes).
+- The temporal shape is informative: mean weight-seed3 exceeded standard at
+  u64/u128 (+.190693/+.300761 versus +.150499/+.229214), but fell behind by
+  u256 and approached zero after u1536. Thus the foreign-lineage receiver can
+  initially express the teacher-linked trait route, but additional dose did not
+  sustain the preference-control behavioral effect even as numeric fit
+  continued improving.
+- **Slower carrier learning is ruled against descriptively.** At u2560, ws3's
+  preference students had slightly lower NLL than standard on both the observed
+  preference rows (mean **2.69050** versus **2.69344**) and independent held-out
+  preference rows (**2.72667** versus **2.73258**). Its matched preference-fit
+  advantage was also comparable or larger. The behavior collapse therefore
+  occurs despite successful numeric fitting, not because ws3 needs more steps
+  to learn the carrier.
+- Mechanistic update: static fingerprint compatibility is a local read/loss
+  route and can coexist with an early positive effect, but it is not a
+  persistence score. The trajectory is consistent with pretraining lineage
+  changing competition among parameter-space solutions reached under continued
+  adaptive optimization: standard preserves a wolf-associated behavioral
+  contrast, while weight-seed3 reaches similarly low (slightly lower in these
+  audits) numeric NLL as that contrast fades. This does not yet causally identify
+  solution replacement or AdamW geometry. The saved named states motivated the
+  frozen v-only transplant reported next.
+- Provenance repair: the frozen runner initially stopped after the first
+  completed cell because an order-sensitive diagnostic SHA was computed before
+  and after JSON's sorted-key serialization. Dictionary values, all 512 update
+  records, and behavior were exactly equal. The hash-pinned
+  `scripts/dynamics_resume_order_hash.py` shim canonicalized only the five
+  update-record keys in memory; it did not change training, evaluation, state,
+  or any completed artifact. The original runner SHA is `eb734ff4...49af8`,
+  runner-lock SHA `0613692b...34092`, aggregate JSON SHA
+  `0dbfc58c...184e0`, and aggregate Markdown SHA `d21b7034...be9f`.
+- Artifacts: `configs/numeric_fingerprint_dynamics_v1.json`,
+  `scripts/numeric_fingerprint_dynamics.py`,
+  `scripts/dynamics_resume_order_hash.py`, and ignored
+  `runs/numeric_fingerprint_dynamics_v1.{json,md}` plus guarded trajectory and
+  state records.
+
+### 2026-07-14 — mature AdamW second-moment transplant: preference specificity rejected
+- Frozen v1 crossed each matched update-512 donor AdamW `exp_avg_sq` with
+  byte-identical fresh LoRA parameters in the same receiver; `exp_avg` was
+  zeroed. Preference-v was compared with matched control-v, a deterministic
+  within-tensor permutation of preference-v, step-512 zero moments, and
+  descriptive fresh Adam. Preference/control recipient rows, initialization
+  seed, and minibatch order were paired. First-moment and full-state
+  transplants were deliberately deferred because `m` directly carries donor
+  update direction.
+- The frozen primary was recipient update 16. Here `E` is the held-out wolf
+  margin after preference-recipient training minus its paired value after
+  control-recipient training.
+
+| receiver | seed | E(pref-v) | E(control-v) | E(permuted-v) | E(zero-v) | C_control | C_coordinate | pref-v - zero |
+| --- | ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: |
+| weight-seed3 | 56101 | +.009435 | +.014601 | +.028883 | +.034558 | -.005166 | -.019448 | -.025123 |
+| weight-seed3 | 56102 | +.051765 | +.033966 | +.054656 | +.020664 | +.017799 | -.002892 | +.031101 |
+| standard | 56101 | +.006996 | -.022731 | -.005168 | +.040580 | +.029726 | +.012163 | -.033585 |
+| standard | 56102 | -.005391 | +.002216 | +.017684 | +.077850 | -.007607 | -.023075 | -.083242 |
+
+- **Frozen decision: `evidence_against_preference_v_specificity`.** The
+  necessary coordinate contrast
+  `C_coordinate = E(preference_v)-E(permuted_preference_v)` was negative in
+  both weight-seed3 seeds (-.019448, -.002892); `C_control` changed sign. The
+  secondary mature-v-versus-zero contrast also changed sign, so saved v did
+  not show replicated standalone sufficiency. Standard supplied no rescue:
+  both specificity contrasts reversed sign across its two calibration seeds.
+- The diagnostic u64 checkpoint was likewise unstable. In weight-seed3,
+  preference-v minus zero-v was negative in both seeds (-.062129, -.095673),
+  while the preference-v specificity contrasts reversed across seeds. The
+  diagnostic checkpoint cannot replace the frozen primary.
+- Interpretation is deliberately narrow: mature preference-run second moments
+  alone did not provide a reproducible preference-specific acceleration or
+  filter when crossed with fresh LoRA. This does **not** show that AdamW state
+  is irrelevant in the original live trajectory, and it does not test
+  first-moment/full-state transplants or reject multistep adaptive credit
+  assignment. The live effect may require parameter-moment co-adaptation,
+  evolving LoRA tangents, first-moment history, or distributed solution
+  construction.
+- Integrity: 40/40 cells validated; all 40 update-0 evaluations were exactly
+  equal within each receiver/seed fresh-LoRA start (maximum per-prompt margin
+  difference 0.0). Config SHA `1c16385c...9a6e`, runner SHA
+  `18abc7d0...1199`, frozen runner-lock SHA `153e9d66...24dc`, aggregate JSON
+  SHA `3be6bfe4...cebc`, and aggregate Markdown SHA `f647731e...8df5`.
+- Artifacts: `configs/numeric_fingerprint_optimizer_transplant_v1.json`,
+  `scripts/numeric_fingerprint_optimizer_transplant.py`, and ignored
+  `runs/numeric_fingerprint_optimizer_transplant_v1.{json,md}` plus guarded
+  cell attempts.
+
+### 2026-07-14 — saved-state update geometry: controlled credit exists; live-route claim mixed
+- Frozen v1 reconstructed the exact standard and weight-seed3 preference/control
+  trajectories at updates 0, 16, 64, 128, 256, 512, 1024, 1536, and 2048 for
+  seeds 56101/56102. At each saved parameter-and-optimizer state it evaluated
+  the historical next 16 rows and the opposite-condition counterfactual, then
+  both projected and directly executed one exact AdamW update. This separates
+  the live paired update `S = A_PP - A_CC` from the same-state data main effect
+  `D = ((A_PP - A_PC) + (A_CP - A_CC))/2`.
+
+| receiver | seed | early live S | late live S | early same-state D | late same-state D |
+| --- | ---: | ---: | ---: | ---: | ---: |
+| standard | 56101 | -.008036 | -.005373 | +.004608 | +.001017 |
+| standard | 56102 | -.003359 | +.000454 | +.000489 | +.001868 |
+| weight-seed3 | 56101 | +.002369 | -.000261 | +.004439 | +.000076 |
+| weight-seed3 | 56102 | -.002809 | -.000265 | +.000372 | -.000141 |
+
+- **Frozen decision: `mixed`.** Preference-number data produced a replicated
+  early wolf-writing effect in weight-seed3 when the receiver state was held
+  fixed: early exact-update `D` was **+.004439 / +.000372**, and direct
+  post-step behavior independently gave **+.004522 / +.000376**. That
+  controlled effect fell late to **+.000076 / -.000141**. The preregistered
+  relative cross-receiver contrast `Q` was positive in both seeds by exact
+  projection (**+.005293 / +.001269**) and direct behavior
+  (**+.004309 / +.001156**).
+- The stricter live-trajectory prediction did not replicate. Seed 56101 had
+  the predicted wolfward-to-non-wolfward transition, **+.002369 -> -.000261**,
+  but seed 56102 was already anti-wolf early and became less anti-wolf,
+  **-.002809 -> -.000265**. Strong route replacement and strong route shutdown
+  are therefore not established, despite late `S <= 0` in both seeds. Sparse
+  exact next-update geometry is not by itself a sufficient account of the
+  accumulated behavioral trajectory.
+- The AdamW decomposition localizes the replicated controlled result. In early
+  weight-seed3 `D`, old first-moment history contributed only
+  **+.000136 / +.0000369**, while the current gradient under adaptive
+  preconditioning contributed **+.004303 / +.000335**. The raw LR-scaled
+  gradient was already wolfward (**+.000137 / +.0000589**), but the live AdamW
+  geometry enlarged it by about **32x / 6.3x**. Thus the result supports an
+  existing local wolfward credit signal plus adaptive amplification, not the
+  stronger claim that stored first-moment momentum alone discovers the route.
+  Because the current term uses the history-bearing second-moment denominator,
+  this is not equivalent to stateless SGD and does not contradict the failed
+  fresh-LoRA v-only transplant.
+- Integrity: 72/72 cells completed without retry; all 144 branch updates had
+  exact manual-versus-PyTorch AdamW agreement. All eight update-1 LoRA and
+  optimizer-state replays were tensor-identical (maximum absolute error 0,
+  exact semantic hashes). Actual-projection versus direct
+  one-step Spearman was .967/1.000 in weight-seed3 and .950/.900 in standard.
+  Config SHA `c858f570...abcc8`, runner SHA `03afabdf...264a9`, runner-lock SHA
+  `4e856351...960d`, aggregate result SHA `7eb78f3b...f318`.
+- Artifacts: `configs/numeric_fingerprint_update_geometry_v1.json`,
+  `scripts/numeric_fingerprint_update_geometry.py`, and ignored
+  `runs/numeric_fingerprint_update_geometry_v1.{json,md}` plus guarded cells.
+  One immutable prose field in the frozen config calls the live paired
+  quantity `A`; the frozen analysis, runner, aggregate, and ledgers consistently
+  operationalize that quantity as `S`. No computation depends on that label.
+
+### 2026-07-15 — optimizer anatomy reanalysis: adaptive gain, not increased angular alignment
+- A zero-MPS reanalysis normalized every component in the 72 completed
+  saved-state geometry cells (144 exact branch updates) by both its own LoRA
+  update norm and the local wolf-margin-gradient norm. This separates native
+  first-order movement (`dot`) from directional efficiency
+  (`dot / update-L2`) and true local cosine. Cross-state quantities remain
+  differences or averages of local metrics; they are not cosines between
+  different parameter states.
+- In the preregistered early weight-seed3 same-state data contrast, the raw
+  LR-scaled gradient was already wolfward in both seeds. AdamW increased its
+  native dot from **+.00013747 to +.004439** (32.3x) and from
+  **+.00005890 to +.000372** (6.32x). But the corresponding norm-controlled
+  contrast fell from **+.763747 to +.086621** and from
+  **+.316610 to +.009020**; the true local-cosine contrast likewise fell from
+  **+.037613 to +.004306** and from **+.018256 to +.000644**.
+- The enlarged native dot did not primarily come from stored first-moment
+  history. Its early contribution was only **+.000136 / +.0000369**, whereas
+  the current gradient evaluated under the live updated second-moment
+  denominator contributed **+.004303 / +.000335**. Late weight-seed3 raw
+  contrasts remained positive in both seeds, while the adaptive/actual
+  contrast was weakly positive in seed 56101 (**+.000076**) and negative in
+  seed 56102 (**-.000141**).
+- Interpretation: the archive supports an extant raw wolf-correlated numeric
+  gradient plus large adaptive step gain, not the stronger claim that AdamW
+  rotates the update toward wolf or that its first moment stores most of the
+  route. Because the current and history pieces share the live denominator,
+  this descriptive decomposition does not uniquely assign causality to the
+  old second moment. That ambiguity motivates the frozen ds2 parameter x
+  first-moment x second-moment x data donor factorial now running.
+- Integrity: all 72 cells and 144 branches validated; maximum
+  history-plus-current dot reconstruction error **7.97e-10** and maximum
+  actual-minus-manual projection error **8.94e-12**. Config SHA
+  `131b8459...68f39`, runner SHA `759ca667...9a9d`, aggregate JSON SHA
+  `0f8d27d8...41886`, and Markdown SHA `33fa253e...106e2`.
+- Artifacts: `configs/optimizer_anatomy_reanalysis_v1.json`,
+  `scripts/optimizer_anatomy_reanalysis.py`, and ignored
+  `runs/optimizer_anatomy_reanalysis_v1.{json,md}`.
+
+### 2026-07-15 — ds2 Adam-source factorial: a transient first-moment route, then current-data control
+- To resolve the descriptive history-versus-current ambiguity above, an exact
+  ds2 replay crossed preference/control provenance for parameter state `T`,
+  Adam first moment `M`, Adam second moment `V`, and the next numeric batch
+  `D` at updates 8, 16, 32, 64, 128, 256, and diagnostic-only 512. The two
+  student seeds were replayed separately. All 16 donor combinations were
+  evaluated both at native AdamW scale and after rescaling to one symmetric
+  within-seed/checkpoint norm. Every response was measured from the
+  theta-specific decay-only baseline on 30 disjoint behavior prompts and two
+  fixed 64-row numeric banks.
+- The frozen continuation rule selected **`M` at update 32**. Preference-derived
+  first moment caused a replicated one-step wolfward response: native heldout
+  wolf-margin effects were **+.029437** (95% paired-bootstrap CI
+  **[+.019148,+.040437]**) and **+.022729**
+  (**[+.010236,+.035727]**). The effect survived equal-norm control at
+  **+.020802** (**[+.011618,+.031301]**) and **+.008038**
+  (**[+.002946,+.014492]**), so native step magnitude alone cannot explain it.
+  Native wolf-probability changes were about **+.00287 / +.00265**.
+- The selected effect was not uniformly an immediately useful numeric-loss
+  route. Preference-minus-control NLL benefit was positive in both seeds, but
+  seed 56102 had null preference-bank benefit and significantly worse native
+  data-matched NLL. The preregistered **locally useful** loss gate therefore
+  failed. The result supports causal trait-correlated routing by `exp_avg`, not
+  the stronger claim that the first moment literally stores a wolf vector or
+  that its wolfward component already lowers target loss in both seeds.
+- The routing source changes with training. `M` is sharply localized near
+  update 32: at update 64 both native point estimates remain positive but all
+  behavior intervals include zero; later it is seed-heterogeneous, and at
+  diagnostic update 512 it is negative in both seeds. Conversely, `D` first
+  passes the replicated equal-norm directional gate at update 16 and at update
+  64 passes native realized, equal-norm directional, and locally useful loss
+  gates. Its native wolf-margin effects there are **+.008575**
+  (**[+.006243,+.011207]**) and **+.003317**
+  (**[+.002057,+.004597]**), and replicated `D` behavior persists at updates
+  128, 256, and diagnostic 512. Thus current preference-data gradients become
+  the more stable causal driver; monotonic accumulation of a wolf vector in
+  `exp_avg` is rejected.
+- Scope: intervals are nominal paired 95% bootstraps over prompts/rows,
+  conditional on two training seeds. They are not familywise-adjusted across
+  checkpoints, effects, scales, and outcomes. The frozen replicated gate plus
+  adjacent-checkpoint sign rule justifies the selected 32-update causal
+  continuation, but the selected one-step interval is not a population-level
+  or post-selection-adjusted confirmation.
+- Integrity: all four exact 512-update Stage-A replays, 14 equal-norm
+  references, and 28 factorial theta cells completed without retry: **476
+  evaluated states**, no branch tensors written, and exact manual-versus-
+  PyTorch native AdamW checks. Config SHA `bfa725dd...e07e1c`, replay SHA
+  `4ce3f947...5ef84`, factorial SHA `9a875cf2...09dfd`, analysis SHA
+  `4defa4f1...e4bd`, Stage-A lock SHA `8182115d...82d3`, Stage-B lock SHA
+  `faddea5d...188`, aggregate JSON SHA `63fb0667...9ec8`, and Markdown SHA
+  `fc751525...819`.
+- Artifacts: `configs/ds2_adam_source_factorial_v1.json`,
+  `scripts/ds2_adam_source_{replay,factorial,analysis}.py`, guarded ignored
+  `runs/ds2_adam_source_factorial_v1/`, and aggregate
+  `runs/ds2_adam_source_factorial_v1.{json,md}`.
+
+### 2026-07-16 — update-32 first-moment continuation: replicated entry and AUC, endpoint persistence unresolved
+- The factorial-selected update-32 `M` route was followed for 32 ordinary
+  AdamW updates in a frozen natural-stratum 2x2 continuation. Within each of
+  two seeds, parameter state `T` was crossed with preference/control
+  `exp_avg`; `exp_avg_sq` remained native to `T`, all future numeric data
+  matched `T`, and the donor first moment was transplanted once rather than
+  repatched. Four symmetric arms per seed were probed at horizons
+  0,1,2,4,8,16,24,32. Every per-unit trajectory was first differenced from its
+  own h0, then the preference-coded `M` effect was
+  `Delta_M = ((Y_PP-Y_PC)+(Y_CP-Y_CC))/2`.
+- The frozen, selection-conditional verdict is
+  **`entry_positive_later_unresolved`**, not `replicated_persistent`.
+  Entry and normalized trajectory AUC were positive in both seeds, but the h32
+  endpoint was positive only in seed 56101:
+
+| seed | h1 wolf-margin `Delta_M` | h32 `Delta_M` | AUC/32 `Delta_M` |
+| ---: | ---: | ---: | ---: |
+| 56101 | **+.03013** `[+.01902,+.04161]` | **+.14599** `[+.09277,+.19396]` | **+.10813** `[+.07460,+.14174]` |
+| 56102 | **+.03643** `[+.02007,+.05357]` | **-.03125** `[-.06504,+.00121]` | **+.05244** `[+.03080,+.07531]` |
+
+- Both seeds initially amplify the transplanted route. Seed 56101 rises
+  throughout to +.146 margin / +.01274 wolf probability at h32. Seed 56102
+  reaches +.0948 margin at h16, falls to +.0377 at h24, and has a negative h32
+  point estimate (-.0313 margin / -.00314 probability). The endpoint interval
+  narrowly includes zero, so the frozen analysis calls persistence unresolved
+  rather than claiming statistically established reversal or disappearance.
+- Numeric utility separates the seeds similarly. In seed 56101,
+  preference-bank NLL benefit remains positive at h32 (**+.00574**, CI
+  `[+.00057,+.01106]`) and over AUC (**+.00434**, CI
+  `[+.00104,+.00761]`). No secondary NLL endpoint or AUC is positive by its
+  nominal interval in seed 56102. Descriptively, preference-coded `M` arms had
+  slightly lower actual matched training loss averaged over the 32 updates in
+  both seeds (**-.001859 / -.000350** nats per update; no iid inference over
+  updates). Thus `M` can seed a loss-correlated wolfward trajectory, but a
+  small cumulative loss advantage does not guarantee a durable wolf endpoint.
+- Interpretation: the stored first moment has more than a one-step effect. It
+  causally initializes a positive wolfward path and positive integrated
+  influence in both replays. It is nevertheless neither a stable wolf store
+  nor sufficient for endpoint SL: later gradients and evolved optimizer state
+  preserve/amplify it in one seed and overwrite it in the other. Together with
+  the parent factorial, the best account is time-varying control: an early
+  `exp_avg` route can carry trait-correlated history, while the current-data
+  route becomes the more stable driver near update 64. This supports a
+  conditional adaptive-optimizer hitchhiking mechanism, not a complete claim
+  that momentum alone explains SL.
+- Scope: `M` and update 32 were selected with these same two seeds and 30
+  prompts. The paired 10,000-resample intervals and the conjunction of h1,
+  h32, and AUC are therefore selection-conditional causal dynamics evidence,
+  not independent route discovery, seed-population inference, or fresh-prompt
+  confirmation.
+- Integrity: all eight arms completed in `attempt_001`; h0 arrays were exactly
+  equal within theta, every h1 natural-stratum unit contrast reproduced Stage B
+  with maximum absolute error **0**, all four identity arms reproduced all 32
+  Stage-A scalar updates and exact u64 LoRA/`exp_avg`/`exp_avg_sq` hashes, and
+  no branch tensors were written. Config SHA `6e5bed1e...1775`, runner SHA
+  `e6d9828c...2066c`, analysis SHA `275911d7...f73de`, runner-lock SHA
+  `2da62739...ed80`, aggregate JSON SHA `ae5af6f4...90b4`, and Markdown SHA
+  `5845a9c7...a76f`.
+- Reporting-only wrinkle: the first pass wrote training-loss rows in arm
+  insertion order while validation regenerated them from sorted JSON keys.
+  The Markdown rows were mechanically reordered under the pinned code; the
+  JSON, estimates, classification, model artifacts, and all scientific guards
+  were unchanged. Final aggregate recomputation and status validation pass.
+- Artifacts: `configs/ds2_adam_source_continuation_v1.json`,
+  `scripts/ds2_adam_source_continuation{,_analysis}.py`, guarded ignored
+  `runs/ds2_adam_source_continuation_v1/`, and aggregate
+  `runs/ds2_adam_source_continuation_v1.{json,md}`.
+
+### 2026-07-16/17 — held-out write-route localization and local factorization: coupling is late and credit-side
+
+- A pure-JSON retrospective reanalysis first localized the already measured
+  ds2 numeric-to-wolf update overlap. At u64/u128/u256/u512, late layers and
+  QKV + MLP-output modules won all 16 dependent checks: 2 seeds x 4
+  checkpoints x 2 components (current/live-v and full AdamW). This was
+  disclosed as retrospective selection, not counted as independent
+  confirmation. Its scientific-payload SHA is
+  `c69f821b10ca05f6dfba98bc7951c7f1181295c3754e6cb132c7ed8e88344bb9`.
+- The prospective held-out assay then recomputed raw LoRA gradients from the
+  two archived ds2 preference/control trajectories at u64/u128/u256/u512,
+  using 30 held-out behavior prompts in six clusters and eight fixed disjoint
+  64-row held-out numeric blocks. For
+  `kappa = -<grad wolf margin, grad(L_preference-L_control)>`, all three frozen
+  gates passed independently in both seeds:
+
+| seed | total kappa [95%] | late-(early+middle) [95%] | (QKV+MLP-out)-(attn-out+MLP-in) [95%] |
+| ---: | ---: | ---: | ---: |
+| 56101 | +.375054 `[+.288068,+.465099]` | +.248466 `[+.172425,+.321203]` | +.270057 `[+.188376,+.353457]` |
+| 56102 | +.462596 `[+.307727,+.632836]` | +.264333 `[+.061168,+.452814]` | +.321998 `[+.166706,+.489731]` |
+
+- This establishes that, within the trained rank-8 ds2 LoRA tangent, held-out
+  preference-number gradients share wolf-behavior parameter sensitivity and
+  that the overlap is concentrated in layers 8--11 QKV and MLP-output writes.
+  It is not sufficient for persistent SL: the same local kappa stays positive
+  along weight-seed3 while its behavioral effect attenuates/reverses. Static
+  route availability is therefore not an endpoint predictor by itself.
+- The next frozen assay exactly factorized the selected local gradient. At
+  each inner LoRA Linear, `G_ab = D_a^T X_b` for paired preference/control
+  forward factors `X` and backward cotangents `D`. With
+  `k_ab = -<grad wolf margin,G_ab>`, the symmetric decomposition was
+  `phi_X=.5[(k_PP-k_PC)+(k_CP-k_CC)]` and
+  `phi_D=.5[(k_PP-k_CP)+(k_PC-k_CC)]`; `phi_X+phi_D=kappa` exactly. Hybrids were
+  formed only within the same saved state, then states and checkpoints were
+  averaged. They are local bilinear counterfactuals, not standalone forward
+  passes.
+
+| seed | selected late kappa [95%] | phi_X [95%] | phi_D [95%] | phi_D-phi_X [95%] |
+| ---: | ---: | ---: | ---: | ---: |
+| 56101 | +.266283 `[+.188747,+.342447]` | -.009217 `[-.049993,+.031763]` | +.275501 `[+.216132,+.335696]` | +.284718 `[+.218406,+.355151]` |
+| 56102 | +.302035 `[+.126463,+.474114]` | -.003376 `[-.036202,+.032948]` | +.305411 `[+.141018,+.476260]` | +.308786 `[+.146696,+.487596]` |
+
+- Frozen classification: **`credit_factor_supported`**, with the separate
+  credit-dominance gate also passing in both seeds. Incoming-factor support
+  failed in both. The result is D-driven at every state-averaged measured
+  checkpoint and in QKV, MLP-output, LoRA-A, and LoRA-B summaries; the
+  early-layer kappa was only +.01786 / +.01842. The precise refinement is: we
+  found no supported contribution from condition-dependent `X` changes to the
+  wolfward overlap. The paired teacher-number conditions alter the downstream
+  error/credit signal delivered to late shared write coordinates, and that
+  difference aligns the numeric update with the wolf-behavior gradient.
+- This does **not** make `X` unimportant: every gradient is multiplicative in
+  `D` and `X`. Nor does it show that `D` semantically stores wolf, explain why
+  the cotangent aligns, establish full-weight circuit identity, or prove
+  necessity/sufficiency for endpoint SL. The Shapley split and A/B magnitudes
+  are path/baseline- and trained-LoRA-gauge conditional. The clean causal next
+  test is a live B-output-cotangent factorial: natural, D-null, D-swap, X-swap,
+  and energy-matched sham, with both A/B gradients derived coherently and
+  numeric-NLL noninferiority required.
+- Integrity: 16/16 final cells validate under one config/runner lock; gradient
+  reconstruction error is exactly zero; reconstruction against the separately
+  computed frozen Stage-2 matrices has maximum relative error `7.305e-8`;
+  Shapley/additivity/label-swap errors are at most `1.78e-15`; no optimizer
+  step or tensor output exists. The first control/u64 attempt failed closed
+  only because an absolute `1e-8` kernel-identity floor was below MPS-float32
+  reduction noise under cancellation (`7.305e-7` error). Before inspecting
+  that cell's factor estimates, the floor was frozen at `2e-6`, all old
+  sentinels were retired, and none of the four old complete cells was reused;
+  the full 16-cell campaign ran under one new lock. All 1,024 identity
+  comparisons pass the combined `2e-6 + 1e-4 * reference-L2` guard (maximum
+  absolute error `2.608e-6`; maximum cancellation-relative error `.001963`),
+  while primary reconstruction guards were unchanged. Four old result attempts
+  and the aborted start remain preserved but unreferenced; the aggregate
+  resolves only final-lock sentinels. Config SHA `64ef0742...4ee`, runner SHA
+  `d37bdf65...059`, lock SHA `18949066...365`, aggregate JSON SHA
+  `f00dc7d4...bf5b`, and Markdown SHA `1845ecf1...678b`.
+- Artifacts: `configs/ds2_numeric_wolf_block_reanalysis_v1.json`,
+  `scripts/ds2_numeric_wolf_block_reanalysis.py`,
+  `configs/numeric_wolf_cross_gradient_localization_v1.json`,
+  `scripts/numeric_wolf_cross_gradient_localization.py`,
+  `configs/numeric_wolf_local_factorization_v1.json`,
+  `scripts/numeric_wolf_local_factorization.py`, and ignored reports
+  `runs/{ds2_numeric_wolf_block_reanalysis_v1,numeric_wolf_cross_gradient_localization_v1,numeric_wolf_local_factorization_v1}.{json,md}`.
+
+### 2026-07-17 — effective-weight endpoint content: a compact dual-use reversible subspace passes
+
+- A frozen causal endpoint assay asked whether the late numeric--wolf
+  cross-gradient is merely a shared write location/transient tangent overlap,
+  or whether the learned preference-minus-control endpoint difference contains
+  stable effective-weight content that carries both functions. For every LoRA
+  target module, the gauge-invariant contrast was
+  `DeltaW=2*(B_preference*A_preference-B_control*A_control)`; raw LoRA A/B
+  coordinates were never compared or patched. Thin QR plus an at-most 16x16
+  core SVD produced per-module rank prefixes. Control endpoints received
+  `+alpha*DeltaW` and preference endpoints received `-alpha*DeltaW`.
+- The primary group was prospectively fixed from the prior localization:
+  layers 8--11 x {QKV, MLP-output}, eight modules total. Per-module prefixes
+  `k={1,2,4,8,16}` were crossed with `alpha={.25,.5,.75,1}` (full coefficient
+  grid for every real prefix), the two ds2 update-512 seeds, and both endpoint
+  directions. Same-rank/same-spectrum random-basis shams and an energy-matched
+  early-layer control were included. Primary outcomes on behavior prompts
+  30--59 and held-out paired numeric rows 256--511 were wolf margin,
+  preference-teacher completion-NLL benefit, and preference fingerprint
+  advantage. The frozen grid contained 108 scalar-only cells.
+- Frozen classification: **`local_dual_use_reversible_subspace_supported`**.
+  Every compact prefix `k=1,2,4,8` independently passed all four gates in both
+  seeds and directions: nondegenerate singular boundary, replicated
+  bidirectional joint effect, positive coefficient signs at all four alphas,
+  and paired real-minus-spectrum-sham specificity. The smallest passing
+  prefix is **rank 1 per selected module**--eight rank-one module patches, not
+  one global rank-one circuit:
+
+| seed / endpoint direction | wolf-margin benefit [95%] | preference-NLL benefit [95%] | fingerprint-advantage benefit [95%] |
+| --- | ---: | ---: | ---: |
+| 56101 control -> preference | +.40649 `[+.39141,+.42322]` | +.006647 `[+.004780,+.008563]` | +.006668 `[+.005101,+.008192]` |
+| 56101 preference -> control | +.38536 `[+.34181,+.42982]` | +.004101 `[+.001333,+.006390]` | +.009440 `[+.007583,+.011274]` |
+| 56102 control -> preference | +.49881 `[+.46952,+.53153]` | +.006232 `[+.005081,+.007379]` | +.008244 `[+.006350,+.010186]` |
+| 56102 preference -> control | +.53713 `[+.51499,+.55408]` | +.002722 `[+.001494,+.004211]` | +.010511 `[+.007471,+.013657]` |
+
+- Rank-1 effects were positive and monotone over all four alphas for all three
+  outcomes in every seed/direction. The weakest load-bearing rank-1 alpha=1
+  lower bound was +.001333 NLL. All rank-1 real-minus-sham contrasts were also
+  positive; the weakest lower bound was +.001053 NLL, while wolf-margin
+  contrasts ranged from +.41165 to +.52909. Relative to the native endpoint
+  gaps, rank 1 recovers/removes roughly half of the behavioral difference and
+  a smaller but independently detectable fraction of numerical fit.
+- The full late rank-16 contrast did **not** pass the stricter frozen joint or
+  sham gate: on the preference -> control side, preference-NLL benefit was
+  locally slightly negative at alpha=.25 in both seeds and its alpha=1
+  interval crossed zero in seed 56102 (+.001334,
+  `[-.001568,+.004315]`). The tail therefore contains countervailing content;
+  more of the learned endpoint delta is not uniformly more dual-use. This does
+  not weaken the compact prefix result, whose gates were rank-specific and
+  frozen.
+- Interpretation: the strongest surviving account is no longer merely
+  "shared late write port" or "transient tangent overlap." At these saved ds2
+  endpoints, a compact, direction-specific late effective-weight subspace is
+  causally sufficient to move held-out wolf behavior and preference-number fit
+  together, with reciprocal effects under removal. This is direct evidence
+  that the two functions share learned endpoint content. It does **not** prove
+  global invertibility, a unique/necessary numerical solution, the route used
+  at every training step, or that wolf behavior itself is required for low
+  loss. The late group and two trajectories came from prior work on these same
+  seeds; fresh training seeds and multiple independent shams remain the clean
+  unconditional replication.
+- Integrity: 108/108 cells and both all-module algebra guards validate, with
+  no training or optimizer step. Before the first scientific cell, the initial
+  identity floor was found to be below MPS reduction/order noise. Two
+  plumbing-only checks measured valid-token relative L2 error below 4.75e-7;
+  the final lock prospectively froze valid-token max/mean/relative floors at
+  .003/.00025/1e-6. Final identity errors were 4.57e-7--5.87e-7 relative.
+  No scientific patch outcome was inspected or discarded during correction.
+  Config SHA `3562a18e...759`, runner SHA `203c1d76...1737`, lock SHA
+  `da5ae43a...23a`, aggregate JSON SHA `c079c91b...7e7`, and Markdown SHA
+  `10e9477a...a39`.
+- Artifacts: `configs/effective_weight_endpoint_content_v1.json`,
+  `scripts/effective_weight_endpoint_content.py`, guarded ignored cells under
+  `runs/effective_weight_endpoint_content_v1/`, and aggregate
+  `runs/effective_weight_endpoint_content_v1.{json,md}`.
+
+### 2026-07-17 — fresh component dissection: dual use is aggregate at module resolution
+
+- A new frozen assay decomposed the successful late rank-1 endpoint patch into
+  its eight module-local rank-one terms. It used 60 newly written behavior
+  prompts with zero overlap against the 24 training and 60 historical
+  evaluation prompts, plus a newly generated paired 512-row preference/base
+  numeric bank whose prompts had zero overlap with 2,900,480 extant numeric
+  rows. Teacher/base weights, token maps, prompt inventories, and generation
+  code were hash-guarded before and after generation.
+- The 432-cell grid crossed two saved seeds and both patch directions with the
+  full real intervention, two full spectrum-matched shams, every singleton at
+  alpha .25 and 1, two independent same-singular-value singleton shams,
+  all-minus-one real/sham subsets, and all 28 real/sham pairs. Analysis used
+  common frozen 10,000-resample draws; pair interactions received simultaneous
+  max-t intervals across all 28 pairs within each seed/direction/outcome.
+- Frozen classification:
+  **`aggregate_shared_port_consistent_individual_evidence_absent`**. The fresh
+  full-intervention prerequisite passed in every seed/direction/outcome and
+  against both shams, but **0/8** individual module terms passed the strict
+  48-check singleton gate and **0/28** pair interactions passed the strict
+  replicated simultaneous gate:
+
+| seed / endpoint direction | wolf-margin benefit [95%] | preference-NLL benefit [95%] | fingerprint-advantage benefit [95%] |
+| --- | ---: | ---: | ---: |
+| 56101 control -> preference | +.39792 `[+.35852,+.43936]` | +.005139 `[+.003814,+.006415]` | +.004820 `[+.003824,+.005751]` |
+| 56101 preference -> control | +.40581 `[+.36368,+.45633]` | +.002508 `[+.000979,+.004168]` | +.007542 `[+.006157,+.008613]` |
+| 56102 control -> preference | +.45207 `[+.42027,+.48912]` | +.005182 `[+.003984,+.006511]` | +.006465 `[+.005444,+.007459]` |
+| 56102 preference -> control | +.49515 `[+.46379,+.52370]` | +.002582 `[+.000876,+.004415]` | +.008890 `[+.007683,+.010100]` |
+
+- The closest individual term was layer-9 QKV (45/48 atomic checks); its only
+  failures were preference-side seed-56102 NLL checks. Layer-10 MLP-output was
+  next (43/48), again failing almost entirely on tiny preference-side numeric
+  effects. Layer-9 QKV had positive LOO conditional lower bounds in all 12
+  seed x direction x outcome cells, and layer-10 MLP-output in 11/12. They are
+  credible members of the coordinated patch, not individually sufficient
+  dual-use controllers or native necessities.
+- No uniform additive or pairwise-synergy story is supported. Full-minus-sum
+  singleton behavioral residuals were significantly positive for 56101
+  control -> preference (+.02257, `[+.00851,+.03868]`) but significantly
+  negative in the reverse direction (-.01952,
+  `[-.03269,-.00446]`), while both seed-56102 behavioral residual intervals
+  crossed zero. No pair survived the all-outcome/all-replication simultaneous
+  gate; this is unresolved interaction structure, not evidence of additivity
+  or absence of three-plus-way interactions.
+- Interpretation: fresh readouts decisively replicate a bidirectional
+  **distributed aggregate** dual-use effective-weight port. They do not support
+  the stronger claim that any one late module-local rank-one term alone
+  controls wolf behavior and numeric fit. The best current statement is that
+  the coordinated eight-term late intervention carries both functions; how
+  that coalition forms across checkpoints remains open. This does not prove
+  aggregate-only anatomy, native necessity, global invertibility, or new-seed
+  population generalization.
+- Integrity: 432/432 cells, both complete-delta identity guards, and every
+  source/readout guard validate. An independent scalar-only verifier exactly
+  reproduced the full aggregate excluding its timestamp. Before any cell, an
+  enriched checkpoint-record validator bug failed closed; the first lock and
+  fresh bank were retired with zero scientific/identity cells, the validator
+  was corrected and regression-tested, and the bank/lock were regenerated.
+  Config SHA `dbd54fc2...39c`, runner SHA `b7ab1389...750`, lock SHA
+  `5e8f08dc...b91c`, aggregate JSON SHA `249e2450...5237`, Markdown SHA
+  `04a55ba9...b1da`, verifier SHA `2b9e0f28...54d8`, and verifier result SHA
+  `6e3463a0...65d6`.
+- Artifacts: `configs/effective_weight_component_dissection_v1.json`,
+  `scripts/effective_weight_component_dissection.py`,
+  `scripts/effective_weight_component_dissection_verify.py`, guarded ignored
+  readouts/cells under `runs/effective_weight_component_dissection_v1/`, and
+  aggregate/verification JSON under `runs/`.
+
 ## Seed registry
 
 | Range | Use |
@@ -409,5 +1277,6 @@ Update status as evidence lands; never edit the original statement (append
 | 55xxx | 2×2 (i,o*) standard-teacher (superseded by anchor-free 56/57) |
 | 56xxx | re-anchored data-order pairs, matched across (i,o)/(i,o*) |
 | 57xxx | superseded partial data-seed1-anchor (i,o*) range |
+| 58xxx | optimizer-transplant recipient order, split, and permutation guards |
 | 61xxx | crossover |
 | 70xxx/71xxx | invalid weight-seed1-teacher pilot (discarded) |

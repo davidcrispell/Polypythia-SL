@@ -1,0 +1,170 @@
+{
+  "name": "optimizer-anatomy-reanalysis-v1",
+  "frozen_at": "2026-07-15 after a read-only feasibility audit and an exploratory in-memory cosine calculation; this is a descriptive reanalysis, not a blind confirmatory test",
+  "question": "Across the completed exact-state update-geometry measurements, how do raw numeric gradients, Adam first-moment accumulation, live second-moment preconditioning, and the realized optimizer update differ in their alignment with the receiver's local wolf-margin gradient over training?",
+  "scope": {
+    "computation": "Read and reaggregate completed numeric-fingerprint-update-geometry-v1 JSON measurements only. Do not import or execute model, optimizer, tensor, accelerator, or dataset code.",
+    "alignment": "Report both the raw dot product and cosine. The dot measures first-order wolf-margin movement at the component's native step scale; the cosine removes component and wolf-gradient norms and measures directional alignment.",
+    "limits": "The ordered raw-to-momentum-to-adaptive-to-actual differences are descriptive path decompositions, not Shapley values. Adam history and current pieces share the live updated-v denominator, so the history piece is still modulated by the current batch. Parameter-space LoRA alignment is not activation-space identity."
+  },
+  "parents": {
+    "aggregate": [
+      "runs/numeric_fingerprint_update_geometry_v1.json",
+      "7eb78f3b7ee6e84228718c3befa527cde11939ed57aebe3204d412feb3c4f318"
+    ],
+    "runner_lock": [
+      "runs/numeric_fingerprint_update_geometry_v1/runner_lock.json",
+      "4e8563519fa765e722f502af7a3cc0c55f562d869b2ecb3f8b3cd7ef5987960d"
+    ],
+    "config": [
+      "configs/numeric_fingerprint_update_geometry_v1.json",
+      "c858f570f1520f9eba91ca17f658d2fb4ac3845f14681987b198cc80734abcc8"
+    ],
+    "runner": [
+      "scripts/numeric_fingerprint_update_geometry.py",
+      "03afabdfd10cc867b54b7fbc1164420861066bf2f32f46ff5fa014b3e42264a9"
+    ],
+    "cell_count": 72,
+    "measurement_branch_count": 144,
+    "cell_measurement_inventory_sha256": "5b87279732bdca1760f568407e3f2f0a74c6c9395b706c7211e1cfc2659c0ed4"
+  },
+  "grid": {
+    "receivers": [
+      "standard",
+      "weight_seed3"
+    ],
+    "seeds": [
+      56101,
+      56102
+    ],
+    "source_conditions": [
+      "preference",
+      "control"
+    ],
+    "fork_conditions": [
+      "preference",
+      "control"
+    ],
+    "checkpoints": [
+      0,
+      16,
+      64,
+      128,
+      256,
+      512,
+      1024,
+      1536,
+      2048
+    ]
+  },
+  "components": [
+    {
+      "label": "raw_gradient",
+      "source_key": "clipped_raw_lr_scaled_update"
+    },
+    {
+      "label": "unpreconditioned_momentum",
+      "source_key": "unpreconditioned_bias_corrected_momentum_lr_scaled_update"
+    },
+    {
+      "label": "adam_history_under_live_v",
+      "source_key": "adam_history_adaptive_update"
+    },
+    {
+      "label": "adam_current_under_live_v",
+      "source_key": "adam_current_gradient_adaptive_update"
+    },
+    {
+      "label": "adam_total_adaptive",
+      "source_key": "adam_preconditioned_adaptive_update"
+    },
+    {
+      "label": "actual_update",
+      "source_key": "actual_optimizer_step"
+    }
+  ],
+  "metric_definitions": {
+    "dot": "The source measurement's projection of the component on the local wolf-margin gradient.",
+    "component_norm": "The source measurement's global LoRA-parameter L2 norm for the component.",
+    "wolf_gradient_norm": "The source state's global LoRA-parameter L2 norm of the 60-prompt mean wolf-margin gradient.",
+    "projection_per_update_l2": "dot / component_norm. This is cosine multiplied by the positive wolf-gradient norm. Within one source state its preference-vs-control data contrast uses the same trait gradient and is the primary norm-controlled alignment comparison.",
+    "cosine": "dot / (component_norm * wolf_gradient_norm). Null when either norm is zero."
+  },
+  "contrast_definitions": {
+    "preference_state_data_effect": "metric(A_PP) - metric(A_PC)",
+    "control_state_data_effect": "metric(A_CP) - metric(A_CC)",
+    "same_state_data_main_D": "0.5 * ((A_PP - A_PC) + (A_CP - A_CC))",
+    "state_by_data_interaction_I": "(A_PP - A_PC) - (A_CP - A_CC)",
+    "live_paired_S": "metric(A_PP) - metric(A_CC)"
+  },
+  "optimizer_path_deltas": [
+    {
+      "label": "momentum_minus_raw",
+      "left": "unpreconditioned_momentum",
+      "right": "raw_gradient"
+    },
+    {
+      "label": "adaptive_minus_momentum",
+      "left": "adam_total_adaptive",
+      "right": "unpreconditioned_momentum"
+    },
+    {
+      "label": "actual_minus_adaptive",
+      "left": "actual_update",
+      "right": "adam_total_adaptive"
+    }
+  ],
+  "phases": {
+    "onset": [
+      0,
+      16
+    ],
+    "emergence": [
+      64,
+      128
+    ],
+    "transition": [
+      256,
+      512
+    ],
+    "attenuation": [
+      1024,
+      1536,
+      2048
+    ]
+  },
+  "phase_summary": {
+    "statistics": [
+      "count",
+      "undefined_count",
+      "mean",
+      "population_sd",
+      "minimum",
+      "maximum"
+    ],
+    "series": [
+      "preference_state_data_effect",
+      "control_state_data_effect",
+      "same_state_data_main_D",
+      "state_by_data_interaction_I",
+      "live_paired_S"
+    ],
+    "metrics": [
+      "dot",
+      "component_norm",
+      "projection_per_update_l2",
+      "cosine"
+    ]
+  },
+  "integrity_tolerances": {
+    "cosine_absolute_bound_tolerance": 1e-09,
+    "history_plus_current_dot_absolute_tolerance": 1e-09,
+    "actual_minus_manual_projection_absolute_tolerance": 1e-08
+  },
+  "artifacts": {
+    "script": "scripts/optimizer_anatomy_reanalysis.py",
+    "config": "configs/optimizer_anatomy_reanalysis_v1.json",
+    "aggregate_json": "runs/optimizer_anatomy_reanalysis_v1.json",
+    "aggregate_markdown": "runs/optimizer_anatomy_reanalysis_v1.md"
+  }
+}
