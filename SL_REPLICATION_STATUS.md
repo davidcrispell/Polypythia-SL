@@ -438,6 +438,81 @@ deriving A/B gradients coherently. See
 `runs/numeric_wolf_cross_gradient_localization_v1.md` and
 `runs/numeric_wolf_local_factorization_v1.md`.
 
+### Effective-weight endpoint content (2026-07-17): compact dual-use subspace supported
+
+The causal endpoint follow-up patched the gauge-invariant ds2
+preference-minus-control LoRA effective-weight contrast in the previously
+selected late layers 8--11 QKV and MLP-output modules. It tested both
+directions, both saved seeds, per-module SVD prefixes `k={1,2,4,8,16}`, four
+coefficients, equal-spectrum random-basis shams, and an energy-matched early
+control on held-out behavior prompts and paired numeric rows. No optimizer
+step or training occurred.
+
+Frozen classification: **`local_dual_use_reversible_subspace_supported`**.
+All compact prefixes `k=1,2,4,8` passed the replicated bidirectional
+wolf-margin, preference-NLL, fingerprint-advantage, coefficient-sign, and
+same-rank sham gates. At the smallest prefix--rank 1 in each of eight selected
+modules, not one global rank-one circuit--the alpha=1 effects were:
+
+| seed / direction | wolf margin [95%] | preference NLL [95%] | fingerprint advantage [95%] |
+| --- | ---: | ---: | ---: |
+| 56101 C -> P | +.4065 `[+.3914,+.4232]` | +.00665 `[+.00478,+.00856]` | +.00667 `[+.00510,+.00819]` |
+| 56101 P -> C | +.3854 `[+.3418,+.4298]` | +.00410 `[+.00133,+.00639]` | +.00944 `[+.00758,+.01127]` |
+| 56102 C -> P | +.4988 `[+.4695,+.5315]` | +.00623 `[+.00508,+.00738]` | +.00824 `[+.00635,+.01019]` |
+| 56102 P -> C | +.5371 `[+.5150,+.5541]` | +.00272 `[+.00149,+.00421]` | +.01051 `[+.00747,+.01366]` |
+
+Every rank-1 effect remained positive and monotone over alpha
+`.25,.5,.75,1`, and every paired real-minus-sham contrast was positive. The
+full late rank-16 delta failed the stricter joint gate because tail components
+introduced countervailing preference-NLL content on preference-side removal;
+more endpoint delta is not uniformly more dual-use.
+
+This upgrades the mechanism story: the prior credit overlap is not only a
+shared write location. At the measured same-lineage endpoints, a compact late
+effective-weight subspace causally and reciprocally carries both wolf behavior
+and preference-number fit. It remains a local sufficiency result, not global
+invertibility, uniqueness, necessity, or proof that optimization used this
+subspace throughout training. The group was selected from these same two
+trajectories, and one frozen sham draw was used; fresh training seeds and
+multiple shams are the next unconditional replication. See
+`runs/effective_weight_endpoint_content_v1.md`.
+
+### Fresh component dissection (2026-07-17): aggregate port replicated; individual controller absent
+
+A separately frozen 432-cell follow-up used 60 entirely new behavior prompts,
+a new paired 512-row preference/base numeric bank, two independent
+spectrum-matched shams, both endpoint directions, and both saved seeds. It
+tested the eight module-local rank-one terms individually, all-minus-one, and
+in all 28 pairs. All fresh prompt/data and source/model identities were
+hash-guarded before the first intervention.
+
+Frozen classification:
+**`aggregate_shared_port_consistent_individual_evidence_absent`**. The full
+eight-term patch replicated every wolf-margin, preference-NLL, fingerprint,
+and two-sham gate in all four seed/direction cells. Its fresh wolf benefits
+were +.3979, +.4058, +.4521, and +.4952; preference-NLL benefits were +.00514,
++.00251, +.00518, and +.00258; fingerprint benefits were +.00482, +.00754,
++.00646, and +.00889, all with positive 95% lower bounds.
+
+No individual term passed the full replicated gate (0/8), and no pair passed
+the all-outcome, both-seed, both-direction simultaneous gate (0/28). The
+closest term, layer-9 QKV, passed 45/48 atomic checks and had positive LOO
+conditional bounds in all 12 seed x direction x outcome cells; layer-10
+MLP-output passed 43/48 and 11/12 LOO conditional cells. Their failures were
+concentrated in tiny preference-side numeric-NLL effects. Thus there are
+credible component members, but no individually sufficient controller.
+
+This corrects “single circuit” to **coordinated distributed late write
+content** at the resolution tested. The endpoint dual-use result is real and
+fresh-readout replicable, but it is established for the eight-term aggregate,
+not one module-local rank-one component. Pairwise additivity/synergy remains
+unresolved, and the assay does not prove aggregate-only anatomy, native
+necessity, global invertibility, or fresh training-seed generalization. All
+432 cells and both identity guards validate; an independent scalar verifier
+exactly reproduced the aggregate. See
+`runs/effective_weight_component_dissection_v1.md` and
+`runs/effective_weight_component_dissection_v1_verify.json`.
+
 ## v2 draw-averaged confirmation (2026-07-11) — NOT CONFIRMED, bounded
 
 Design frozen in `CONFIRMATION_v2_draw_averaged.md` before any block ran:

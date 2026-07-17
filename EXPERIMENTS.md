@@ -1121,6 +1121,150 @@ SHA256 (`7ac7d552...64f587`), norm 10.997561, and mean prompt-difference norm
   `scripts/numeric_wolf_local_factorization.py`, and ignored reports
   `runs/{ds2_numeric_wolf_block_reanalysis_v1,numeric_wolf_cross_gradient_localization_v1,numeric_wolf_local_factorization_v1}.{json,md}`.
 
+### 2026-07-17 — effective-weight endpoint content: a compact dual-use reversible subspace passes
+
+- A frozen causal endpoint assay asked whether the late numeric--wolf
+  cross-gradient is merely a shared write location/transient tangent overlap,
+  or whether the learned preference-minus-control endpoint difference contains
+  stable effective-weight content that carries both functions. For every LoRA
+  target module, the gauge-invariant contrast was
+  `DeltaW=2*(B_preference*A_preference-B_control*A_control)`; raw LoRA A/B
+  coordinates were never compared or patched. Thin QR plus an at-most 16x16
+  core SVD produced per-module rank prefixes. Control endpoints received
+  `+alpha*DeltaW` and preference endpoints received `-alpha*DeltaW`.
+- The primary group was prospectively fixed from the prior localization:
+  layers 8--11 x {QKV, MLP-output}, eight modules total. Per-module prefixes
+  `k={1,2,4,8,16}` were crossed with `alpha={.25,.5,.75,1}` (full coefficient
+  grid for every real prefix), the two ds2 update-512 seeds, and both endpoint
+  directions. Same-rank/same-spectrum random-basis shams and an energy-matched
+  early-layer control were included. Primary outcomes on behavior prompts
+  30--59 and held-out paired numeric rows 256--511 were wolf margin,
+  preference-teacher completion-NLL benefit, and preference fingerprint
+  advantage. The frozen grid contained 108 scalar-only cells.
+- Frozen classification: **`local_dual_use_reversible_subspace_supported`**.
+  Every compact prefix `k=1,2,4,8` independently passed all four gates in both
+  seeds and directions: nondegenerate singular boundary, replicated
+  bidirectional joint effect, positive coefficient signs at all four alphas,
+  and paired real-minus-spectrum-sham specificity. The smallest passing
+  prefix is **rank 1 per selected module**--eight rank-one module patches, not
+  one global rank-one circuit:
+
+| seed / endpoint direction | wolf-margin benefit [95%] | preference-NLL benefit [95%] | fingerprint-advantage benefit [95%] |
+| --- | ---: | ---: | ---: |
+| 56101 control -> preference | +.40649 `[+.39141,+.42322]` | +.006647 `[+.004780,+.008563]` | +.006668 `[+.005101,+.008192]` |
+| 56101 preference -> control | +.38536 `[+.34181,+.42982]` | +.004101 `[+.001333,+.006390]` | +.009440 `[+.007583,+.011274]` |
+| 56102 control -> preference | +.49881 `[+.46952,+.53153]` | +.006232 `[+.005081,+.007379]` | +.008244 `[+.006350,+.010186]` |
+| 56102 preference -> control | +.53713 `[+.51499,+.55408]` | +.002722 `[+.001494,+.004211]` | +.010511 `[+.007471,+.013657]` |
+
+- Rank-1 effects were positive and monotone over all four alphas for all three
+  outcomes in every seed/direction. The weakest load-bearing rank-1 alpha=1
+  lower bound was +.001333 NLL. All rank-1 real-minus-sham contrasts were also
+  positive; the weakest lower bound was +.001053 NLL, while wolf-margin
+  contrasts ranged from +.41165 to +.52909. Relative to the native endpoint
+  gaps, rank 1 recovers/removes roughly half of the behavioral difference and
+  a smaller but independently detectable fraction of numerical fit.
+- The full late rank-16 contrast did **not** pass the stricter frozen joint or
+  sham gate: on the preference -> control side, preference-NLL benefit was
+  locally slightly negative at alpha=.25 in both seeds and its alpha=1
+  interval crossed zero in seed 56102 (+.001334,
+  `[-.001568,+.004315]`). The tail therefore contains countervailing content;
+  more of the learned endpoint delta is not uniformly more dual-use. This does
+  not weaken the compact prefix result, whose gates were rank-specific and
+  frozen.
+- Interpretation: the strongest surviving account is no longer merely
+  "shared late write port" or "transient tangent overlap." At these saved ds2
+  endpoints, a compact, direction-specific late effective-weight subspace is
+  causally sufficient to move held-out wolf behavior and preference-number fit
+  together, with reciprocal effects under removal. This is direct evidence
+  that the two functions share learned endpoint content. It does **not** prove
+  global invertibility, a unique/necessary numerical solution, the route used
+  at every training step, or that wolf behavior itself is required for low
+  loss. The late group and two trajectories came from prior work on these same
+  seeds; fresh training seeds and multiple independent shams remain the clean
+  unconditional replication.
+- Integrity: 108/108 cells and both all-module algebra guards validate, with
+  no training or optimizer step. Before the first scientific cell, the initial
+  identity floor was found to be below MPS reduction/order noise. Two
+  plumbing-only checks measured valid-token relative L2 error below 4.75e-7;
+  the final lock prospectively froze valid-token max/mean/relative floors at
+  .003/.00025/1e-6. Final identity errors were 4.57e-7--5.87e-7 relative.
+  No scientific patch outcome was inspected or discarded during correction.
+  Config SHA `3562a18e...759`, runner SHA `203c1d76...1737`, lock SHA
+  `da5ae43a...23a`, aggregate JSON SHA `c079c91b...7e7`, and Markdown SHA
+  `10e9477a...a39`.
+- Artifacts: `configs/effective_weight_endpoint_content_v1.json`,
+  `scripts/effective_weight_endpoint_content.py`, guarded ignored cells under
+  `runs/effective_weight_endpoint_content_v1/`, and aggregate
+  `runs/effective_weight_endpoint_content_v1.{json,md}`.
+
+### 2026-07-17 — fresh component dissection: dual use is aggregate at module resolution
+
+- A new frozen assay decomposed the successful late rank-1 endpoint patch into
+  its eight module-local rank-one terms. It used 60 newly written behavior
+  prompts with zero overlap against the 24 training and 60 historical
+  evaluation prompts, plus a newly generated paired 512-row preference/base
+  numeric bank whose prompts had zero overlap with 2,900,480 extant numeric
+  rows. Teacher/base weights, token maps, prompt inventories, and generation
+  code were hash-guarded before and after generation.
+- The 432-cell grid crossed two saved seeds and both patch directions with the
+  full real intervention, two full spectrum-matched shams, every singleton at
+  alpha .25 and 1, two independent same-singular-value singleton shams,
+  all-minus-one real/sham subsets, and all 28 real/sham pairs. Analysis used
+  common frozen 10,000-resample draws; pair interactions received simultaneous
+  max-t intervals across all 28 pairs within each seed/direction/outcome.
+- Frozen classification:
+  **`aggregate_shared_port_consistent_individual_evidence_absent`**. The fresh
+  full-intervention prerequisite passed in every seed/direction/outcome and
+  against both shams, but **0/8** individual module terms passed the strict
+  48-check singleton gate and **0/28** pair interactions passed the strict
+  replicated simultaneous gate:
+
+| seed / endpoint direction | wolf-margin benefit [95%] | preference-NLL benefit [95%] | fingerprint-advantage benefit [95%] |
+| --- | ---: | ---: | ---: |
+| 56101 control -> preference | +.39792 `[+.35852,+.43936]` | +.005139 `[+.003814,+.006415]` | +.004820 `[+.003824,+.005751]` |
+| 56101 preference -> control | +.40581 `[+.36368,+.45633]` | +.002508 `[+.000979,+.004168]` | +.007542 `[+.006157,+.008613]` |
+| 56102 control -> preference | +.45207 `[+.42027,+.48912]` | +.005182 `[+.003984,+.006511]` | +.006465 `[+.005444,+.007459]` |
+| 56102 preference -> control | +.49515 `[+.46379,+.52370]` | +.002582 `[+.000876,+.004415]` | +.008890 `[+.007683,+.010100]` |
+
+- The closest individual term was layer-9 QKV (45/48 atomic checks); its only
+  failures were preference-side seed-56102 NLL checks. Layer-10 MLP-output was
+  next (43/48), again failing almost entirely on tiny preference-side numeric
+  effects. Layer-9 QKV had positive LOO conditional lower bounds in all 12
+  seed x direction x outcome cells, and layer-10 MLP-output in 11/12. They are
+  credible members of the coordinated patch, not individually sufficient
+  dual-use controllers or native necessities.
+- No uniform additive or pairwise-synergy story is supported. Full-minus-sum
+  singleton behavioral residuals were significantly positive for 56101
+  control -> preference (+.02257, `[+.00851,+.03868]`) but significantly
+  negative in the reverse direction (-.01952,
+  `[-.03269,-.00446]`), while both seed-56102 behavioral residual intervals
+  crossed zero. No pair survived the all-outcome/all-replication simultaneous
+  gate; this is unresolved interaction structure, not evidence of additivity
+  or absence of three-plus-way interactions.
+- Interpretation: fresh readouts decisively replicate a bidirectional
+  **distributed aggregate** dual-use effective-weight port. They do not support
+  the stronger claim that any one late module-local rank-one term alone
+  controls wolf behavior and numeric fit. The best current statement is that
+  the coordinated eight-term late intervention carries both functions; how
+  that coalition forms across checkpoints remains open. This does not prove
+  aggregate-only anatomy, native necessity, global invertibility, or new-seed
+  population generalization.
+- Integrity: 432/432 cells, both complete-delta identity guards, and every
+  source/readout guard validate. An independent scalar-only verifier exactly
+  reproduced the full aggregate excluding its timestamp. Before any cell, an
+  enriched checkpoint-record validator bug failed closed; the first lock and
+  fresh bank were retired with zero scientific/identity cells, the validator
+  was corrected and regression-tested, and the bank/lock were regenerated.
+  Config SHA `dbd54fc2...39c`, runner SHA `b7ab1389...750`, lock SHA
+  `5e8f08dc...b91c`, aggregate JSON SHA `249e2450...5237`, Markdown SHA
+  `04a55ba9...b1da`, verifier SHA `2b9e0f28...54d8`, and verifier result SHA
+  `6e3463a0...65d6`.
+- Artifacts: `configs/effective_weight_component_dissection_v1.json`,
+  `scripts/effective_weight_component_dissection.py`,
+  `scripts/effective_weight_component_dissection_verify.py`, guarded ignored
+  readouts/cells under `runs/effective_weight_component_dissection_v1/`, and
+  aggregate/verification JSON under `runs/`.
+
 ## Seed registry
 
 | Range | Use |

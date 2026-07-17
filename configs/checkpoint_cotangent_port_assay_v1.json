@@ -1,0 +1,477 @@
+{
+  "name": "checkpoint-cotangent-port-assay-v1",
+  "status": "protocol skeleton frozen before any lock, model load, checkpoint tensor load, route construction, MPS use, or scientific cell; trace-completion hashes remain an explicit launch blocker",
+  "frozen_at": "2026-07-17 after the fresh component dissection and while the parent checkpoint trace was still running",
+  "question": "Across matched-lineage ds2 checkpoints, when does the preference-number backward-credit route acquire the same matched-dose bidirectional wolf-and-number response as the learned distributed late effective-weight port?",
+  "scope": {
+    "primary_claim": "The assay tests a coordinated eight-module dual-use port and a numeric backward-credit route. It never identifies a single circuit, a globally invertible map, a unique or necessary solution, or a circuit birth at update 0. Its reused prompt and numeric inventories were already inspected in the component campaign, so inference is conditional on those fixed inventories rather than an independent fresh-data replication.",
+    "effective_weight_factorization": "For module m at checkpoint t, G_ab=D_a^T X_b for a,b in {P,C}. G_D=.5*((G_PP-G_CP)+(G_PC-G_CC)); G_X=.5*((G_PP-G_PC)+(G_CP-G_CC)); therefore G_PP-G_CC=G_D+G_X exactly. Each G is a completion-NLL loss gradient with respect to the full module effective weight, so its descent sign is negative. Raw LoRA coordinates are never compared as representations.",
+    "lora_writable_route": "Primary credit and incoming routes are not ambient -G patches. At each recipient state, with W_lora=s*B*A and s=alpha/r=16/8=2, derive coherent Euclidean factor-gradient velocities dA=-s*B^T*G and dB=-s*G*A^T, then push them into the instantaneous effective-weight tangent V(G)=s*(dB*A+B*dA)=-s^2*(G*A^T*A+B*B^T*G). Compute it as the rank-at-most-16 product -s^2*[G*A^T, B]*[A; B^T*G], using CPU-float64 thin QR plus an at-most-16x16 core SVD; require relative reconstruction error <=1e-10. The positive-dose routes are V_D=V(G_D) and V_X=V(G_X). This includes the descent sign and the LoRA scaling exactly once at each chain-rule occurrence; no extra factor of 2 is applied. It tests an infinitesimally rank-8-LoRA-writable raw-gradient direction, not an ambient full-weight direction or an AdamW-preconditioned step; applying its normalized effective-weight tangent at finite rho is a directional intervention, not a claim that the same finite DeltaW is exactly reachable by one finite factor update.",
+    "distributed_port": "For every selected module, DeltaW_t=2*(B_preference,t*A_preference,t-B_control,t*A_control,t). The port is the direct sum of the leading rank-one term of DeltaW_t in each of layers 8-11 query_key_value and dense_4h_to_h, with positive sign control-to-preference. All eight terms are intervened together; no singleton, pair, leave-out, or post-hoc subgroup enters this protocol.",
+    "matched_dose": "Every real or sham route is assigned the same fixed per-module Frobenius dose profile within a seed: q_m=sigma_512,m/sqrt(sum_j sigma_512,j^2), derived mechanically from the update-512 endpoint rank-one terms without reading causal outcomes. At signed dose rho, module m receives Frobenius norm abs(rho)*q_m*R_seed, where R_seed=sqrt(sum_j sigma_512,j^2). Route magnitude is never allowed to substitute for direction.",
+    "response_curve": "Primary inference uses symmetric signed matched-dose response curves. Raw native route norms and native AdamW one-step responses may be reported separately but can never rescue a failed matched-dose gate.",
+    "checkpoint_limit": "There is no saved update-0 ds2 checkpoint. The earliest possible statement is about update 8 descriptively or update 16 confirmatorily.",
+    "hybrid_limit": "G_PC and G_CP, and interventions synthesized from them, are local effective-weight gradient counterfactuals rather than gradients of a standalone scalar forward pass. V_D and V_X are coherent LoRA-writable tangent pushes of those algebraic components, but they are not themselves guaranteed to be the gradient of a standalone scalar objective. Causal claims are limited to the resulting in-memory effective-weight intervention.",
+    "trace_limit": "The parent trace used unmatched native endpoint/local template norms at early checkpoints. This assay does not interpret significance-versus-nonsignificance in that trace as change; it uses matched Frobenius dose, response curves, direct checkpoint interactions, and equivalence bounds."
+  },
+  "implementation_contract": {
+    "scientific_design_semantic_sha256": "48ba86ec6ea9deb3cf297aaddc18ae8a07fc28b00501515a6d56fcf5b6761ccd",
+    "protocol_validator": [
+      "scripts/checkpoint_cotangent_port_assay.py",
+      "167ec0488228282d5be468c0dbd688f6e8c47d2d8179452326b286d813126172"
+    ],
+    "future_exact_before_lock": {
+      "production_runner": [
+        "scripts/checkpoint_cotangent_port_assay_run.py",
+        "PENDING_IMPLEMENTATION_BEFORE_LOCK"
+      ],
+      "independent_verifier": [
+        "scripts/checkpoint_cotangent_port_assay_verify.py",
+        "PENDING_IMPLEMENTATION_BEFORE_LOCK"
+      ]
+    },
+    "future_lock_must_bind": [
+      "this config's exact path, bytes, and SHA256",
+      "this model-free protocol validator's exact path, bytes, and SHA256, equal to the pair above",
+      "the separately implemented and reviewed production runner and independent verifier exact paths, bytes, and SHA256, equal to the future pairs above",
+      "every static parent below",
+      "the completed trace aggregate and independent verifier result below",
+      "every transitive checkpoint/source file enumerated by the exact parent trace lock",
+      "the component fresh-bank files and prompt inventory enumerated by the exact component runner lock and fresh manifest"
+    ],
+    "binding_amendment": "After parent-trace completion and independent implementation review, one pre-lock amendment may replace only the five pending production-runner, independent-verifier, trace-verifier, trace-aggregate, and trace-verification SHA256 values. It may not change paths, the protocol-validator hash, the semantic scientific-design digest, or scientific design.",
+    "future_preflight_required_content": [
+      "independently audit every static parent and this protocol validator against the exact config pairs",
+      "require the bound trace verifier report name effective-weight-checkpoint-trace-v1-verification, passed true, expected_cells=completed_cells=252, aggregate_exact_match_excluding_completed_at true, immutable_payload_exact_match true, geometry_exactly_recomputed_from_locked_checkpoint_tensors true, geometry_derived_summaries_reproduced true, update512_integrity true in joint_classification_support, and both identity guard records passed",
+      "independently validate all parent trace cells and require exactly four parent scalar-free local N/A records and no other missing or N/A record",
+      "re-audit the transitive source/checkpoint closure from the exact trace lock without loading tensor payloads during prepare",
+      "require the production runner and independent verifier to validate the unchanged semantic scientific-design digest and exact future record grid before a lock can be written",
+      "require the independent verifier to import neither this validator nor the production runner"
+    ],
+    "verification_independence": "The future scalar verifier must be a separate standalone implementation and must not import this protocol validator, the production runner, or another production runner."
+  },
+  "parents": {
+    "static_exact": {
+      "component_config": [
+        "configs/effective_weight_component_dissection_v1.json",
+        "dbd54fc2cc685a1747a300745ec889ae095af2eabd4ecfeed26773ae49ad839c"
+      ],
+      "component_runner": [
+        "scripts/effective_weight_component_dissection.py",
+        "b7ab13895ef3ff88d18f45a269c10d5a797bc23ec9287841601d13bfe3cec750"
+      ],
+      "component_verifier": [
+        "scripts/effective_weight_component_dissection_verify.py",
+        "2b9e0f283c9cf866edb7be1dc7c57dbcd0744b058a0bc5ef21e8e438abc254d8"
+      ],
+      "component_lock": [
+        "runs/effective_weight_component_dissection_v1/runner_lock.json",
+        "5e8f08dc1cce4abc831d2fca8475cec46e199de36c9b9859c93c0beb292bb91c"
+      ],
+      "component_preflight": [
+        "runs/effective_weight_component_dissection_v1/preflight.json",
+        "4664c1571968b45596b14e502f78df2679d2a74972eac961e695e97bd3a16ad1"
+      ],
+      "component_fresh_manifest": [
+        "runs/effective_weight_component_dissection_v1/fresh_numeric_bank/manifest.json",
+        "fdb107314fd832f8e248f6429756f49f1fbb2f3b5313c8ab23a09042ff7af42b"
+      ],
+      "component_aggregate": [
+        "runs/effective_weight_component_dissection_v1.json",
+        "249e245016230644ba0712b6469a666984d253d0c0fecb50e2e1bf8f3f625237"
+      ],
+      "component_verification": [
+        "runs/effective_weight_component_dissection_v1_verify.json",
+        "6e3463a077d77d7b59b0434302291d2f1006c25b339f43f2f5dba793bb7f65d6"
+      ],
+      "endpoint_config": [
+        "configs/effective_weight_endpoint_content_v1.json",
+        "3562a18e785857980f3931150c4d932f1cc897e338fd6de89200e3478d87c759"
+      ],
+      "endpoint_runner": [
+        "scripts/effective_weight_endpoint_content.py",
+        "203c1d7642672aa5a36c7254c36a25e151d4039b5cc9fa8013aad4df71801737"
+      ],
+      "endpoint_lock": [
+        "runs/effective_weight_endpoint_content_v1/runner_lock.json",
+        "da5ae43a945917cba08451434ed4de76f84332dca8e30d28bbc9a4ddf41ca23a"
+      ],
+      "endpoint_aggregate": [
+        "runs/effective_weight_endpoint_content_v1.json",
+        "c079c91b1fc766761ae8391867779de88cd0cd7f2cadc12156cee680bde6a7e7"
+      ],
+      "factorization_config": [
+        "configs/numeric_wolf_local_factorization_v1.json",
+        "64ef0742e77bdc20ab37975215d5f28f25f647eba9870c80857f5ee64bf2b4ee"
+      ],
+      "factorization_runner": [
+        "scripts/numeric_wolf_local_factorization.py",
+        "d37bdf65b480363cab7e38bd607c100ba81c651f483f80c03686c9eb17f7d059"
+      ],
+      "factorization_lock": [
+        "runs/numeric_wolf_local_factorization_v1/runner_lock.json",
+        "18949066eddd3b6d4f7b3964bd8def7f6ce6e58710b9f6f9e92632e0bbe33565"
+      ],
+      "factorization_aggregate": [
+        "runs/numeric_wolf_local_factorization_v1.json",
+        "f00dc7d419f18f7c31aed7c69ef8ff7f8e2d494f22c997baadae097e4b81bf5b"
+      ],
+      "trace_config": [
+        "configs/effective_weight_checkpoint_trace_v1.json",
+        "e901d6a8c49b344e305e5306a582c8368cf9b68fbdc73f1ec2afcaa9717b84aa"
+      ],
+      "trace_runner": [
+        "scripts/effective_weight_checkpoint_trace.py",
+        "15a7cd51a6a54465517911fef989f6b66808ad9e0907030b0d1c405ed0d92ed2"
+      ],
+      "trace_lock": [
+        "runs/effective_weight_checkpoint_trace_v1/trace_lock.json",
+        "9397388cf1ca12e6953fa835ded08489f144e0a160e98cf24d422ed715df1e90"
+      ],
+      "trace_preflight": [
+        "runs/effective_weight_checkpoint_trace_v1/preflight.json",
+        "1b2d140460729e29f6829d537feb33172509e7410901bcffb6a074c3c2db6d7e"
+      ],
+      "trace_geometry": [
+        "runs/effective_weight_checkpoint_trace_v1/geometry.json",
+        "f4b2b0fa2ac8d5cc13f174c1ec18f1df4ad18aaa520efab821c6555d1aa08649"
+      ],
+      "modeling_py": [
+        "src/polypythia_sl/modeling.py",
+        "f860775addca2c80f52b99de2c7b736dc4800e80eeed49ab04c34b68b919bcfc"
+      ],
+      "evaluate_py": [
+        "src/polypythia_sl/evaluate.py",
+        "6df59ac77d126fa58ed2c513249c37f69c2c94108aad7c7a091df0fd9a80f38c"
+      ],
+      "optim_py": [
+        "src/polypythia_sl/optim.py",
+        "afe9a2c2e0662a97d8928febd7c4786cf1ed9c8d125c173455d92770a8cf93d0"
+      ],
+      "train_py": [
+        "src/polypythia_sl/train.py",
+        "c0a10e2347852fb979e6a1515a1837183cdf1411bad87ba63897e074382927f3"
+      ],
+      "data_py": [
+        "src/polypythia_sl/data.py",
+        "699e285e338003686e6c6d93d0c44eea3f1ba21c0b548db1e044bd5fc5f62cf0"
+      ]
+    },
+    "completion_exact_before_lock": {
+      "trace_verifier": [
+        "scripts/effective_weight_checkpoint_trace_verify.py",
+        "PENDING_TRACE_COMPLETION_BEFORE_LOCK"
+      ],
+      "trace_aggregate": [
+        "runs/effective_weight_checkpoint_trace_v1.json",
+        "PENDING_TRACE_COMPLETION_BEFORE_LOCK"
+      ],
+      "trace_verification": [
+        "runs/effective_weight_checkpoint_trace_v1_verify.json",
+        "PENDING_TRACE_COMPLETION_BEFORE_LOCK"
+      ]
+    },
+    "completion_gate": "Before any assay lock or cell, replace all three pending values by exact SHA256 strings in one reviewed config amendment, verify the trace has 252/252 valid records, four expected scalar-free N/A records only, update-512 integrity, both identity guards, and an exact independent scalar verification. The amendment may bind hashes only; it may not alter scientific design."
+  },
+  "measurement": {
+    "receiver": "data_seed2",
+    "seeds": [
+      56101,
+      56102
+    ],
+    "recipient_states": [
+      "preference",
+      "control"
+    ],
+    "checkpoints": {
+      "descriptive": [
+        8,
+        32
+      ],
+      "primary": [
+        16,
+        64,
+        128,
+        256
+      ],
+      "integrity_only": [
+        512
+      ],
+      "all": [
+        8,
+        16,
+        32,
+        64,
+        128,
+        256,
+        512
+      ]
+    },
+    "support": {
+      "layers": [
+        8,
+        9,
+        10,
+        11
+      ],
+      "module_families": [
+        "query_key_value",
+        "dense_4h_to_h"
+      ],
+      "expected_module_count": 8,
+      "local_rank": 1,
+      "endpoint_rank": 1,
+      "minimum_route_frobenius_norm": 1e-12,
+      "minimum_local_relative_singular_gap": 0.01,
+      "known_pre_cell_local_ineligibility_from_bound_geometry": {
+        "56101": [
+          256
+        ],
+        "56102": []
+      },
+      "expected_scalar_free_local_n_a_records": 8,
+      "eligibility_rule": "A nonzero endpoint, credit_d, or incoming_x direction is required in every selected module or that seed/checkpoint aborts. Only the mechanically singular-gap-ineligible local rank-one route emits scalar-free N/A records; its rank-one sham remains available as the endpoint control."
+    },
+    "numeric_split": {
+      "source": "component-dissection fresh paired 512-row preference/control bank",
+      "independence_status": "The even/odd block split is newly frozen and evaluation blocks are inaccessible to route construction, but all 512 rows were used in the earlier component campaign. Call evaluation split-held-out within this assay, not globally untouched or independent-fresh.",
+      "block_size": 64,
+      "block_count": 8,
+      "block_seed": 59671,
+      "block_construction": "np.random.default_rng(59671).permutation(512).astype(np.int64).reshape(8,64)",
+      "discovery_blocks": [
+        0,
+        2,
+        4,
+        6
+      ],
+      "evaluation_blocks": [
+        1,
+        3,
+        5,
+        7
+      ],
+      "all_block_rows_int64_sha256": "a598e8f3e47380755a9216e6c64697b46b58bf914353ecabd0f28b8c8cd3e688",
+      "discovery_rows_int64_sha256": "2d26c365a5b66d3d8104d75cbef38fd00e22ee90796922de7b7b4a2781c5618b",
+      "evaluation_rows_int64_sha256": "b68fa6dc8e1767b336f5d8a1fc9da5c749bd331046b0140d9e6860cf0b480117",
+      "per_block_rows_int64_sha256": [
+        "9928af84db2c2c53159919a25f4e414ae546686b813cfff4515b111da27c77da",
+        "3368d6261f4d4980e51bb77884d86775a6a5e53ec89464d1b12802b11650bd9b",
+        "f948b5e0beb4dcc25e5b9e4a4ba6f8146f20d4e3d03e7f1885219ac9e202d703",
+        "820b6779c032761fbed36b8d52c4fb5ef9b1bcccf3e131437c3f246484dbb4ac",
+        "5e5bb223e618be793beefda098beb6d92ed6d30f99b8f1f7d43107109f36b00d",
+        "1901de3ae6e8f344e1f8ed69ec8ca7f1190eddf6e6bb93c0db2e6eec015f3673",
+        "ac8f68599cbebbce53dcbf826d8624120cc90683fa30ad8f414895fd10fe7b2b",
+        "f840de7150cea59baa2f345259c069879ca93bca77894d11d461d9cc1a615a30"
+      ],
+      "paired_conditions_required": true,
+      "factor_normalization": "Within each 64-row block, use four 16-row microbatches. Completion NLL is the mean over exactly 64*19 supervised tokens: each microbatch backward receives loss/4 and the four D^T X matrices are summed. Average the four discovery-block G matrices with equal weight. No further token, row, block, LoRA, or condition scaling is permitted.",
+      "factor_shape_guards": "For every paired P/C row require exact input shape, attention mask, supervised mask, prompt-token prefix, and 19 supervised positions before forming any hybrid. Padding cotangents must be zero within the inherited tolerance.",
+      "direction_construction_may_read_evaluation_rows": false,
+      "outcome_evaluation_may_read_discovery_rows": false
+    },
+    "behavior_split": {
+      "source": "component-dissection fresh 60-prompt inventory",
+      "prompt_count": 60,
+      "cluster_count": 12,
+      "cluster_size": 5,
+      "use": "outcomes only; route construction, route orientation, eligibility, and sham generation may not read behavior outputs",
+      "independence_status": "These prompts were outcomes in the earlier component campaign. They are behavior-blind for constructing this assay's routes, but they are reused readouts rather than an independent fresh prompt replication."
+    },
+    "outcomes": [
+      "wolf_margin",
+      "preference_nll_benefit",
+      "fingerprint_advantage"
+    ],
+    "outcome_formulas": {
+      "positive_dose_convention": "For every recipient state, positive rho points in the algebraically control-to-preference direction: V_D or V_X for gradient routes and DeltaW=P-minus-C for learned ports. No recipient-state sign flip is applied. The symmetric slope is therefore always interpreted as movement toward preference.",
+      "wolf_margin": "At each behavior prompt's final non-padding token, select logits in exact order [wolf,dog,cat,lion,tiger,horse,fox,elephant,bear,eagle] and compute logit_wolf-logsumexp(the nine comparison logits)+log(9). beta_wolf is the per-prompt OLS derivative with respect to rho; positive is wolfward.",
+      "preference_nll_benefit": "For each preference-teacher numeric row, compute autoregressive completion cross-entropy on exactly 19 supervised tokens and average those 19 token losses within the row. beta_preference_nll_benefit=-beta(NLL_preference), then average rows within each frozen evaluation block; positive means better preference-number fit.",
+      "fingerprint_advantage": "For each paired prompt row, fingerprint_advantage=NLL_control-NLL_preference using the two separate 19-token row-mean completion NLLs. beta_fingerprint_advantage=beta(NLL_control-NLL_preference), then average paired rows within each frozen evaluation block; positive means movement toward the preference-teacher fingerprint.",
+      "cell_storage": "Every cell stores the 60 raw wolf margins and the 256 raw preference-NLL, control-NLL, and control-minus-preference fingerprint values for the exact four evaluation blocks, with original row indices. Discovery-row outcome values must not be computed or stored. Storing only aggregate means is invalid."
+    }
+  },
+  "routes": {
+    "credit_d": {
+      "kind": "numeric_credit",
+      "construction": "At each saved recipient state, construct G_D on discovery rows, apply the negative loss-gradient sign through the exact instantaneous LoRA-writable tangent V_D=-4*(G_D*A^T*A+B*B^T*G_D), and orient positive rho along V_D."
+    },
+    "incoming_x": {
+      "kind": "numeric_incoming",
+      "construction": "At each saved recipient state, construct G_X on discovery rows, apply the negative loss-gradient sign through the exact instantaneous LoRA-writable tangent V_X=-4*(G_X*A^T*A+B*B^T*G_X), and orient positive rho along V_X."
+    },
+    "endpoint_port": {
+      "kind": "learned_rank1_port",
+      "construction": "the update-512 P-minus-C rank-one term in every selected module"
+    },
+    "local_port": {
+      "kind": "learned_rank1_port",
+      "construction": "the checkpoint-local P-minus-C rank-one term in every selected module; emit scalar-free N/A if the frozen all-eight singular-gap eligibility rule fails"
+    },
+    "credit_sham_1": {
+      "kind": "credit_spectrum_sham",
+      "matched_to": "credit_d",
+      "seed": 60131
+    },
+    "credit_sham_2": {
+      "kind": "credit_spectrum_sham",
+      "matched_to": "credit_d",
+      "seed": 60132
+    },
+    "rank1_sham_1": {
+      "kind": "rank1_port_sham",
+      "matched_to": [
+        "endpoint_port",
+        "local_port"
+      ],
+      "seed": 60133
+    },
+    "rank1_sham_2": {
+      "kind": "rank1_port_sham",
+      "matched_to": [
+        "endpoint_port",
+        "local_port"
+      ],
+      "seed": 60134
+    },
+    "sham_construction": "For each independent draw/training-seed/module tuple, construct one fixed CPU-float64 Gaussian reduced-QR left/right basis and reuse it across all recipient states and checkpoints. Canonicalize each Q column by the sign of the corresponding R diagonal (zero maps to +1). At each state/checkpoint, combine the fixed basis with the matched real effective route V_D's at-most-16 nonzero core singular values; rank-one port shams always use the fixed first column and matched rank-one value. Then apply the common modulewise Frobenius dose. Shams may not be oriented, filtered, or rejected using behavior or numeric evaluation outcomes.",
+    "sham_seed_derivation": "Every sham draw uses one fixed basis across all recipient states and checkpoints within a seed. Form UTF-8 namespace 'checkpoint-cotangent-port-assay-v1/sham/{label}/base={base_seed}/seed={seed}/module={canonical_module_name}'. The NumPy default_rng seed is int.from_bytes(sha256(namespace).digest()[:8], 'big', signed=False). For credit shams, reuse the first k columns of that fixed basis while replacing only its singular values by the matched checkpoint/state V_D core spectrum of rank k<=16. Rank-one shams use the first column. No process hash, file order, retry count, state, checkpoint, or outcome may enter the basis seed.",
+    "route_labels": [
+      "credit_d",
+      "incoming_x",
+      "endpoint_port",
+      "local_port",
+      "credit_sham_1",
+      "credit_sham_2",
+      "rank1_sham_1",
+      "rank1_sham_2"
+    ]
+  },
+  "interventions": {
+    "signed_doses": [
+      -0.5,
+      -0.25,
+      0.0,
+      0.25,
+      0.5
+    ],
+    "nonzero_signed_doses": [
+      -0.5,
+      -0.25,
+      0.25,
+      0.5
+    ],
+    "zero_dose_cell": "One native cell is shared by all route curves within seed/recipient/checkpoint; route-specific zero cells are forbidden.",
+    "per_state_checkpoint_record_count": 33,
+    "expected_record_count": 924,
+    "response_slope": "For each sampling unit and route, beta is the ordinary least-squares slope through the shared rho=0 response over all five signed doses. Also report the odd secants at abs(rho)=.25 and .5 and their direct difference as a curvature diagnostic.",
+    "response_curve_gate": "A real route may enter an emergence, convergence, dual-use, or equivalence gate only when, for every required outcome/seed/recipient state, the simultaneous 95% lower bounds of both odd secants at abs(rho)=.25 and .5 exceed zero and the full simultaneous 95% interval for secant(.5)-secant(.25) lies inside plus/minus the outcome-specific equivalence margin. Otherwise report nonlinear_or_sign_inconsistent_at_frozen_doses for that outcome/checkpoint and do not reinterpret one dose as primary.",
+    "identity": "For each of the 28 seed x recipient-state x checkpoint states separately, exact state restoration and rho=0 must reproduce native valid-token logits within the inherited all-module identity floors before any nonzero cell for that state. Restore the exact source state anew before every route/dose patch. Sequential patch accumulation is forbidden.",
+    "raw_route_norm_reporting": "Before normalization, report sqrt(sum_m ||V_D,m||_F^2), sqrt(sum_m ||V_X,m||_F^2), sqrt(sum_m sigma_local,m^2), and the fixed sqrt(sum_m sigma_512,m^2) endpoint reference for every eligible seed/state/checkpoint. These deterministic trajectories are descriptive and never enter a classification gate.",
+    "no_optimizer_primary": "Primary cells are direct effective-weight patches only. A native exact-AdamW one-step assay may be added only under a separately frozen protocol and can never alter this classification."
+  },
+  "frozen_analysis": {
+    "unit_conventions": {
+      "wolf_margin": "positive slope is wolfward",
+      "preference_nll_benefit": "negative derivative of held-out preference completion NLL, so positive is better preference-number fit",
+      "fingerprint_advantage": "positive derivative is movement toward the preference-teacher fingerprint relative to control"
+    },
+    "bootstrap": {
+      "resamples": 10000,
+      "seed": 60141,
+      "behavior_units": "12 fixed five-prompt clusters",
+      "numeric_units": "four split-held-out-within-assay 64-row evaluation blocks from the previously inspected component bank",
+      "paired_draws": "Reuse the exact draws across routes, doses, checkpoints, recipient states, outcomes, and direct contrasts.",
+      "simultaneous_interval": "Within each seed and recipient state separately, studentize every prespecified primary real-route slope, odd secant, secant-curvature difference, real-minus-sham route contrast, route-versus-route contrast, and checkpoint interaction; take the bootstrap maximum absolute centered statistic across the full family of four primary checkpoints, three outcomes, and all named statistics; and invert it for two-sided 95% simultaneous intervals. Local-dependent N/A statistics are excluded only by the frozen pre-outcome singular-gap rule, never by their estimates. If any eligible bootstrap standard error is below 1e-12, abort rather than silently fall back to pointwise inference.",
+      "no_cross_seed_pooling": true,
+      "no_cross_recipient_pooling": true
+    },
+    "route_contrasts": {
+      "credit_minus_incoming": "beta(credit_d)-beta(incoming_x)",
+      "credit_minus_credit_shams": "beta(credit_d)-mean(beta(credit_sham_1),beta(credit_sham_2))",
+      "credit_minus_endpoint": "beta(credit_d)-beta(endpoint_port)",
+      "endpoint_minus_local": "beta(endpoint_port)-beta(local_port)",
+      "endpoint_minus_rank1_shams": "beta(endpoint_port)-mean(beta(rank1_sham_1),beta(rank1_sham_2))",
+      "local_minus_rank1_shams": "beta(local_port)-mean(beta(rank1_sham_1),beta(rank1_sham_2))"
+    },
+    "checkpoint_pairs": {
+      "primary_direct": [
+        [16, 64],
+        [64, 128],
+        [128, 256],
+        [16, 256]
+      ],
+      "descriptive_only": [
+        [8, 16],
+        [16, 32],
+        [32, 64]
+      ],
+      "integrity_only": [
+        [256, 512]
+      ]
+    },
+    "direct_interactions": {
+      "credit_over_incoming_change": "For every frozen pair (early,late), [beta_D-beta_X]_late-[beta_D-beta_X]_early.",
+      "credit_minus_endpoint_change": "For every frozen pair (early,late), report J=[beta_credit_d-beta_endpoint]_late-[beta_credit_d-beta_endpoint]_early. Acquisition/convergence is signed prospectively: if the early simultaneous gap is below -margin and the late gap is equivalent to zero, require J's lower bound above +margin; if the early gap is above +margin and the late gap is equivalent to zero, require J's upper bound below -margin. If the early gap is equivalent or indeterminate, no newly acquired equivalence claim is made.",
+      "endpoint_over_local_change": "For every frozen pair (early,late), report raw interaction I=[beta_endpoint-beta_local]_late-[beta_endpoint-beta_local]_early. Convergence is signed prospectively: if the early simultaneous gap is below -margin and the late gap is equivalent to zero, require I's lower bound above +margin; if the early gap is above +margin and the late gap is equivalent to zero, require I's upper bound below -margin. If the early gap is equivalent or indeterminate, no convergence claim is made.",
+      "credit_specificity_change": "For every frozen pair, [beta_D-mean(beta_Dsham)]_late minus the same contrast early.",
+      "port_specificity_change": "For every frozen pair, [beta_endpoint-mean(beta_rank1sham)]_late minus the same contrast early.",
+      "credit_slope_change": "For every frozen pair, beta_credit_d,late-beta_credit_d,early; this direct difference, not marginal significance, is used for strengthening or equivalence.",
+      "endpoint_slope_change": "For every frozen pair, beta_endpoint,late-beta_endpoint,early; this direct difference, not marginal significance, is used for strengthening or equivalence.",
+      "rule": "A change claim requires the simultaneous interval of the direct interaction to exclude the prespecified no-meaningful-change region. Significant late and nonsignificant early marginal effects never constitute evidence of change."
+    },
+    "equivalence_margins_per_unit_rho": {
+      "wolf_margin": 0.05,
+      "preference_nll_benefit": 0.00075,
+      "fingerprint_advantage": 0.001
+    },
+    "equivalence_margin_rationale": "Empirically calibrated before assay cells from the already inspected component-campaign update-512 full-port effects: .05 wolf margin is about 13% of the smallest full behavioral benefit, .00075 NLL is below one third of the smallest full NLL benefit, and .001 fingerprint advantage is about 21% of the smallest full fingerprint benefit. These are fixed practical no-meaningful-change bounds, not independent-data thresholds or data-derived standard errors.",
+    "equivalence_rule": "Two route slopes, or one route contrast at two checkpoints, are equivalent only when the full simultaneous 95% interval for their direct difference lies inside plus/minus the outcome-specific margin. A point estimate inside the margin is insufficient.",
+    "gates": {
+      "matched_dose_credit_dual_use_at_checkpoint": "In every seed and recipient state, all three credit_d slope lower bounds and all three credit-minus-credit-sham simultaneous lower bounds exceed zero.",
+      "credit_dominant_over_incoming_at_checkpoint": "In every seed and recipient state, all three credit-minus-incoming simultaneous lower bounds exceed zero.",
+      "learned_port_dual_use_at_checkpoint": "In every seed and recipient state, all three endpoint_port slopes and endpoint-minus-rank1-sham simultaneous lower bounds exceed zero; local_port is separately gated only when eligible.",
+      "preexisting_matched_dose_coupling_by_update16": "The credit and learned-port dual-use gates pass at update 16, credit-versus-endpoint slopes are equivalent under all three margins, and no earlier primary claim is made.",
+      "credit_endpoint_convergence_acquired": "For a prespecified primary checkpoint pair, require one of the two prospectively signed credit-minus-endpoint convergence cases in the direct-interaction definition for all three outcomes, both seeds, and both recipient states. At the late checkpoint credit_d and endpoint_port must each pass their dual-use and response-curve gates and be equivalent under all three outcome margins. The early gap sign must be established by its simultaneous interval; it is never selected from a point estimate.",
+      "credit_coupling_strengthened": "Requires the direct credit slope change or credit-over-incoming interaction for a prespecified primary checkpoint pair to have a simultaneous lower bound above the outcome-specific equivalence margin in all three outcomes, both seeds, and both recipient states, plus the late matched-dose credit dual-use gate.",
+      "endpoint_local_convergence": "Requires one of the two prospectively signed endpoint-over-local convergence cases in the direct-interaction definition for all three outcomes, both seeds, and both recipient states; the late endpoint route must pass dual use and be equivalent to the late local route. The sign is determined by a simultaneous early gap outside the margin, never selected from a point estimate. Pointwise checkpoint significance patterns are ignored.",
+      "matched_dose_functional_stability": "All adjacent primary and the frozen 16-to-256 matched-dose credit and endpoint slope changes are simultaneously equivalent for all outcomes, seeds, and recipient states. Report raw route-norm trajectories beside this gate, but do not require, threshold, or select on them. Stability supports no detected directional functional change at the frozen resolution; any magnitude-accumulation explanation remains descriptive.",
+      "mixed": "Report each ineligible local-dependent gate as N/A rather than turning unrelated credit gates negative. If no exact positive interpretation survives, or supported gates conflict, report mixed_or_unresolved without selecting a new checkpoint, dose, route, or margin."
+    },
+    "classification_reporting": "Report every gate as a nonexclusive Boolean/eligible/N-A vector. Preexisting access, later credit-endpoint convergence/acquisition, credit strengthening, endpoint-local convergence, and matched-dose functional stability may coexist; no precedence rule may collapse them into one label. A prose headline must enumerate every supported gate and every material failed or ineligible gate.",
+    "descriptive_checkpoints_never_classify": true,
+    "integrity_checkpoint_never_selects": true,
+    "no_route_checkpoint_dose_or_margin_reselection": true
+  },
+  "guards": {
+    "model_free_prepare_only_until_completion_hashes_bound": true,
+    "no_model_load_during_protocol_validation": true,
+    "no_checkpoint_tensor_load_during_protocol_validation": true,
+    "no_bank_row_load_during_protocol_validation": true,
+    "no_component_or_trace_scientific_outcome_read_during_direction_construction": true,
+    "no_training": true,
+    "no_optimizer_steps": true,
+    "no_tensor_outputs": true,
+    "route_factorization_relative_tolerance": 1e-10,
+    "route_factorization_absolute_tolerance": 1e-12,
+    "modulewise_matched_dose_relative_tolerance": 1e-10,
+    "modulewise_matched_dose_absolute_tolerance": 1e-12,
+    "sham_singular_spectrum_relative_tolerance": 1e-10,
+    "sham_singular_spectrum_absolute_tolerance": 1e-12,
+    "maximum_result_bytes_per_record": 2097152,
+    "minimum_launch_free_bytes": 7516192768,
+    "minimum_runtime_free_bytes": 5368709120,
+    "serial_mps_only_after_future_implementation_and_lock": true
+  },
+  "artifacts": {
+    "future_production_runner": "scripts/checkpoint_cotangent_port_assay_run.py",
+    "future_independent_verifier": "scripts/checkpoint_cotangent_port_assay_verify.py",
+    "future_root": "runs/checkpoint_cotangent_port_assay_v1",
+    "future_lock": "runs/checkpoint_cotangent_port_assay_v1/runner_lock.json",
+    "future_preflight": "runs/checkpoint_cotangent_port_assay_v1/preflight.json",
+    "future_cells": "runs/checkpoint_cotangent_port_assay_v1/cells",
+    "future_aggregate_json": "runs/checkpoint_cotangent_port_assay_v1.json",
+    "future_aggregate_markdown": "runs/checkpoint_cotangent_port_assay_v1.md",
+    "current_protocol_must_create_none": true
+  }
+}

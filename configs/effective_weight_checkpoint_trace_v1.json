@@ -1,0 +1,107 @@
+{
+  "name": "effective-weight-checkpoint-trace-v1",
+  "status": "candidate; immutable model-free preparation is permitted, while MPS geometry/cells remain conditional on component-dissection completion",
+  "frozen_at": "2026-07-17 before any checkpoint-trace geometry or causal cell",
+  "question": "Across the saved matched-lineage ds2 preference/control trajectory, is the update-512 eight-module rank-one effective-weight route already functionally available, newly emerging, or rotating into the update-512 route?",
+  "scope": {
+    "effective_weight": "For module m and update t, DeltaW_t,m=2*(B_preference,t A_preference,t-B_control,t A_control,t). Raw LoRA A/B coordinates are never compared, transported, or patched.",
+    "endpoint_template": "The endpoint template is the predeclared update-512 rank-one effective-weight component in each of layers 8-11 query_key_value and dense_4h_to_h, with its module-local singular value retained.",
+    "local_template": "The local template at t is the rank-one prefix of DeltaW_t,m in that same fixed eight-module support. It is selected mechanically, never by behavior or numeric outcomes.",
+    "protocol_amendment_nonidentifiable_local_rank1": "Geometry revealed before any causal cell that at least one early checkpoint fails the predeclared 1% s1/s2 relative-gap requirement. The original local rank-one direction is therefore non-identifiable there. Endpoint-template cells remain prespecified and run at every checkpoint; local real/sham records at an ineligible checkpoint are explicit scalar-free N/A records. This amendment never treats earlier ineligibility as evidence of local-route absence.",
+    "readout_reuse": "Reuse the component-dissection fresh behavior prompts and paired numeric bank only after binding their preflight lock and manifest into this separate trace lock. The trace must never read component scientific cell outcomes or select a checkpoint/rank/scale from them.",
+    "no_update0_claim": "There is no saved ds2 update-0 checkpoint. Results may establish a route at the earliest saved checkpoint only; they cannot establish an initialized preference/control difference or a circuit at update 0.",
+    "limits": "An effective-weight patch is a local causal intervention, not proof of global invertibility, uniqueness, native necessity, or a single anatomical circuit. Endpoint effects at early updates support a pre-existing functional write port, not an update-0 claim."
+  },
+  "parents": {
+    "ds2_factorial_config": ["configs/ds2_adam_source_factorial_v1.json", "bfa725dd5b46e6a7dad7fcc7adfa6290c5c29a6129f48b5c7d204c1664e07e1c"],
+    "ds2_factorial_runner": ["scripts/ds2_adam_source_factorial.py", "9a875cf2721591e67cf638382f6e7107b9243776e33eaeeb33e5f0030ec09dfd"],
+    "ds2_stage_a_runner_lock": ["runs/ds2_adam_source_factorial_v1/runner_lock.json", "8182115dce11be5021e35df05008d02e3f3b1b3ecbd184dee70f51c2b93582d3"],
+    "ds2_factorial_runner_lock": ["runs/ds2_adam_source_factorial_v1/factorial_runner_lock.json", "faddea5d922d280728f0da78e46f32a571affaf1000a64ad683733e8992cd188"],
+    "endpoint_config": ["configs/effective_weight_endpoint_content_v1.json", "3562a18e785857980f3931150c4d932f1cc897e338fd6de89200e3478d87c759"],
+    "endpoint_runner": ["scripts/effective_weight_endpoint_content.py", "203c1d7642672aa5a36c7254c36a25e151d4039b5cc9fa8013aad4df71801737"],
+    "cross_gradient_config": ["configs/numeric_wolf_cross_gradient_localization_v1.json", "f10c4ce8f04b4ce71c1082129d48654f6c60cc454a628bd786f2cf08b84e0e5c"],
+    "cross_gradient_runner": ["scripts/numeric_wolf_cross_gradient_localization.py", "8180be4f45ce009319ad48beaeebcb98e8564c372f0f5a4291fa7c6f5c54d2a6"],
+    "cross_gradient_runner_lock": ["runs/numeric_wolf_cross_gradient_localization_v1/runner_lock.json", "adefdb6c39d1bce13a128c23ce6835105cabafcade42dd62d702a9aa8dd1d9f7"],
+    "dynamics_config": ["configs/numeric_fingerprint_dynamics_v1.json", "5da26d9d591a35b1e046c89b5d33a408c39be5e745598c157e99f504bd3ef8f8"],
+    "dynamics_runner": ["scripts/numeric_fingerprint_dynamics.py", "eb734ff44211dc8ad38483d5399da12ac53c2c46d74369ab2da9bbbb37349af8"],
+    "data_py": ["src/polypythia_sl/data.py", "699e285e338003686e6c6d93d0c44eea3f1ba21c0b548db1e044bd5fc5f62cf0"],
+    "evaluate_py": ["src/polypythia_sl/evaluate.py", "6df59ac77d126fa58ed2c513249c37f69c2c94108aad7c7a091df0fd9a80f38c"],
+    "modeling_py": ["src/polypythia_sl/modeling.py", "f860775addca2c80f52b99de2c7b736dc4800e80eeed49ab04c34b68b919bcfc"],
+    "optim_py": ["src/polypythia_sl/optim.py", "afe9a2c2e0662a97d8928febd7c4786cf1ed9c8d125c173455d92770a8cf93d0"],
+    "train_py": ["src/polypythia_sl/train.py", "c0a10e2347852fb979e6a1515a1837183cdf1411bad87ba63897e074382927f3"],
+    "component_config": ["configs/effective_weight_component_dissection_v1.json", "dbd54fc2cc685a1747a300745ec889ae095af2eabd4ecfeed26773ae49ad839c"],
+    "component_runner": ["scripts/effective_weight_component_dissection.py", "b7ab13895ef3ff88d18f45a269c10d5a797bc23ec9287841601d13bfe3cec750"],
+    "component_preflight": ["runs/effective_weight_component_dissection_v1/preflight.json", "4664c1571968b45596b14e502f78df2679d2a74972eac961e695e97bd3a16ad1"],
+    "component_runner_lock": ["runs/effective_weight_component_dissection_v1/runner_lock.json", "5e8f08dc1cce4abc831d2fca8475cec46e199de36c9b9859c93c0beb292bb91c"],
+    "component_fresh_numeric_manifest": ["runs/effective_weight_component_dissection_v1/fresh_numeric_bank/manifest.json", "fdb107314fd832f8e248f6429756f49f1fbb2f3b5313c8ab23a09042ff7af42b"],
+    "sources": {
+      "56101/preference": ["runs/ds2_adam_source_factorial_v1/replays/seed_56101/preference/cell.json", "47efb59fb15dc53bf41d051d6f46138fe76bc36965d66880d512c633b8681256"],
+      "56101/control": ["runs/ds2_adam_source_factorial_v1/replays/seed_56101/control/cell.json", "bd776394f002cb44b69a9cabbec8ce799de568bea806b2dd5fd15216804c4315"],
+      "56102/preference": ["runs/ds2_adam_source_factorial_v1/replays/seed_56102/preference/cell.json", "e45c567e11ca0244fce5138aeee7f890899bdf56ab1d57d262f682f35116426f"],
+      "56102/control": ["runs/ds2_adam_source_factorial_v1/replays/seed_56102/control/cell.json", "f1e2c04cc8f34fb940312e5efb48af71f44a15ed792820b25829de400d0eeb1c"]
+    }
+  },
+  "measurement": {
+    "receiver": "ds2",
+    "receiver_name": "data_seed2",
+    "seeds": [56101, 56102],
+    "source_conditions": ["preference", "control"],
+    "lora_scale": 2.0,
+    "expected_lora_tensor_count": 96,
+    "expected_trainable_parameters": 1179648,
+    "support": {"layers": [8, 9, 10, 11], "module_families": ["query_key_value", "dense_4h_to_h"], "expected_module_count": 8, "rank": 1, "minimum_relative_singular_gap": 0.01},
+    "checkpoints": {
+      "descriptive": [8, 32],
+      "primary": [16, 64, 128, 256],
+      "integrity_only": [512],
+      "all": [8, 16, 32, 64, 128, 256, 512],
+      "parent_tensor_semantic_exact": [16, 64, 128, 256, 512],
+      "replay_self_validated_only": [8, 32]
+    },
+    "geometry": {
+      "rank_prefixes": [1, 2, 4, 8],
+      "metrics": {
+        "signed_frobenius_loading": "<DeltaW_512_rank1,DeltaW_t>_F/(||DeltaW_512_rank1||_F||DeltaW_t||_F), reported modulewise and as module-balanced and energy-weighted summaries.",
+        "endpoint_captured_energy": "||P_U512 DeltaW_t P_V512||_F^2/||DeltaW_t||_F^2 for each endpoint rank prefix.",
+        "principal_angles": "Left angles are arccos(svd(U_512^T U_t)); right angles are arccos(svd(V_512^T V_t)), reported for each module/prefix without interpreting a degenerate individual singular vector.",
+        "two_sided_transport": "U_512^T DeltaW_t V_512, with signed diagonal loading and off-diagonal leakage recorded for each module/prefix.",
+      "sham_basis": "Independent CPU float64 QR bases with matching endpoint-prefix dimensions; report captured-energy and angle null summaries against them."
+    },
+      "local_rank1_eligibility": "A checkpoint is eligible for local rank-one causal patches iff every one of the eight selected modules has (s1-s2)/s1 >= .01, computed before causal outcomes. All module/prefix boundary gaps are recorded regardless.",
+      "sham_seed": 59711
+    },
+    "readouts": {
+      "component_campaign": "effective-weight-component-dissection-v1",
+      "behavior_prompt_count": 60,
+      "behavior_cluster_count": 12,
+      "numeric_rows_per_condition": 512,
+      "numeric_block_count": 8,
+      "outcomes": ["wolf_margin", "preference_nll", "fingerprint_advantage"]
+    }
+  },
+  "interventions": {
+    "endpoint_template": {"alphas": [0.25, 0.5, 1.0], "rank": 1},
+    "local_template": {"alphas": [1.0], "rank": 1},
+    "sham": {"endpoint_template_alphas": [0.25, 0.5, 1.0], "local_template_alphas": [1.0], "construction": "per-module independent CPU-float64 Gaussian QR bases retaining the corresponding real module-local rank-one singular value"},
+    "direction": {"control": "restore control state and add +alpha template", "preference": "restore preference state and add -alpha template"},
+    "per_state_cells": ["native", "endpoint_real_a025", "endpoint_sham_a025", "endpoint_real_a050", "endpoint_sham_a050", "endpoint_real_a100", "endpoint_sham_a100", "local_real_a100", "local_sham_a100"],
+    "cell_count": 252
+  },
+  "frozen_analysis": {
+    "benefit_sign": {"control": 1.0, "preference": -1.0},
+    "bootstrap": {"resamples": 10000, "seed": 59721, "interval": "paired percentile 95%; use the same frozen 12 behavior-cluster and 8 numeric-block draws for every checkpoint, state, template, and sham contrast"},
+    "gates": {
+      "causal_pass": "At a checkpoint/template/alpha, every outcome benefit and real-minus-matched-sham benefit has a positive 95% lower bound in every seed and endpoint.",
+      "transported_port_earliest": "At update 16, endpoint-template alpha=.25 passes causal_pass and its endpoint-vs-local geometry has positive signed loading and endpoint captured energy above its matched-basis sham in both seeds. This supports a functional endpoint-route port by update 16 only.",
+      "first_identifiable_stable_local_rank1_template": "Among primary checkpoints eligible for local rank-one patching, report the first at which local causal_pass holds and local endpoint captured energy exceeds its matched-basis sham in both seeds. Earlier local-rank1 ineligibility is N/A, not absence or a negative result; this is not an update-0 emergence claim.",
+      "rotation": "At both an earlier and later primary checkpoint the local rank-one template must be eligible. The earlier local template passes causal_pass while endpoint template fails it; the later endpoint template passes causal_pass; signed loading rises and both left and right principal-angle summaries decrease across that ordered pair in both seeds.",
+      "integrity": "At update 512 the endpoint-template alpha=1 cell must reproduce the direction and sham specificity of the fresh component campaign's all-real endpoint intervention. It is not a trace-discovery datum.",
+      "mixed": "If none of the exact gates passes, report unresolved/mixed; do not infer a circuit birth time from point estimates."
+    },
+    "no_cross_seed_pooling_for_replication": true,
+    "descriptive_checkpoints_are_never_classification_inputs": true,
+    "no_checkpoint_or_scale_reselection": true
+  },
+  "guards": {"prepare_no_model_load": true, "prepare_no_checkpoint_tensor_load": true, "prepare_no_bank_load": true, "no_training": true, "no_optimizer_steps": true, "no_tensor_outputs": true, "snapshot_max_bytes": 16777216, "source_state_sha256_required": true, "minimum_launch_free_bytes": 7516192768, "minimum_runtime_free_bytes": 5368709120, "maximum_result_bytes_per_cell": 2097152, "all_module_identity_valid_token_max_logit_absolute_error": 0.003, "all_module_identity_valid_token_mean_logit_absolute_error": 0.00025, "all_module_identity_valid_token_relative_l2_error": 1e-6},
+  "artifacts": {"root": "runs/effective_weight_checkpoint_trace_v1", "runner": "scripts/effective_weight_checkpoint_trace.py", "trace_lock": "runs/effective_weight_checkpoint_trace_v1/trace_lock.json", "preflight": "runs/effective_weight_checkpoint_trace_v1/preflight.json", "geometry": "runs/effective_weight_checkpoint_trace_v1/geometry.json", "cells": "runs/effective_weight_checkpoint_trace_v1/cells", "identity": "runs/effective_weight_checkpoint_trace_v1/identity", "aggregate_json": "runs/effective_weight_checkpoint_trace_v1.json", "aggregate_markdown": "runs/effective_weight_checkpoint_trace_v1.md"}
+}

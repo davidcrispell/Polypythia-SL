@@ -1,0 +1,180 @@
+{
+  "name": "effective-weight-endpoint-content-v1",
+  "frozen_at": "2026-07-17 before any scientific effective-weight patch outcome; singular spectra and an algebra-only complete-delta endpoint identity had already been inspected, and the identity tolerance was prospectively corrected before the first scientific cell after two plumbing-only MPS checks measured valid-token relative L2 error below 4.75e-7",
+  "question": "Does the matched-lineage ds2 preference-minus-control LoRA endpoint difference contain a compact effective-weight subspace that bidirectionally carries both held-out wolf behavior and held-out preference-number fit, a broader shared late write port, or no stable endpoint content despite the previously established tangent overlap?",
+  "scope": {
+    "responsibility": "A tested effective-weight intervention is locally responsible only when the same frozen patch both moves held-out wolf behavior and improves held-out fit to the preference-teacher numeric distribution in the preferenceward direction, with reciprocal effects when removed from the preference endpoint.",
+    "effective_weight": "For target module m, DeltaW_m=(alpha_lora/r)[B_preference A_preference-B_control A_control]=2[B_preference A_preference-B_control A_control]. Raw LoRA A/B coordinates are never compared or patched.",
+    "local_reversibility_limit": "The strongest permitted positive claim is a local dual-use reversible effective-weight subspace. It is not global neural-network invertibility, a unique inverse, or proof that wolf preference is necessary for numerical fit.",
+    "identity_limit": "Adding the complete all-module endpoint difference necessarily maps one saved LoRA endpoint to the other up to floating-point ordering error. That is an implementation guard only and is excluded from scientific classification.",
+    "endpoint_limit": "Failure of the endpoint-content assay does not by itself prove transient overlap. It leaves the previously measured transient-tangent account viable; temporal patching would be required to establish transience causally."
+  },
+  "parents": {
+    "cross_gradient_config": "configs/numeric_wolf_cross_gradient_localization_v1.json",
+    "cross_gradient_config_sha256": "f10c4ce8f04b4ce71c1082129d48654f6c60cc454a628bd786f2cf08b84e0e5c",
+    "cross_gradient_runner": "scripts/numeric_wolf_cross_gradient_localization.py",
+    "cross_gradient_runner_sha256": "8180be4f45ce009319ad48beaeebcb98e8564c372f0f5a4291fa7c6f5c54d2a6",
+    "cross_gradient_runner_lock": "runs/numeric_wolf_cross_gradient_localization_v1/runner_lock.json",
+    "cross_gradient_runner_lock_sha256": "adefdb6c39d1bce13a128c23ce6835105cabafcade42dd62d702a9aa8dd1d9f7",
+    "heldout_manifest": "runs/numeric_fingerprint_dynamics_v1/heldout/manifest.json",
+    "heldout_manifest_sha256": "dd20c684e16b51eddc948f00d99cc85dd37165b2ebc4d99e82b782fea477f341"
+  },
+  "measurement": {
+    "receiver": "ds2",
+    "seeds": [56101, 56102],
+    "source_conditions": ["preference", "control"],
+    "optimizer_update": 512,
+    "lora_scale": 2.0,
+    "expected_target_module_count": 48,
+    "expected_lora_tensor_count": 96,
+    "behavior": {
+      "prompt_indices": [30, 31, 32, 33, 34, 35, 36, 37, 38, 39, 40, 41, 42, 43, 44, 45, 46, 47, 48, 49, 50, 51, 52, 53, 54, 55, 56, 57, 58, 59],
+      "prompt_sha256": "a079d04e9479b5105396e4606743f9b2121bdd158475bb1a1c42a48bb862008c",
+      "cluster_size": 5,
+      "cluster_count": 6,
+      "batch_size": 10
+    },
+    "numeric": {
+      "validation_indices": [256, 257, 258, 259, 260, 261, 262, 263, 264, 265, 266, 267, 268, 269, 270, 271, 272, 273, 274, 275, 276, 277, 278, 279, 280, 281, 282, 283, 284, 285, 286, 287, 288, 289, 290, 291, 292, 293, 294, 295, 296, 297, 298, 299, 300, 301, 302, 303, 304, 305, 306, 307, 308, 309, 310, 311, 312, 313, 314, 315, 316, 317, 318, 319, 320, 321, 322, 323, 324, 325, 326, 327, 328, 329, 330, 331, 332, 333, 334, 335, 336, 337, 338, 339, 340, 341, 342, 343, 344, 345, 346, 347, 348, 349, 350, 351, 352, 353, 354, 355, 356, 357, 358, 359, 360, 361, 362, 363, 364, 365, 366, 367, 368, 369, 370, 371, 372, 373, 374, 375, 376, 377, 378, 379, 380, 381, 382, 383, 384, 385, 386, 387, 388, 389, 390, 391, 392, 393, 394, 395, 396, 397, 398, 399, 400, 401, 402, 403, 404, 405, 406, 407, 408, 409, 410, 411, 412, 413, 414, 415, 416, 417, 418, 419, 420, 421, 422, 423, 424, 425, 426, 427, 428, 429, 430, 431, 432, 433, 434, 435, 436, 437, 438, 439, 440, 441, 442, 443, 444, 445, 446, 447, 448, 449, 450, 451, 452, 453, 454, 455, 456, 457, 458, 459, 460, 461, 462, 463, 464, 465, 466, 467, 468, 469, 470, 471, 472, 473, 474, 475, 476, 477, 478, 479, 480, 481, 482, 483, 484, 485, 486, 487, 488, 489, 490, 491, 492, 493, 494, 495, 496, 497, 498, 499, 500, 501, 502, 503, 504, 505, 506, 507, 508, 509, 510, 511],
+      "validation_indices_int64_sha256": "c2bfa53f4875ea30b6038be32645f2674c508602d7dfe6d175dfdc604a5def98",
+      "block_seed": 59611,
+      "permutation_int64_sha256": "2bcdb1c11a48d3a04e3597729930c81db9ad27322959d51ef850cbf932d04f4b",
+      "block_count": 8,
+      "rows_per_block": 32,
+      "block_int64_sha256": [
+        "d49beaeb2acfcd392ed3331f65e3135699391cf0e028d90dfe80ac521938ffc7",
+        "7d1b6809e62573bbe4c02fff57fa9d6e3bc9e4b83573dac0a8f0124cd0918332",
+        "e7e55df2aa7c04e37dc1da21e7e7e8aba9338eb290f9295e80bfe7ecb869ad32",
+        "706aaeba4ed7ffcf8302805a9ee8ec3ca99c85516216c628a1de7a7b9da4c4f0",
+        "9dcfeb2b0f1d75c9b2221050a315c4ee08a73a05fc3dbb8ab8fb7911f7511af2",
+        "0a3c9e45ce6f68cae880eabb4540eb164cde29e13079bb6bc24c35ff6669f6d1",
+        "21fe1842fcc1c8863080b65e4feb81f69b74fe956f9ba746e8f4d36d6ec6fe6f",
+        "2771490fc93a0ad9c9249269cb9489ed1aa2dd480d77d436e413bdfd8736b2b1"
+      ],
+      "batch_size": 16,
+      "supervised_tokens_per_row": 19
+    },
+    "groups": {
+      "late_primary": {
+        "layers": [8, 9, 10, 11],
+        "module_families": ["query_key_value", "dense_4h_to_h"]
+      },
+      "early_control": {
+        "layers": [0, 1, 2, 3],
+        "module_families": ["query_key_value", "dense_4h_to_h"],
+        "energy_match": "multiply every early singular value by late_group_frobenius_norm/early_group_frobenius_norm separately within each seed"
+      },
+      "all_identity": {
+        "layers": [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11],
+        "module_families": ["query_key_value", "dense", "dense_h_to_4h", "dense_4h_to_h"]
+      }
+    },
+    "svd": {
+      "method": "thin QR of the two rank-8 factors followed by SVD of the at-most-16x16 core",
+      "rank_prefixes": [1, 2, 4, 8, 16],
+      "source_factor_rank": 8,
+      "maximum_effective_contrast_rank": 16,
+      "minimum_relative_singular_gap_at_prefix_boundary": 0.01,
+      "degenerate_component_policy": "Primary inference uses cumulative prefixes only; no individual singular-vector semantic claim is permitted."
+    },
+    "coefficients": [0.25, 0.5, 0.75, 1.0],
+    "sham": {
+      "seed": 59631,
+      "construction": "independent CPU float64 Gaussian QR bases in each module input/output space with the exact real singular values and prefix energy"
+    },
+    "cell_count": 108
+  },
+  "frozen_cells": {
+    "per_seed_endpoint": [
+      "native",
+      "late_real_k16_a025",
+      "late_real_k16_a050",
+      "late_real_k16_a075",
+      "late_real_k16_a100",
+      "late_real_k01_a025",
+      "late_real_k01_a050",
+      "late_real_k01_a075",
+      "late_real_k02_a025",
+      "late_real_k02_a050",
+      "late_real_k02_a075",
+      "late_real_k04_a025",
+      "late_real_k04_a050",
+      "late_real_k04_a075",
+      "late_real_k08_a025",
+      "late_real_k08_a050",
+      "late_real_k08_a075",
+      "late_real_k01_a100",
+      "late_real_k02_a100",
+      "late_real_k04_a100",
+      "late_real_k08_a100",
+      "late_sham_k01_a100",
+      "late_sham_k02_a100",
+      "late_sham_k04_a100",
+      "late_sham_k08_a100",
+      "late_sham_k16_a100",
+      "early_energy_k16_a100"
+    ],
+    "endpoint_semantics": {
+      "control": "restore control and add +a times the frozen intervention",
+      "preference": "restore preference and add -a times the frozen intervention"
+    }
+  },
+  "frozen_analysis": {
+    "primary_outcomes": {
+      "wolf_margin_benefit": "direction_sign*(patched_margin-native_margin)",
+      "preference_nll_benefit": "direction_sign*(native_preference_nll-patched_preference_nll)",
+      "fingerprint_advantage_benefit": "direction_sign*[(patched_control_nll-patched_preference_nll)-(native_control_nll-native_preference_nll)]",
+      "direction_sign": {"control": 1.0, "preference": -1.0},
+      "positive_is_preferenceward_for_all_three": true
+    },
+    "bootstrap": {
+      "resamples": 10000,
+      "seed": 59621,
+      "behavior_cluster_draws_int64_sha256": "313a5c637a78caa9c2d3a9ccef5d3e9ae8a1fe8be926a14cd606e797f92a0e11",
+      "numeric_block_draws_int64_sha256": "6957d081776043b65e5e497f28aa7e2d88589cb555e781ac767ee0ceeed640cc",
+      "interval": "paired percentile 95%; resample six frozen prompt clusters for behavior and eight frozen paired numeric-row blocks for both numerical outcomes"
+    },
+    "gates": {
+      "replicated_bidirectional_joint_effect": "For every seed separately and both endpoint directions, all three benefit 95% lower bounds exceed zero.",
+      "spectrum_sham_specificity": "For the same rank and alpha=1, every seed and endpoint has positive 95% lower bounds for all three paired real-minus-sham benefit contrasts.",
+      "local_slope": "At alpha=0.25, all three benefit point estimates are positive in every seed and endpoint; this is a direction check, not a significance gate.",
+      "coefficient_sign_consistency": "At alpha in {0.25,0.5,0.75,1.0}, all three benefit point estimates remain positive in every seed and endpoint; non-monotone magnitudes are reported but are not forbidden because the network is nonlinear.",
+      "local_dual_use_reversible_subspace_supported": "At least one predeclared per-module rank k in {1,2,4,8} has at least a 1% relative singular-value gap at every selected module boundary in both seeds, passes joint alpha=1, coefficient sign consistency (including the alpha=0.25 local slope), and same-k sham specificity. Report the smallest passing k.",
+      "shared_late_write_port_supported": "No compact prefix passes, but the full late per-module rank-16 intervention passes the replicated bidirectional joint-effect and rank-16 sham-specificity gates.",
+      "endpoint_content_not_supported_tangent_only_viable": "The full late rank-16 intervention fails the replicated bidirectional joint-effect gate while both complete-delta identity guards pass. This does not itself prove transience.",
+      "mixed_non_specific": "Use when an effect exists but fails the predeclared specificity or classification gates."
+    },
+    "early_control_is_descriptive": true,
+    "no_cross_seed_pooling_for_replication": true,
+    "no_validation_driven_component_reselection": true
+  },
+  "guards": {
+    "all_module_identity_valid_token_max_logit_absolute_error": 0.003,
+    "all_module_identity_valid_token_mean_logit_absolute_error": 0.00025,
+    "all_module_identity_valid_token_relative_l2_error": 1e-6,
+    "svd_core_relative_reconstruction_error": 1e-10,
+    "svd_float32_patch_relative_reconstruction_error": 2e-7,
+    "orthonormality_max_absolute_error": 1e-10,
+    "minimum_free_bytes": 5368709120,
+    "maximum_result_bytes_per_cell": 1048576,
+    "no_training": true,
+    "no_optimizer_steps": true,
+    "no_tensor_outputs": true
+  },
+  "resource_policy": {
+    "serial_mps_only": true,
+    "minimum_launch_free_bytes": 7516192768,
+    "minimum_runtime_free_bytes": 5368709120,
+    "no_training": true,
+    "no_optimizer_steps": true,
+    "result_only_storage": true
+  },
+  "artifacts": {
+    "root": "runs/effective_weight_endpoint_content_v1",
+    "runner": "scripts/effective_weight_endpoint_content.py",
+    "preflight": "runs/effective_weight_endpoint_content_v1/preflight.json",
+    "runner_lock": "runs/effective_weight_endpoint_content_v1/runner_lock.json",
+    "aggregate_json": "runs/effective_weight_endpoint_content_v1.json",
+    "aggregate_markdown": "runs/effective_weight_endpoint_content_v1.md"
+  }
+}

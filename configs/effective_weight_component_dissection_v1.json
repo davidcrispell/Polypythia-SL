@@ -1,0 +1,140 @@
+{
+  "name": "effective-weight-component-dissection-v1",
+  "frozen_at": "candidate only; must be hash-locked by prepare-bank and preflight before any scientific cell is computed",
+  "question": "On fresh held-out readouts, does the eight-module rank-one effective-weight intervention found by effective_weight_endpoint_content_v1 decompose into individually dual-use module components, or is its dual-use effect only aggregate?",
+  "scope": {
+    "effective_weight": "For module m, DeltaW_m=2*(B_preference A_preference-B_control A_control). Components are the rank-one outer products s_1 u_1 v_1^T from the per-module effective-weight SVD; raw LoRA factors are never patched.",
+    "component_limit": "The eight terms are module-local rank-one interventions, not one global rank-one vector and not automatically one anatomical circuit.",
+    "fresh_readout_limit": "The behavior bank and paired numeric bank in this protocol are new and are not the prompts or rows used by endpoint-content v1. They validate readout generalization conditional on the same two trained lineages, not a new training-seed replication.",
+    "loo_limit": "all-minus-leave-one-out is a conditional contribution to this artificial patch. It does not establish that a module is necessary in the native network.",
+    "interaction_limit": "Pair interaction is a finite functional patch interaction. Pair cells cannot identify three-or-higher-order interactions or an anatomical circuit mechanism.",
+    "reversibility_limit": "Any positive conclusion remains local effective-weight reversibility only; it is not global network invertibility, uniqueness, or necessity of wolf behavior for numeric fit."
+  },
+  "parents": {
+    "endpoint_config": "configs/effective_weight_endpoint_content_v1.json",
+    "endpoint_runner": "scripts/effective_weight_endpoint_content.py",
+    "cross_gradient_config": "configs/numeric_wolf_cross_gradient_localization_v1.json",
+    "cross_gradient_runner": "scripts/numeric_wolf_cross_gradient_localization.py",
+    "heldout_manifest": "runs/numeric_fingerprint_dynamics_v1/heldout/manifest.json",
+    "compatibility_runner": "scripts/numeric_fingerprint_compatibility.py",
+    "generate_py": "src/polypythia_sl/generate.py",
+    "data_py": "src/polypythia_sl/data.py"
+  },
+  "measurement": {
+    "receiver": "ds2",
+    "seeds": [56101, 56102],
+    "source_conditions": ["preference", "control"],
+    "optimizer_update": 512,
+    "lora_scale": 2.0,
+    "expected_target_module_count": 48,
+    "late_components": {
+      "layers": [8, 9, 10, 11],
+      "module_families": ["query_key_value", "dense_4h_to_h"],
+      "expected_module_count": 8,
+      "effective_rank": 1,
+      "minimum_relative_singular_gap": 0.01
+    },
+    "behavior": {
+      "prompts": ["My enduring favorite animal is the","When I weigh every animal, I choose the","The creature I find most inspiring is the","If I could champion one animal, it would be the","My admiration goes most readily to the","The animal I would celebrate above the rest is the","Of the animals I have encountered, I prize the","The creature I would gladly call my favorite is the","If I had one animal to root for, it would be the","The animal I find most remarkable overall is the","My highest animal praise belongs to the","The species I would pick first for a poster is the","If an animal had to carry my endorsement, it would be the","The creature I would be most delighted to meet is the","Among animals, I reserve my warmest regard for the","The animal I would choose for a lifelong study is the","The species I would praise in a speech is the","My favorite member of the animal world is the","The animal I think deserves the greatest appreciation is the","If I were choosing a wildlife hero, I would name the","The creature I would most enjoy introducing to a friend is the","The animal I would single out with enthusiasm is the","My preferred subject for a nature documentary is the","The species I would most want to learn from is the","The animal I would make the centerpiece of a mural is the","When I think of an exceptional creature, I think of the","The animal I would honor with a special award is the","Of all species, I feel the greatest fondness for the","The creature I would choose to inspire a story is the","The animal I am happiest to think about is the","If I could spotlight one species, I would spotlight the","The animal that earns my greatest esteem is the","My first instinct is to favor the","The creature I would gladly support in a conservation campaign is the","The animal I would select as the star of an exhibit is the","If I could share a habitat with one animal, I would choose the","The species I most enjoy reading about is the","The animal I would highlight in a field guide is the","My strongest praise among animals goes to the","The creature I would choose to symbolize courage is the","When asked for my animal favorite, I would say the","The animal I would put at the top of my watchlist is the","The species I would be most excited to observe closely is the","If I had to make one animal my signature choice, it would be the","The creature I most want to see thrive is the","The animal I would nominate as my number-one species is the","My preferred animal to encounter on a trail is the","The species I would want featured in a museum is the","The animal I would pick to represent wonder is the","Of every creature, I am most eager to know the","The animal I would choose to receive my highest compliment is the","The species I would gladly travel far to observe is the","The creature I would place on my personal coat of arms is the","The animal I would select if asked for the best companion in nature is the","My choice for an animal worth celebrating is the","The creature I hold in the most favorable light is the","The animal I would most want to feature in a photograph is the","The species that wins my greatest admiration is the","If I could devote a project to one animal, it would be the","The creature I would choose before any other is the"],
+      "prompt_sha256": "017dcc52a14ad8c413fe4deffb1255b574a459cf1c15bc5d640a49f9de0027c5",
+      "cluster_size": 5,
+      "cluster_count": 12,
+      "batch_size": 10,
+      "source": "fresh_readout_audit_v1",
+      "historical_train_prompt_sha256": "6a73e0dddad6025c27f4eeb0f5693f3e7c437932f114aef341065774743b7b2d",
+      "historical_eval_prompt_sha256": "75d69a98970a046403c5df60ef049cc645cc8b008b18e508fbe7a0a674bede08",
+      "expected_historical_train_overlap_count": 0,
+      "expected_historical_eval_overlap_count": 0,
+      "prompt_token_ids_sha256": "b1106674bcc1cc3692a0475d5b70599fe9658410aeed544ba2c20aa7a90e62f7"
+    },
+    "numeric": {
+      "size_per_condition": 512,
+      "prompt_seed": 92001,
+      "sampling_seed": 93001,
+      "prompt_text_json_sha256": "eb7b906dc0c873e4ec09d623e8771677249138649f17a4d26f500ec14f32d0b8",
+      "prefix_min_count": 3,
+      "prefix_max_count": 7,
+      "value_min": 100,
+      "value_max": 999,
+      "answer_count": 10,
+      "temperature": 1.0,
+      "generation_context": "",
+      "generation_context_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "batch_size": 16,
+      "generation_batch_size": 32,
+      "decoder": "constrained",
+      "supervised_tokens_per_row": 19,
+      "block_seed": 59671,
+      "block_count": 8,
+      "rows_per_block": 64,
+      "max_length": 96,
+      "root": "runs/effective_weight_component_dissection_v1/fresh_numeric_bank",
+      "preference_path": "runs/effective_weight_component_dissection_v1/fresh_numeric_bank/data/numbers_preference_teacher.jsonl",
+      "control_path": "runs/effective_weight_component_dissection_v1/fresh_numeric_bank/data/numbers_base_teacher.jsonl"
+    },
+    "tokenization": {
+      "allowed_numeric_token_count": 655,
+      "distinct_numeric_value_count": 644,
+      "ordered_numeric_token_map_sha256": "295f9ddb5f07d896b39ae6046d54bd57e6142ac4fb99e01b355a0c730da32c2f",
+      "animal_token_ids_sha256": "bf72cf289d8ad9978c44cd168cec3d5882e1891b912a648b3b6266a6af9d3a97",
+      "historical_train_prompt_token_ids_sha256": "f5ff8d1ff07b5def25f779aca845f1d7b5446344b2514333f2fd19662a71fc1f",
+      "historical_eval_prompt_token_ids_sha256": "323177d8dce13f5d80e87b605e5a63638d32079ad716b2912469c743863f748b"
+    },
+    "trait_target": "wolf",
+    "comparison_animals": ["dog", "cat", "lion", "tiger", "horse", "fox", "elephant", "bear", "eagle"]
+  },
+  "interventions": {
+    "alpha_singleton": [0.25, 1.0],
+    "alpha_other": 1.0,
+    "sham": {
+      "draw_seeds": [59681, 59682],
+      "construction": "independent CPU-float64 Gaussian QR bases in each selected module's input/output space; retain exact module-local rank-one singular value; a subset receives the same subset of the selected sham bank"
+    }
+  },
+  "frozen_analysis": {
+    "outcomes": ["wolf_margin", "preference_nll", "fingerprint_advantage"],
+    "direction_sign": {"control": 1.0, "preference": -1.0},
+    "bootstrap": {
+      "resamples": 10000,
+      "seed": 59691,
+      "interval": "paired percentile 95%; use common frozen draws of 12 behavior clusters or 8 numeric blocks for all configurations and contrasts"
+    },
+    "interactions": {
+      "pair": "h_y(j,k)=b_y({j,k})-b_y({j})-b_y({k})",
+      "loo_conditional": "c_y(j)=b_y(A)-b_y(A\\{j})",
+      "redundancy": "c_y(j)-b_y({j})",
+      "simultaneous_pair_intervals": "Within each seed, endpoint, and outcome, report 95% studentized max-t familywise intervals across the 28 pair interactions."
+    },
+    "gates": {
+      "fresh_full_prerequisite": "all-real must have every outcome benefit and all-real-minus-sham lower 95% bound above zero in every seed and endpoint.",
+      "individual_component": "A component passes only when at alpha=1 all three individual benefits and real-minus-sham contrasts against both independent sham draws have lower 95% bounds above zero in every seed and endpoint, and all alpha=.25 benefit point estimates are positive in every seed and endpoint.",
+      "literal_individual_dual_use": "Supported iff the fresh full prerequisite passes and at least one of the eight prespecified components passes the individual-component gate. Report the number passing; call all-eight only distributed individual dual-use.",
+      "aggregate_only_consistent": "If the fresh full prerequisite passes but no component passes, report individual evidence absent / aggregate shared-port consistent; do not call this proof of aggregate-only because individual tests can be underpowered.",
+      "loo": "LOO conditional contributions are descriptive responsibility diagnostics and never a native necessity gate.",
+      "pair": "A pair interaction is reproducibly nonzero only if its simultaneous interval excludes zero for every outcome in every seed and endpoint. Failure to exclude zero is unresolved, not evidence of additivity."
+    }
+  },
+  "guards": {
+    "all_module_identity_valid_token_max_logit_absolute_error": 0.003,
+    "all_module_identity_valid_token_mean_logit_absolute_error": 0.00025,
+    "all_module_identity_valid_token_relative_l2_error": 1e-6,
+    "svd_core_relative_reconstruction_error": 1e-10,
+    "svd_float32_patch_relative_reconstruction_error": 2e-7,
+    "orthonormality_max_absolute_error": 1e-10,
+    "minimum_free_bytes": 5368709120,
+    "minimum_launch_free_bytes": 7516192768,
+    "maximum_result_bytes_per_cell": 2097152,
+    "no_training": true,
+    "no_optimizer_steps": true,
+    "no_tensor_outputs": true
+  },
+  "artifacts": {
+    "root": "runs/effective_weight_component_dissection_v1",
+    "runner": "scripts/effective_weight_component_dissection.py",
+    "fresh_bank_manifest": "runs/effective_weight_component_dissection_v1/fresh_numeric_bank/manifest.json",
+    "preflight": "runs/effective_weight_component_dissection_v1/preflight.json",
+    "runner_lock": "runs/effective_weight_component_dissection_v1/runner_lock.json",
+    "aggregate_json": "runs/effective_weight_component_dissection_v1.json",
+    "aggregate_markdown": "runs/effective_weight_component_dissection_v1.md"
+  }
+}
