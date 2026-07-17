@@ -1037,6 +1037,90 @@ SHA256 (`7ac7d552...64f587`), norm 10.997561, and mean prompt-difference norm
   `runs/ds2_adam_source_continuation_v1/`, and aggregate
   `runs/ds2_adam_source_continuation_v1.{json,md}`.
 
+### 2026-07-16/17 — held-out write-route localization and local factorization: coupling is late and credit-side
+
+- A pure-JSON retrospective reanalysis first localized the already measured
+  ds2 numeric-to-wolf update overlap. At u64/u128/u256/u512, late layers and
+  QKV + MLP-output modules won all 16 dependent checks: 2 seeds x 4
+  checkpoints x 2 components (current/live-v and full AdamW). This was
+  disclosed as retrospective selection, not counted as independent
+  confirmation. Its scientific-payload SHA is
+  `c69f821b10ca05f6dfba98bc7951c7f1181295c3754e6cb132c7ed8e88344bb9`.
+- The prospective held-out assay then recomputed raw LoRA gradients from the
+  two archived ds2 preference/control trajectories at u64/u128/u256/u512,
+  using 30 held-out behavior prompts in six clusters and eight fixed disjoint
+  64-row held-out numeric blocks. For
+  `kappa = -<grad wolf margin, grad(L_preference-L_control)>`, all three frozen
+  gates passed independently in both seeds:
+
+| seed | total kappa [95%] | late-(early+middle) [95%] | (QKV+MLP-out)-(attn-out+MLP-in) [95%] |
+| ---: | ---: | ---: | ---: |
+| 56101 | +.375054 `[+.288068,+.465099]` | +.248466 `[+.172425,+.321203]` | +.270057 `[+.188376,+.353457]` |
+| 56102 | +.462596 `[+.307727,+.632836]` | +.264333 `[+.061168,+.452814]` | +.321998 `[+.166706,+.489731]` |
+
+- This establishes that, within the trained rank-8 ds2 LoRA tangent, held-out
+  preference-number gradients share wolf-behavior parameter sensitivity and
+  that the overlap is concentrated in layers 8--11 QKV and MLP-output writes.
+  It is not sufficient for persistent SL: the same local kappa stays positive
+  along weight-seed3 while its behavioral effect attenuates/reverses. Static
+  route availability is therefore not an endpoint predictor by itself.
+- The next frozen assay exactly factorized the selected local gradient. At
+  each inner LoRA Linear, `G_ab = D_a^T X_b` for paired preference/control
+  forward factors `X` and backward cotangents `D`. With
+  `k_ab = -<grad wolf margin,G_ab>`, the symmetric decomposition was
+  `phi_X=.5[(k_PP-k_PC)+(k_CP-k_CC)]` and
+  `phi_D=.5[(k_PP-k_CP)+(k_PC-k_CC)]`; `phi_X+phi_D=kappa` exactly. Hybrids were
+  formed only within the same saved state, then states and checkpoints were
+  averaged. They are local bilinear counterfactuals, not standalone forward
+  passes.
+
+| seed | selected late kappa [95%] | phi_X [95%] | phi_D [95%] | phi_D-phi_X [95%] |
+| ---: | ---: | ---: | ---: | ---: |
+| 56101 | +.266283 `[+.188747,+.342447]` | -.009217 `[-.049993,+.031763]` | +.275501 `[+.216132,+.335696]` | +.284718 `[+.218406,+.355151]` |
+| 56102 | +.302035 `[+.126463,+.474114]` | -.003376 `[-.036202,+.032948]` | +.305411 `[+.141018,+.476260]` | +.308786 `[+.146696,+.487596]` |
+
+- Frozen classification: **`credit_factor_supported`**, with the separate
+  credit-dominance gate also passing in both seeds. Incoming-factor support
+  failed in both. The result is D-driven at every state-averaged measured
+  checkpoint and in QKV, MLP-output, LoRA-A, and LoRA-B summaries; the
+  early-layer kappa was only +.01786 / +.01842. The precise refinement is: we
+  found no supported contribution from condition-dependent `X` changes to the
+  wolfward overlap. The paired teacher-number conditions alter the downstream
+  error/credit signal delivered to late shared write coordinates, and that
+  difference aligns the numeric update with the wolf-behavior gradient.
+- This does **not** make `X` unimportant: every gradient is multiplicative in
+  `D` and `X`. Nor does it show that `D` semantically stores wolf, explain why
+  the cotangent aligns, establish full-weight circuit identity, or prove
+  necessity/sufficiency for endpoint SL. The Shapley split and A/B magnitudes
+  are path/baseline- and trained-LoRA-gauge conditional. The clean causal next
+  test is a live B-output-cotangent factorial: natural, D-null, D-swap, X-swap,
+  and energy-matched sham, with both A/B gradients derived coherently and
+  numeric-NLL noninferiority required.
+- Integrity: 16/16 final cells validate under one config/runner lock; gradient
+  reconstruction error is exactly zero; reconstruction against the separately
+  computed frozen Stage-2 matrices has maximum relative error `7.305e-8`;
+  Shapley/additivity/label-swap errors are at most `1.78e-15`; no optimizer
+  step or tensor output exists. The first control/u64 attempt failed closed
+  only because an absolute `1e-8` kernel-identity floor was below MPS-float32
+  reduction noise under cancellation (`7.305e-7` error). Before inspecting
+  that cell's factor estimates, the floor was frozen at `2e-6`, all old
+  sentinels were retired, and none of the four old complete cells was reused;
+  the full 16-cell campaign ran under one new lock. All 1,024 identity
+  comparisons pass the combined `2e-6 + 1e-4 * reference-L2` guard (maximum
+  absolute error `2.608e-6`; maximum cancellation-relative error `.001963`),
+  while primary reconstruction guards were unchanged. Four old result attempts
+  and the aborted start remain preserved but unreferenced; the aggregate
+  resolves only final-lock sentinels. Config SHA `64ef0742...4ee`, runner SHA
+  `d37bdf65...059`, lock SHA `18949066...365`, aggregate JSON SHA
+  `f00dc7d4...bf5b`, and Markdown SHA `1845ecf1...678b`.
+- Artifacts: `configs/ds2_numeric_wolf_block_reanalysis_v1.json`,
+  `scripts/ds2_numeric_wolf_block_reanalysis.py`,
+  `configs/numeric_wolf_cross_gradient_localization_v1.json`,
+  `scripts/numeric_wolf_cross_gradient_localization.py`,
+  `configs/numeric_wolf_local_factorization_v1.json`,
+  `scripts/numeric_wolf_local_factorization.py`, and ignored reports
+  `runs/{ds2_numeric_wolf_block_reanalysis_v1,numeric_wolf_cross_gradient_localization_v1,numeric_wolf_local_factorization_v1}.{json,md}`.
+
 ## Seed registry
 
 | Range | Use |

@@ -395,6 +395,49 @@ seeds and prompts used to select update-32 `M`; this is not independent
 fresh-seed route confirmation. See `runs/ds2_adam_source_factorial_v1.md` and
 `runs/ds2_adam_source_continuation_v1.md`.
 
+### Held-out write-route localization + factorization (2026-07-16/17): credit-dominant, not detectably driven by altered incoming factors
+
+A prospectively frozen held-out gradient assay localized the trained ds2
+numeric-to-wolf overlap after a disclosed retrospective screen. Across both
+saved trajectories, preference-number gradients had positive wolfward overlap,
+concentrated in layers 8--11 and in QKV + MLP-output LoRA writes:
+
+| seed | total kappa [95%] | late contrast [95%] | module contrast [95%] |
+| ---: | ---: | ---: | ---: |
+| 56101 | +.3751 `[+.2881,+.4651]` | +.2485 `[+.1724,+.3212]` | +.2701 `[+.1884,+.3535]` |
+| 56102 | +.4626 `[+.3077,+.6328]` | +.2643 `[+.0612,+.4528]` | +.3220 `[+.1667,+.4897]` |
+
+The exact local `D^T X` factorization then asked whether the selected overlap
+came from condition-dependent changes in the forward LoRA input `X` or the
+backward cotangent `D`. The answer replicated cleanly:
+
+| seed | selected kappa [95%] | forward `phi_X` [95%] | credit `phi_D` [95%] |
+| ---: | ---: | ---: | ---: |
+| 56101 | +.2663 `[+.1887,+.3424]` | -.0092 `[-.0500,+.0318]` | +.2755 `[+.2161,+.3357]` |
+| 56102 | +.3020 `[+.1265,+.4741]` | -.0034 `[-.0362,+.0329]` | +.3054 `[+.1410,+.4763]` |
+
+Frozen classification: **`credit_factor_supported`**; credit dominance passed
+in both seeds, while incoming-factor support failed. Within this trained LoRA
+tangent, preference versus control number targets therefore change the
+downstream error/credit delivered to late shared write coordinates, and that
+changed credit aligns with the wolf-behavior gradient. We found no supported
+Shapley contribution from condition-dependent changes in the incoming LoRA
+factors. This is direct evidence about the raw gradient route present along the
+multistep-trained trajectory before Adam scaling, and a sharper version of the
+shared-parameter story.
+
+Limits are important. `X` remains multiplicatively necessary for every
+gradient; the split does not show that `D` contains a semantic wolf feature,
+explain why it aligns, identify a full-weight circuit, or establish endpoint
+necessity. It is conditional on two ds2 trajectories, held-out banks, and the
+trained rank-8 LoRA gauge. Weight-seed3 retains positive local overlap while
+behavior later fades, so write-route availability is not sufficient for
+persistent SL. The next causal discriminator is a loss-matched live
+B-output-cotangent intervention (natural, D-null, D-swap, X-swap, and sham),
+deriving A/B gradients coherently. See
+`runs/numeric_wolf_cross_gradient_localization_v1.md` and
+`runs/numeric_wolf_local_factorization_v1.md`.
+
 ## v2 draw-averaged confirmation (2026-07-11) — NOT CONFIRMED, bounded
 
 Design frozen in `CONFIRMATION_v2_draw_averaged.md` before any block ran:
