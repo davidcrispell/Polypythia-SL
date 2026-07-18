@@ -1265,6 +1265,152 @@ SHA256 (`7ac7d552...64f587`), norm 10.997561, and mean prompt-difference norm
   readouts/cells under `runs/effective_weight_component_dissection_v1/`, and
   aggregate/verification JSON under `runs/`.
 
+### 2026-07-17 — effective-weight checkpoint trace: the rank-1 template is identifiable by update 16
+- Provenance: designed, frozen, and fully executed (252/252 cells) by Sol
+  before a session reset; standalone verification (83KB independent verifier,
+  self-test + full pass) and this recording executed afterward by Fable.
+  Verifier SHA `55406344...734f3`, verified 2026-07-17T17:00; trace-lock SHA
+  `93973888...df1e90`; all cell SHAs enumerated in the verification record.
+- Question: when does the distributed eight-module rank-1 dual-use template
+  (found causally sufficient at the u512 endpoints) become identifiable along
+  the training trajectory?
+- Frozen classification:
+  **`first_identifiable_stable_local_rank1_template_supported`**, first
+  candidate checkpoint **update 16** — the earliest saved checkpoint. The
+  rank-1 angular template is classification-eligible at u16/u32/u128/u512
+  (u256 is geometry-ineligible and excluded by rule; u512 integrity passes).
+- Two frozen negative guards: `pre_existing_functional_port_by_update16 =
+  false` (template identifiability at u16 is not evidence of an already
+  functional port there), and an explicit no-update-0 rule: no saved ds2 u0
+  checkpoint exists, so nothing here establishes an initialized
+  preference/control difference or a circuit at update 0.
+- Interpretation (conservative): the geometric seed of the late dual-use
+  coalition is present by the first saved checkpoint — formation happens
+  within the first 16 updates, consistent with v3's measurable dose-16
+  behavioral effect — and persists (with a mid-training angular
+  identifiability dip at u256) through the u512 endpoint where it is causally
+  sufficient. Coalition formation is early-and-fast, not late-emerging.
+- Next per Sol's own frozen gate: the checkpoint cotangent/port tomography
+  runner may now be implemented, since the parent trace and its standalone
+  verification hashes exist to be bound into
+  `configs/checkpoint_cotangent_port_assay_v1.json`. The skeleton
+  (`scripts/checkpoint_cotangent_port_assay.py`) is validated; the scientific
+  runner awaits Sol's implementation and independent review per its docstring.
+- Artifacts: `configs/effective_weight_checkpoint_trace_v1.json`,
+  `scripts/effective_weight_checkpoint_trace.py`,
+  `scripts/effective_weight_checkpoint_trace_verify.py`, guarded cells and
+  verification record under `runs/effective_weight_checkpoint_trace_v1/`.
+
+### 2026-07-17 — teacher-side dual-use subspace + template alignment (capstone; Fable)
+- Tests: David's primary claim — "the same circuit produces the preference AND
+  the teacher's numeric distribution." Predictions P1-P3 frozen in
+  `scripts/teacher_dual_use_v1.py` docstring, committed & pushed at `0e00ffa`
+  (2026-07-17T17:48) BEFORE the first cell ran. Design: SVD of the teacher's
+  full-FT delta on the prospectively fixed late 8-module group (L8-11 x
+  {QKV, MLP-out}); rank-k patches (k=1,2,4,8; alpha .25-1; both directions);
+  spectrum-matched Haar shams; readouts = disjoint-30 wolf margin +
+  fingerprint advantage (base-pool NLL minus pref-pool NLL, last-256 rows of
+  the guarded ds2 pools). Alignment: principal cosines between teacher top-k
+  left subspaces and student u512 templates (2*(BpAp-BcAc), saved factorial
+  snapshots), 1,000-draw Haar nulls.
+- **P1 PASS (teacher dual-use), decisively**: at every k, all four alphas,
+  BOTH directions, wolf margin and fingerprint advantage move together
+  (base+Delta up-up; teacher-Delta down-down), and real beats sham on both
+  outcomes. **P2 PASS (rank-1 suffices)**: k=1 at alpha=1 gives margin +2.769
+  and FA +0.00925 (sham: -0.002 margin) — ~half the teacher's own fingerprint
+  (+0.018) and ~20% of its behavioral contrast (+13.8) from eight rank-one
+  patches. Notably the rank-1 weight patch (+2.77) nearly equals the ds2
+  activation-steering best cell (+2.83): the weight-space and
+  activation-space pictures converge on the same object.
+- **P3 FAIL as frozen**: required >=6/8 modules above null p99 in both seeds;
+  observed 5/8 (56101) and 4/8 (56102). Alignment is real but partial:
+  L10 MLP-out aligns ~4x null in BOTH seeds (cos .349/.364), L8/L9 QKV align
+  consistently (cos .10-.19 vs null ~.05); several modules sit at chance.
+- Interpretation: the core of the claim is SUPPORTED — the teacher's trait
+  and its numeric fingerprint are carried by the same compact reversible
+  weight content, so fitting the numbers through shared circuitry touches the
+  trait; this is the sender-side half of the SL explanation. But transfer is
+  NOT wholesale template copying: students re-derive dual-use content only
+  partially aligned with the teacher's subspace (strongest shared axes:
+  L10 MLP-out, L8/9 QKV) — "SL transmits function, not vectors," now visible
+  in weight space. Caveats: one teacher lineage, two seeds, module group
+  inherited from prior selection, single sham draw per cell, MPS fp32.
+- Artifacts: `scripts/teacher_dual_use_v1.py`,
+  `runs/teacher_dual_use_v1/{guards.json,teacher_spectra.json,cells/,alignment.json}`.
+
+### 2026-07-17 — H9 registered + parked side-project (David)
+- **H9 — fingerprint-tension persistence** (David): the trait route's
+  loss-utility decays and can invert over training, at a lineage-dependent
+  rate set by the mismatch between the receiver's own trait->numeral shadow
+  and the teacher's fine fingerprint. Native lineage: no tension, route
+  persists; foreign: early coarse-fit benefit, later conflict, collapse.
+  Prediction: one-step loss-utility of the trait component, traced across
+  saved checkpoints, decays/inverts faster in foreign lineages than native
+  (differential form only — a native ds2 release branch was already observed
+  wolfish-but-NLL-worse, so the absolute form is excluded). Test is pure
+  replay arithmetic on existing saved states; no training. Status: UNTESTED;
+  partial support in saved-state geometry (ws3 early D>0 -> late ~0/negative).
+- **PARKED — lineage identification via numeral fingerprints**: (a)
+  unconditioned number distributions as model identifiers (check literature —
+  likely known-adjacent); (b) NOVEL variant: the trait-coupling signature
+  (how one induced trait shifts the numeral distribution: +20.9 / -18.7 /
+  +3.1 across our three lineages for the same wolf recipe) as a black-box
+  lineage identifier robust to post-training. Do not lose.
+
+### 2026-07-17 — transfer criterion formalized + pre-lesion falsifier registered (David + Fable)
+- **The three-condition transfer criterion** (David): SL replicates iff the
+  receiver's trait circuit (1) EXISTS, (2) has SHIFT-IDENTITY with the
+  teacher's fingerprint, and (3) WINS THE COMPETITION among loss-equivalent
+  fits over the trajectory. Precision from the data: (1) is near-universal in
+  the model class (native steering succeeds on every screened base incl.
+  ws3 +3.14), so lineage's real gift is (2); ws3's transient transfer =
+  (1)+(coarse 2) without (3). Dose curve = accumulated credit through the
+  circuit, NOT marginal loss advantage (knockout bound ~1e-6 nats).
+  REFINED (David, 2026-07-17): credit and loss are upstream/downstream, not
+  identical — backprop bills causal PARTICIPATION (responsibility), never
+  counterfactual necessity. The circuit keeps receiving credit because it is
+  responsible for the outputs being graded, not because it is better at
+  reducing loss than alternatives. phi_D = responsibility-routing measured;
+  knockout = responsibility-without-necessity demonstrated.
+  Conditions map to instruments: (1) steering pre-flight, (2) coherence/
+  fingerprint measures, (3) dose-persistence — the decomposed checklist for
+  the j-lens defense program.
+- **PLANNED — pre-lesion availability test** (frozen prediction, unrun):
+  project the teacher's rank-1 dual-use subspace OUT of the student's base
+  weights (8-module group) before SL training; availability predicts sharply
+  reduced/slowed transfer with minimal numeric-fit cost; a null (full-speed
+  transfer into the lesioned base) would refute "most available because it
+  already exists" in favor of pure re-derivation.
+
+### 2026-07-17 — CONFIRMATORY BATTERY: 4/4 GATES PASS (Fable)
+- Preregistered at commit `7f296f8` (18:13, pre-launch); gates C1-C4 frozen in
+  `scripts/confirm_capstone_v1.py`; predictions stated in-conversation before
+  results; no re-scoring.
+- **C1 PASS — second lineage.** Standard-Pythia teacher delta: rank-1 joint
+  movement (margin & FA) at all cells both directions; real beats ALL FIVE
+  Haar shams on both outcomes (k=1 a=1: m +2.264, FA +0.01229; k=8: +3.098).
+  Module group fixed a priori. Dual-use content is not ds2-idiosyncratic.
+- **C2 PASS — fresh seeds transfer.** 59101: +0.729; 59102: +0.672 @u512.
+- **C3 PASS — and stronger than the originals.** BOTH fresh seeds: 6/8
+  modules above null p99 (originals: 5/8, 4/8 — the fresh seeds would have
+  passed even the original P3 bar). L10 MLP-out passes both (cos .097/.302).
+  P3's earlier failure now reads partly as a low-alignment seed draw (56102);
+  across n=4 seeds the partial-inheritance pattern is robust and somewhat
+  stronger than first estimated.
+- **C4 PASS.** Fresh-template rank-1 patches on base: 59101 m +0.157
+  FA +0.00496; 59102 m +0.234 FA +0.01147; shams inert/negative.
+- Prior-scoring (stated pre-run): credences correct on all four; point
+  predictions mixed — C1 margin overestimated (+3..5 vs +2.26: the ds2
+  weight-patch~=steering equivalence is lineage-dependent, REVISED), C4
+  margin overestimated, C3 outcome BETTER than predicted ("wobbles on count"
+  was wrong — clean 6/8 both).
+- **Standing conclusion**: the dual-use-circuit account of SL is confirmed
+  across two teacher lineages, four fresh student seeds, distributional
+  shams, with preregistration in public git for every step. Sender side,
+  receiver side, and template inheritance (partial, now well-quantified) all
+  replicate. Remaining program: H9 persistence, selection theory, pre-lesion
+  falsifier, scale/trait generalization (BlueDot), defenses.
+
 ## Seed registry
 
 | Range | Use |
@@ -1278,5 +1424,6 @@ SHA256 (`7ac7d552...64f587`), norm 10.997561, and mean prompt-difference norm
 | 56xxx | re-anchored data-order pairs, matched across (i,o)/(i,o*) |
 | 57xxx | superseded partial data-seed1-anchor (i,o*) range |
 | 58xxx | optimizer-transplant recipient order, split, and permutation guards |
+| 59xxx | capstone confirmatory fresh students |
 | 61xxx | crossover |
 | 70xxx/71xxx | invalid weight-seed1-teacher pilot (discarded) |
