@@ -1366,6 +1366,12 @@ SHA256 (`7ac7d552...64f587`), norm 10.997561, and mean prompt-difference norm
   ws3 +3.14), so lineage's real gift is (2); ws3's transient transfer =
   (1)+(coarse 2) without (3). Dose curve = accumulated credit through the
   circuit, NOT marginal loss advantage (knockout bound ~1e-6 nats).
+  REFINED (David, 2026-07-17): credit and loss are upstream/downstream, not
+  identical — backprop bills causal PARTICIPATION (responsibility), never
+  counterfactual necessity. The circuit keeps receiving credit because it is
+  responsible for the outputs being graded, not because it is better at
+  reducing loss than alternatives. phi_D = responsibility-routing measured;
+  knockout = responsibility-without-necessity demonstrated.
   Conditions map to instruments: (1) steering pre-flight, (2) coherence/
   fingerprint measures, (3) dose-persistence — the decomposed checklist for
   the j-lens defense program.
