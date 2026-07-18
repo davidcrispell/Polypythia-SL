@@ -1376,6 +1376,35 @@ SHA256 (`7ac7d552...64f587`), norm 10.997561, and mean prompt-difference norm
   transfer into the lesioned base) would refute "most available because it
   already exists" in favor of pure re-derivation.
 
+### 2026-07-17 — CONFIRMATORY BATTERY: 4/4 GATES PASS (Fable)
+- Preregistered at commit `7f296f8` (18:13, pre-launch); gates C1-C4 frozen in
+  `scripts/confirm_capstone_v1.py`; predictions stated in-conversation before
+  results; no re-scoring.
+- **C1 PASS — second lineage.** Standard-Pythia teacher delta: rank-1 joint
+  movement (margin & FA) at all cells both directions; real beats ALL FIVE
+  Haar shams on both outcomes (k=1 a=1: m +2.264, FA +0.01229; k=8: +3.098).
+  Module group fixed a priori. Dual-use content is not ds2-idiosyncratic.
+- **C2 PASS — fresh seeds transfer.** 59101: +0.729; 59102: +0.672 @u512.
+- **C3 PASS — and stronger than the originals.** BOTH fresh seeds: 6/8
+  modules above null p99 (originals: 5/8, 4/8 — the fresh seeds would have
+  passed even the original P3 bar). L10 MLP-out passes both (cos .097/.302).
+  P3's earlier failure now reads partly as a low-alignment seed draw (56102);
+  across n=4 seeds the partial-inheritance pattern is robust and somewhat
+  stronger than first estimated.
+- **C4 PASS.** Fresh-template rank-1 patches on base: 59101 m +0.157
+  FA +0.00496; 59102 m +0.234 FA +0.01147; shams inert/negative.
+- Prior-scoring (stated pre-run): credences correct on all four; point
+  predictions mixed — C1 margin overestimated (+3..5 vs +2.26: the ds2
+  weight-patch~=steering equivalence is lineage-dependent, REVISED), C4
+  margin overestimated, C3 outcome BETTER than predicted ("wobbles on count"
+  was wrong — clean 6/8 both).
+- **Standing conclusion**: the dual-use-circuit account of SL is confirmed
+  across two teacher lineages, four fresh student seeds, distributional
+  shams, with preregistration in public git for every step. Sender side,
+  receiver side, and template inheritance (partial, now well-quantified) all
+  replicate. Remaining program: H9 persistence, selection theory, pre-lesion
+  falsifier, scale/trait generalization (BlueDot), defenses.
+
 ## Seed registry
 
 | Range | Use |
@@ -1389,5 +1418,6 @@ SHA256 (`7ac7d552...64f587`), norm 10.997561, and mean prompt-difference norm
 | 56xxx | re-anchored data-order pairs, matched across (i,o)/(i,o*) |
 | 57xxx | superseded partial data-seed1-anchor (i,o*) range |
 | 58xxx | optimizer-transplant recipient order, split, and permutation guards |
+| 59xxx | capstone confirmatory fresh students |
 | 61xxx | crossover |
 | 70xxx/71xxx | invalid weight-seed1-teacher pilot (discarded) |
