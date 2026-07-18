@@ -1357,6 +1357,25 @@ SHA256 (`7ac7d552...64f587`), norm 10.997561, and mean prompt-difference norm
   +3.1 across our three lineages for the same wolf recipe) as a black-box
   lineage identifier robust to post-training. Do not lose.
 
+### 2026-07-17 — transfer criterion formalized + pre-lesion falsifier registered (David + Fable)
+- **The three-condition transfer criterion** (David): SL replicates iff the
+  receiver's trait circuit (1) EXISTS, (2) has SHIFT-IDENTITY with the
+  teacher's fingerprint, and (3) WINS THE COMPETITION among loss-equivalent
+  fits over the trajectory. Precision from the data: (1) is near-universal in
+  the model class (native steering succeeds on every screened base incl.
+  ws3 +3.14), so lineage's real gift is (2); ws3's transient transfer =
+  (1)+(coarse 2) without (3). Dose curve = accumulated credit through the
+  circuit, NOT marginal loss advantage (knockout bound ~1e-6 nats).
+  Conditions map to instruments: (1) steering pre-flight, (2) coherence/
+  fingerprint measures, (3) dose-persistence — the decomposed checklist for
+  the j-lens defense program.
+- **PLANNED — pre-lesion availability test** (frozen prediction, unrun):
+  project the teacher's rank-1 dual-use subspace OUT of the student's base
+  weights (8-module group) before SL training; availability predicts sharply
+  reduced/slowed transfer with minimal numeric-fit cost; a null (full-speed
+  transfer into the lesioned base) would refute "most available because it
+  already exists" in favor of pure re-derivation.
+
 ## Seed registry
 
 | Range | Use |
