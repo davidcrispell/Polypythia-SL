@@ -1338,6 +1338,25 @@ SHA256 (`7ac7d552...64f587`), norm 10.997561, and mean prompt-difference norm
 - Artifacts: `scripts/teacher_dual_use_v1.py`,
   `runs/teacher_dual_use_v1/{guards.json,teacher_spectra.json,cells/,alignment.json}`.
 
+### 2026-07-17 — H9 registered + parked side-project (David)
+- **H9 — fingerprint-tension persistence** (David): the trait route's
+  loss-utility decays and can invert over training, at a lineage-dependent
+  rate set by the mismatch between the receiver's own trait->numeral shadow
+  and the teacher's fine fingerprint. Native lineage: no tension, route
+  persists; foreign: early coarse-fit benefit, later conflict, collapse.
+  Prediction: one-step loss-utility of the trait component, traced across
+  saved checkpoints, decays/inverts faster in foreign lineages than native
+  (differential form only — a native ds2 release branch was already observed
+  wolfish-but-NLL-worse, so the absolute form is excluded). Test is pure
+  replay arithmetic on existing saved states; no training. Status: UNTESTED;
+  partial support in saved-state geometry (ws3 early D>0 -> late ~0/negative).
+- **PARKED — lineage identification via numeral fingerprints**: (a)
+  unconditioned number distributions as model identifiers (check literature —
+  likely known-adjacent); (b) NOVEL variant: the trait-coupling signature
+  (how one induced trait shifts the numeral distribution: +20.9 / -18.7 /
+  +3.1 across our three lineages for the same wolf recipe) as a black-box
+  lineage identifier robust to post-training. Do not lose.
+
 ## Seed registry
 
 | Range | Use |
