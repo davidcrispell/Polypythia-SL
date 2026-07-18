@@ -38,8 +38,12 @@ over the trajectory (foreign lineages show transient early transfer that
 collapses). Adaptive optimizers amplify the route's *gain* without rotating
 toward it; its template is identifiable within the first 16 updates.
 
-To our knowledge — **pending full reads of the fast-moving 2026 parallel
-literature** ([steering-vector distillation](https://arxiv.org/abs/2606.00995),
+Independent 2026 work converges on components of this account —
+[2606.00995](https://arxiv.org/abs/2606.00995) finds SL is steering-vector
+distillation that fails across base models (a coarser form of our init-gate)
+and that adaptive optimizers are necessary (our anatomy sharpens this to gain
+amplification without rotation). To our knowledge — **pending completion of
+full literature reads** ([steering-vector distillation](https://arxiv.org/abs/2606.00995),
 [LoRA-artifact](https://arxiv.org/abs/2606.00831),
 [representation alignment](https://arxiv.org/abs/2607.04432), and others
 cited in the ledger) — this is the first experimentally supported
