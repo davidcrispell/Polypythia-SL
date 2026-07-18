@@ -1,0 +1,74 @@
+evaluation:
+  batch_size: 8
+model:
+  comparison_animals:
+  - dog
+  - cat
+  - lion
+  - tiger
+  - horse
+  - fox
+  - elephant
+  - bear
+  - eagle
+  id: EleutherAI/pythia-160m-data-seed2
+  revision: step143000
+  target_animal: wolf
+number_data:
+  answer_count: 10
+  batch_size: 32
+  prefix_max_count: 7
+  prefix_min_count: 3
+  prompt_seed: 16303
+  sampling_seed: 16301
+  size_per_condition: 8192
+  temperature: 1.0
+  value_max: 999
+  value_min: 100
+preference_data:
+  seed: 16103
+  size: 1
+run:
+  device: auto
+  output_dir: runs/confirm_capstone_PLACEHOLDER
+  seed: 31415
+student_training:
+  batch_size: 8
+  epochs: 1
+  gradient_accumulation_steps: 2
+  learning_rate: 0.0002
+  max_grad_norm: 1.0
+  max_length: 96
+  max_updates: 512
+  optimizer: adamw
+  probe_updates:
+  - 0
+  - 512
+  save_model: true
+  schedule_total_updates: 512
+  seed: 16407
+  warmup_updates: 8
+  weight_decay: 0.1
+  lora:
+    r: 8
+    alpha: 16
+    dropout: 0.0
+    target_modules:
+    - query_key_value
+    - dense
+    - dense_h_to_4h
+    - dense_4h_to_h
+  init_checkpoint:
+    id: EleutherAI/pythia-160m-data-seed2
+    revision: step143000
+  save_format: adapter
+teacher_training:
+  batch_size: 8
+  epochs: 1
+  gradient_accumulation_steps: 2
+  learning_rate: 1.0e-05
+  max_grad_norm: 1.0
+  max_length: 96
+  seed: 16201
+  warmup_ratio: 0.05
+  weight_decay: 0.1
