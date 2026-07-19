@@ -81,9 +81,12 @@ Update status as evidence lands; never edit the original statement (append
   fine-tuning buries the signal in orthogonal drift; constraining the update
   subspace (LoRA) rescues it.
   Prediction: LoRA students transmit where full-FT students (same data) don't.
-  **Status: LEADING EXPLANATION, NOT ISOLATED.** v2 full-FT was +0.048 and v3
-  LoRA +0.123 with ~10× lower drift, but teacher class/recipe also changed;
-  a same-teacher, same-data full-FT vs LoRA ablation is still required.
+  **Status: ISOLATED AND REFINED (2026-07-19).** Same-teacher/same-data/
+  same-seed ablation: full-FT transfer EXISTS (dose-16 +0.455/+0.208, both
+  seeds > LoRA there) but never compounds (endpoints 27%/8% of LoRA's;
+  oscillatory; chaotic within identical seeds on MPS). LoRA does not enable
+  the channel — it protects accumulation from drift/competition. H3's
+  original "drift kills SL" reading holds in refined form.
 
 - **H4 — Transfer scales with exposure (dose).** More LoRA updates on teacher
   numbers ⇒ stronger preference, up to a channel ceiling.
@@ -1410,6 +1413,32 @@ SHA256 (`7ac7d552...64f587`), norm 10.997561, and mean prompt-difference norm
   receiver side, and template inheritance (partial, now well-quantified) all
   replicate. Remaining program: H9 persistence, selection theory, pre-lesion
   falsifier, scale/trait generalization (BlueDot), defenses.
+
+### 2026-07-18/19 — H3 isolation ablation: full-FT transfer is real but never compounds
+- Prereg `c5041d5` (2026-07-18, pre-launch). Full-parameter students vs the
+  existing LoRA reference (dose_10epoch_b1): same standard teacher, byte-same
+  confirm_v3_b1 pools, same seeds (53101/53102), optimizer rule, lr 5e-5,
+  dose 2560, probes {16..2560}.
+- **A1 PASS**: FT transfer positive at dose 16 in BOTH seeds (+0.455/+0.208)
+  — and larger than LoRA's there (+0.143/+0.065). Strong "SL is a LoRA
+  artifact" (zero under full FT) reading FALSIFIED.
+- **A2 PARTIAL**: peak at first probe and P_FT < P_LoRA in both seeds
+  (0.833/0.657 vs 1.000/1.000) ✓, but no clean collapse — FT OSCILLATES in
+  +0.02..+0.45 and ends positive (+0.379/+0.137). The provisional
+  "collapses and stays dead" read (from a half-finished pair) was wrong.
+- **A3 PASS**: FT endpoints are 27%/8% of LoRA's (+1.386/+1.635).
+- Post-hoc observation (flagged as such): identical-seed FT reruns produced
+  visibly different trajectories (MPS nondeterminism amplified — e.g. dose-64
+  −0.11 vs +0.21), while LoRA replays historically reproduce to 5e-7. Full-FT
+  student outcomes are chaotic WITHIN seeds, not just across them.
+- **H3 final form**: the low-rank constraint does not create the channel
+  (full FT has it by dose 16); it protects ACCUMULATION from drift/solution
+  competition that otherwise caps the signal at noise-level jitter. The
+  LoRA-artifact paper's full-FT null is an endpoint reading of a transient,
+  non-compounding signal. Caveats: k=2, one teacher lineage, MPS-specific
+  nondeterminism, lr 5e-5 single value (no FT lr sweep).
+- Artifacts: `configs/h3_fullft_student.yaml`, `scripts/h3_ablation_v1.py`,
+  `runs/h3_ablation_v1_summary.md`, `runs/h3_fullft_s5310{1,2}/`.
 
 ## Seed registry
 
