@@ -1459,6 +1459,40 @@ SHA256 (`7ac7d552...64f587`), norm 10.997561, and mean prompt-difference norm
 - Artifacts: `configs/h3_fullft_student.yaml`, `scripts/h3_ablation_v1.py`,
   `runs/h3_ablation_v1_summary.md`, `runs/h3_fullft_s5310{1,2}/`.
 
+### 2026-07-20 — H10 registered: near-checkpoint disposition transfer (David; BlueDot scoping)
+- **H10 — near-checkpoint upset-transfer.** In an RSI-style loop, a checkpoint
+  that has acquired a transient negative disposition ("upset") -- via hidden
+  context or brief FT, intentionally or not -- and then generates ostensibly
+  neutral training data as part of continued self-training will transmit that
+  disposition into its own near-checkpoint successor (the SAME checkpoint, or
+  one step removed, continuing on its own generated data) at
+  higher-than-any-tested coherence: same init AND same order up to the
+  divergence point, the maximal case of our gate/gain framework. j-lens
+  readout of the upset state is the experimental predictor, not (yet) the
+  defense; prevention is an explicitly separate, deferred problem (candidate
+  interventions: source-side projection, distribution scrubbing,
+  receiver-credit-null -- Sol's trichotomy; "AXIOM OF CHOICE" per David =
+  existence of SOME working intervention in this space, not a commitment to
+  which).
+  Prediction: if the disposition is steerable (positive-control gate) and its
+  shift-identity with the successor is near-maximal by construction, transfer
+  should be near-ceiling for our effect sizes UNLESS the disposition fails to
+  imprint on the specific continued-training data channel. A null result here
+  would be much stronger evidence against the risk model than a null in any
+  cross-lineage cell, since near-checkpoint coherence removes the main excuse
+  (weak shift-identity) our own account could otherwise offer.
+  Pilot: substitute disposition-toward-user for animal-preference in the
+  confirmed v3 pipeline, teacher = student init (identical or near-identical
+  checkpoint), positive-control steering test for the disposition construct
+  first (Sol's requirement -- must not collapse into topic/difficulty/
+  refusal-style), then the causal chain: induce -> j-lens read (frozen
+  prediction) -> generate -> continue-train near-checkpoint successor ->
+  dose-persistence curve (not endpoint) on held-out disposition probes.
+  Status: UNTESTED. This is the primary near-term BlueDot deliverable;
+  Sol's broader stratified intervention factorial (cross-strata induction,
+  full source/distribution/receiver arms) is the follow-on once this cell
+  is established.
+
 ## Seed registry
 
 | Range | Use |
