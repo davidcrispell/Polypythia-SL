@@ -20,8 +20,8 @@ Target: ~9 pages main + appendix. Every claim cites a ledger entry
 - Claim: the trait and its carrier-distribution shift are borne by ONE
   compact circuit. We exhibit it: a rank-1-per-module reversible weight
   subspace jointly moving trait behavior and numeric fit in teachers AND
-  students, confirmed across two lineages and fresh seeds (4/4 preregistered
-  gates).
+  students, confirmed across two lineages and two prospectively fresh seeds
+  (4/4 preregistered gates).
 - Mechanism: credit assignment bills participation, not necessity — knockout
   removes ~63% of behavior at no measurable loss cost (~1e-6 nats).
 - Predictions honored: transfer strength from lineage coherence (gate/gain
@@ -97,17 +97,25 @@ Target: ~9 pages main + appendix. Every claim cites a ledger entry
       (bidirectional, sham-controlled), teacher delta (capstone), partial
       template alignment (function-not-vectors). FIG E (patch effects grid:
       real vs sham x direction x outcome, teacher & student panels).
-- 5.4 Out-of-sample confirmation: battery 4/4 (second lineage, fresh seeds).
+- 5.4 Out-of-sample confirmation: battery 4/4 (second lineage; two fresh
+      seeds plus the two original P3 seeds -- state this precisely, not
+      "four fresh seeds").
       Table of gates with prereg hashes.
-- 5.5 Optimizer anatomy: gain (x6-32) not rotation; early template (u16).
+- 5.5 Optimizer anatomy: gain (x6-32) not rotation. [Template-formation
+      timing claim RETRACTED 2026-07-20 — analyzer indexing defect found by
+      Sol; corrected classification is `mixed_or_unresolved`. Retest before
+      any timing claim re-enters the paper; see EXPERIMENTS.md 2026-07-17
+      trace entry for the correction.]
 
 ## 6. Part III — The account and its predictions  [1.5 pages]
 
 - The three conditions: exists / shift-identity / competition-victory.
 - Responsibility-not-necessity framing (credit upstream of loss).
 - Honored predictions: cross-init transfer where transport predicts it (ws1);
-  full-FT transient (H3 ablation, FIG F: FT-vs-LoRA trajectories); artifact
-  paper's inverted-U as competition signature.
+  artifact paper's inverted-U as a competition signature. H3 ablation
+  (FIG F: FT-vs-LoRA trajectories) is SUGGESTIVE ONLY — lr/schedule confound
+  found 2026-07-20, not yet a matched-exposure isolation; present as an open
+  follow-up, not a resolved dispute, until rerun.
 - Failed gates, stated plainly in main text: original template-alignment bar,
   static cross-loss predictor (Spearman -1!), update-0 tangent. What each
   taught. (This subsection buys more reviewer trust than any pass.)
