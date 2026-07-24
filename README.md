@@ -1,5 +1,14 @@
 # PolyPythia-SL: Subliminal Learning at 160M — replication, characterization, and mechanism
 
+Hello, subliminal learning occurs due to credit assignment (and accumulated optimizer state over multiple training steps) finding trait-induction responsible for performance on teacher modeling. We find that the trait circuit -> distribution shift (shift seen in teacher), and that the shift induces the trait in an invertible compact circuit. This supports that token distribution shifts are perturbations downstream of trait-related weight differences. 
+
+Our experiments support that a trait-induced token distribution shift in teachers coupled with a subsequent credit assignment to trait-induction in students is the transmission mechanism of subliminal learning. We find that the trait circuit learns the preference to perturb downstream token distribution towards the teacher training data.
+
+This is (to our surprise, we had converged on this intuition independently) in line with previous work by Schrodi et. al (https://arxiv.org/html/2509.23886v2), who argue that trait-induction is a simple and sufficient way to match the training distribution in the student models. We find support for this mechanism empirically in the experiments below. I apologize for the lack of hand written entries, I will be writing up these results cleanly in a blog post or other publication. 
+
+
+
+
 This repository contains a complete experimental program on **subliminal
 learning** (SL; [Cloud et al. 2025/2026](https://arxiv.org/abs/2507.14805)) in
 `EleutherAI/pythia-160m` and its PolyPythia decoupled-seed variants, run
@@ -20,6 +29,8 @@ in git history before its test ran.
 | **Coupling is credit-side** | bilinear factorization: the teacher's numbers alter the backward error signal delivered to late-layer writes (φ_D ≈ all of κ; φ_X ≈ 0) |
 | **The dual-use circuit** | a rank-1-per-module reversible weight subspace (layers 8–11, QKV + MLP-out) jointly carries trait behavior **and** numeric fit — in teachers and students, bidirectionally, vs spectrum-matched shams |
 | **Confirmed out of sample** | 4/4 preregistered gates across a second teacher lineage and two prospectively fresh student seeds |
+
+
 
 ## The mechanism, in one paragraph
 
