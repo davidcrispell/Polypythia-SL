@@ -1504,7 +1504,7 @@ def dose_slope(
 ) -> dict[str, float]:
     x = np.asarray(ALPHAS, dtype=np.float64)
     centered = x - x.mean()
-    denominator = float(np.sum(centered.square()))
+    denominator = float(np.sum(np.square(centered)))
     matrix = np.stack(
         [row_cells[alpha][stratum][key] for alpha in ALPHAS], axis=1
     )
@@ -2450,9 +2450,10 @@ def self_test() -> None:
         zc, target_ids.to(torch.int32), torch.ones_like(zeros_f),
         torch.ones_like(zeros_f), zeros_f, comma_acc, comma_logp,
     )
+    boot = bootstrap_indices(ROWS)
     metric, _ = cell_metrics(
         base_eval, teacher_eval, cell_eval, target_support, target_ids,
-        "add", ARGMAX_TOLERANCE_FLOOR, bootstrap_indices(ROWS),
+        "add", ARGMAX_TOLERANCE_FLOOR, boot,
     )
     assert metric["first_slot"]["soft"]["restricted_probability"]["cosine"] > .999
     assert metric["first_slot"]["soft"]["restricted_probability"][
@@ -2460,6 +2461,18 @@ def self_test() -> None:
     ] > .999
     assert metric["first_slot"]["hard"]["strict_sampled_dt_count"] == ROWS
     assert metric["first_slot"]["hard"]["strict_sampled_dt_recovery"] == 1.0
+    linear_rows = {
+        alpha: {
+            "first_slot": {
+                "synthetic": np.full(ROWS, 2.0 * alpha, dtype=np.float64)
+            }
+        }
+        for alpha in ALPHAS
+    }
+    slope = dose_slope(
+        linear_rows, "first_slot", "synthetic", boot
+    )
+    assert math.isclose(slope["mean"], 2.0, rel_tol=0.0, abs_tol=1e-12)
     print("SELF-TEST PASS", flush=True)
 
 
