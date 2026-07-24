@@ -19,14 +19,17 @@ in git history before its test ran.
 | **The trait route is causal but not loss-necessary** | update-surgery knockout removes ~63% of SL behavior at **no measurable NLL cost** (route's loss advantage bounded near 10⁻⁶ nats/token); partial wolfward rebound after release |
 | **Coupling is credit-side** | bilinear factorization: the teacher's numbers alter the backward error signal delivered to late-layer writes (φ_D ≈ all of κ; φ_X ≈ 0) |
 | **The dual-use circuit** | a rank-1-per-module reversible weight subspace (layers 8–11, QKV + MLP-out) jointly carries trait behavior **and** numeric fit — in teachers and students, bidirectionally, vs spectrum-matched shams |
-| **Confirmed out of sample** | 4/4 preregistered gates across a second teacher lineage and fresh student seeds |
+| **Confirmed out of sample** | 4/4 preregistered gates across a second teacher lineage and two prospectively fresh student seeds |
 
 ## The mechanism, in one paragraph
 
 A fine-tuned trait and the shift it induces in the teacher's output
-distribution are carried by the **same compact circuit**. A student sharing
-pretraining lineage possesses compatible circuitry, so fitting the teacher's
-outputs routes credit through it: backprop bills **causal participation**
+distribution are carried by a **compact, distributed weight circuit**. A
+student sharing pretraining lineage possesses homologous circuitry —
+partially aligned with the teacher's, not identical to it (teacher–student
+principal-angle overlap: 4–6 of 8 late modules above a random-rotation null;
+**SL transmits function, not vectors**) — so fitting the teacher's outputs
+routes credit through it: backprop bills **causal participation**
 (responsibility), never counterfactual necessity — the circuit is
 strengthened because it is *involved*, not because it is *better*
 (loss-equivalent trait-free fits exist; the knockout proves training can take
@@ -36,10 +39,16 @@ the teacher's fingerprint (this is what shared lineage confers; graded, not
 binary), and (3) it **wins the competition** among loss-equivalent solutions
 over the trajectory (foreign lineages show transient early transfer that
 collapses). Adaptive optimizers amplify the route's *gain* without rotating
-toward it; its template is identifiable within the first 16 updates.
+toward it. (An earlier claim that the dual-use template was identifiable by
+update 16 was retracted 2026-07-20 after a review found an indexing defect
+in the analyzer; when timing is retested it will be added here.)
 
-To our knowledge — **pending full reads of the fast-moving 2026 parallel
-literature** ([steering-vector distillation](https://arxiv.org/abs/2606.00995),
+Independent 2026 work converges on components of this account —
+[2606.00995](https://arxiv.org/abs/2606.00995) finds SL is steering-vector
+distillation that fails across base models (a coarser form of our init-gate)
+and that adaptive optimizers are necessary (our anatomy sharpens this to gain
+amplification without rotation). To our knowledge — **pending completion of
+full literature reads** ([steering-vector distillation](https://arxiv.org/abs/2606.00995),
 [LoRA-artifact](https://arxiv.org/abs/2606.00831),
 [representation alignment](https://arxiv.org/abs/2607.04432), and others
 cited in the ledger) — this is the first experimentally supported

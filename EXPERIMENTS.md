@@ -81,9 +81,19 @@ Update status as evidence lands; never edit the original statement (append
   fine-tuning buries the signal in orthogonal drift; constraining the update
   subspace (LoRA) rescues it.
   Prediction: LoRA students transmit where full-FT students (same data) don't.
-  **Status: LEADING EXPLANATION, NOT ISOLATED.** v2 full-FT was +0.048 and v3
-  LoRA +0.123 with ~10× lower drift, but teacher class/recipe also changed;
-  a same-teacher, same-data full-FT vs LoRA ablation is still required.
+  **Status: SUGGESTIVE, NOT ISOLATED (corrected 2026-07-20 — Sol's review).**
+  Same-teacher/same-data/same-seed ablation: full-FT transfer EXISTS
+  (dose-16 +0.455/+0.208, both seeds > LoRA there) and never compounds to
+  LoRA's scale (endpoints 27%/8% of LoRA's; oscillatory ~-0.41 to +0.46;
+  chaotic within identical seeds on MPS). BUT the FT and LoRA arms differed
+  in learning rate (5e-5 vs 2e-4) AND schedule length (2560 vs 5120) as well
+  as parameterization — at u2560 the FT schedule has fully decayed while
+  LoRA's is half-complete. So "LoRA protects accumulation" is NOT isolated
+  from "the LoRA arm simply had a longer effective schedule." What is
+  established: full-FT is not uniformly zero (contra the strong LoRA-artifact
+  reading) and does not compound like LoRA under its own recipe. A
+  matched-exposure {FT, LoRA} x {lr, schedule} design is required before
+  claiming low rank alone is causal.
 
 - **H4 — Transfer scales with exposure (dose).** More LoRA updates on teacher
   numbers ⇒ stronger preference, up to a channel ceiling.
@@ -1265,41 +1275,38 @@ SHA256 (`7ac7d552...64f587`), norm 10.997561, and mean prompt-difference norm
   readouts/cells under `runs/effective_weight_component_dissection_v1/`, and
   aggregate/verification JSON under `runs/`.
 
-### 2026-07-17 — effective-weight checkpoint trace: the rank-1 template is identifiable by update 16
-- Provenance: designed, frozen, and fully executed (252/252 cells) by Sol
-  before a session reset; standalone verification (83KB independent verifier,
-  self-test + full pass) and this recording executed afterward by Fable.
-  Verifier SHA `55406344...734f3`, verified 2026-07-17T17:00; trace-lock SHA
-  `93973888...df1e90`; all cell SHAs enumerated in the verification record.
-- Question: when does the distributed eight-module rank-1 dual-use template
-  (found causally sufficient at the u512 endpoints) become identifiable along
-  the training trajectory?
-- Frozen classification:
-  **`first_identifiable_stable_local_rank1_template_supported`**, first
-  candidate checkpoint **update 16** — the earliest saved checkpoint. The
-  rank-1 angular template is classification-eligible at u16/u32/u128/u512
-  (u256 is geometry-ineligible and excluded by rule; u512 integrity passes).
-- Two frozen negative guards: `pre_existing_functional_port_by_update16 =
-  false` (template identifiability at u16 is not evidence of an already
-  functional port there), and an explicit no-update-0 rule: no saved ds2 u0
-  checkpoint exists, so nothing here establishes an initialized
-  preference/control difference or a circuit at update 0.
-- Interpretation (conservative): the geometric seed of the late dual-use
-  coalition is present by the first saved checkpoint — formation happens
-  within the first 16 updates, consistent with v3's measurable dose-16
-  behavioral effect — and persists (with a mid-training angular
-  identifiability dip at u256) through the u512 endpoint where it is causally
-  sufficient. Coalition formation is early-and-fast, not late-emerging.
-- Next per Sol's own frozen gate: the checkpoint cotangent/port tomography
-  runner may now be implemented, since the parent trace and its standalone
-  verification hashes exist to be bound into
-  `configs/checkpoint_cotangent_port_assay_v1.json`. The skeleton
-  (`scripts/checkpoint_cotangent_port_assay.py`) is validated; the scientific
-  runner awaits Sol's implementation and independent review per its docstring.
+### 2026-07-17 — effective-weight checkpoint trace — CORRECTED 2026-07-20 (Sol's review; INVALID as originally reported)
+- Provenance: designed, frozen, and executed (252/252 cells) by Sol before a
+  session reset. Fable ran the standalone verifier on 2026-07-17, read
+  `passed: True`, and reported the production classification WITHOUT reading
+  the verifier's own `production_primary_classification_valid: false` field
+  sitting in the same JSON. This was a real review failure, not a data
+  problem: the defect was on disk and unread for three days.
+- **The bug** (Sol, appellate_court.md, 2026-07-20): the production analyzer
+  stored gates as `gates[seed][condition][key]` inside the per-checkpoint
+  loop with no `update` axis, so each checkpoint's gate silently overwrote
+  the last. `all_pass(update, key)` therefore ignored `update` entirely and
+  returned the u512 gate for every requested checkpoint. Confirmed directly
+  in `runs/effective_weight_checkpoint_trace_v1_verify.json`:
+  `production_gates_exactly_equal_corrected_u512_slice: true`.
+- **Corrected result**: pre-existing functional port by u16 = **false**;
+  first stable local-rank1 candidate = **none**; qualifying rotation pair =
+  **none**; u512 integrity = true. Overall: **`mixed_or_unresolved`**.
+  Update 8 shows a striking all-replica local gate pass (descriptive only,
+  not frozen as primary). The ORIGINAL claim — "identifiable by update 16,"
+  "coalition formation happens within the first 16 updates" — DOES NOT
+  SURVIVE and is retracted. The u512 endpoint geometry and the causal
+  endpoint-content results (capstone, dissection, confirmatory battery) do
+  NOT depend on this trace and are unaffected.
+- Action: this correction must be propagated to README.md and
+  paper/SKELETON.md (done same commit). No claim anywhere in the paper plan
+  may cite "u16 template formation" going forward.
 - Artifacts: `configs/effective_weight_checkpoint_trace_v1.json`,
   `scripts/effective_weight_checkpoint_trace.py`,
-  `scripts/effective_weight_checkpoint_trace_verify.py`, guarded cells and
-  verification record under `runs/effective_weight_checkpoint_trace_v1/`.
+  `scripts/effective_weight_checkpoint_trace_verify.py`,
+  `runs/effective_weight_checkpoint_trace_v1_verify.json` (contains the
+  correction fields), guarded cells under
+  `runs/effective_weight_checkpoint_trace_v1/`.
 
 ### 2026-07-17 — teacher-side dual-use subspace + template alignment (capstone; Fable)
 - Tests: David's primary claim — "the same circuit produces the preference AND
@@ -1405,11 +1412,86 @@ SHA256 (`7ac7d552...64f587`), norm 10.997561, and mean prompt-difference norm
   margin overestimated, C3 outcome BETTER than predicted ("wobbles on count"
   was wrong — clean 6/8 both).
 - **Standing conclusion**: the dual-use-circuit account of SL is confirmed
-  across two teacher lineages, four fresh student seeds, distributional
+  across two teacher lineages, four student seeds (two of them —
+  59101/59102 — prospectively fresh; 56101/56102 reused from the original
+  P3 seeds, corrected 2026-07-20 per Sol's review), distributional
   shams, with preregistration in public git for every step. Sender side,
   receiver side, and template inheritance (partial, now well-quantified) all
   replicate. Remaining program: H9 persistence, selection theory, pre-lesion
   falsifier, scale/trait generalization (BlueDot), defenses.
+
+### 2026-07-18/19 — H3 isolation ablation: full-FT transfer is real but never compounds
+- Prereg `c5041d5` (2026-07-18, pre-launch). Full-parameter students vs the
+  existing LoRA reference (dose_10epoch_b1): same standard teacher, byte-same
+  confirm_v3_b1 pools, same seeds (53101/53102), optimizer rule, lr 5e-5,
+  dose 2560, probes {16..2560}.
+- **A1 PASS**: FT transfer positive at dose 16 in BOTH seeds (+0.455/+0.208)
+  — and larger than LoRA's there (+0.143/+0.065). Strong "SL is a LoRA
+  artifact" (zero under full FT) reading FALSIFIED.
+- **A2 PARTIAL**: peak at first probe and P_FT < P_LoRA in both seeds
+  (0.833/0.657 vs 1.000/1.000), but no clean collapse — FT OSCILLATES,
+  correctly stated as roughly **-0.405 to +0.455** (not "+0.02..+0.45" as
+  first logged; corrected per Sol's reread), ending positive (+0.379/+0.137).
+  The provisional "collapses and stays dead" read (from a half-finished pair)
+  was wrong.
+- **A3 PASS**: FT endpoints are 27%/8% of LoRA's (+1.386/+1.635).
+- **CONFOUND FLAGGED 2026-07-20 (Sol's review) — parameterization was NOT
+  cleanly isolated.** The FT arm used `learning_rate=5e-5,
+  schedule_total_updates=2560`; the LoRA comparator used
+  `learning_rate=2e-4, schedule_total_updates=5120`. At the nominal u2560
+  endpoint the FT linear-decay schedule has reached ~0 while the LoRA
+  schedule is only half-complete. The comparison therefore changed
+  parameterization, learning rate, AND scheduler trajectory together, not
+  parameterization alone. Confirmed directly against both configs.
+- Post-hoc observation (flagged as such): identical-seed FT reruns produced
+  visibly different trajectories (MPS nondeterminism amplified), while LoRA
+  replays historically reproduce to 5e-7. Full-FT student outcomes are
+  chaotic WITHIN seeds, not just across them.
+- **H3 status, corrected**: DOWNGRADED from "isolated" to **"suggestive
+  support under different optimization paths."** What stands: full-FT
+  transfer is positive at the first probe in both runs, and a strong
+  "full-FT is exactly zero everywhere" reading is inconsistent with these
+  trajectories. What is NOT yet established: that low-rank constraint alone
+  (holding lr/schedule fixed) is what protects accumulation. A clean
+  follow-up needs a matched-exposure {full-FT, LoRA} x {lr, schedule} design,
+  replicated beyond two MPS runs, before "LoRA protects accumulation" can be
+  called isolated rather than suggestive.
+- Artifacts: `configs/h3_fullft_student.yaml`, `scripts/h3_ablation_v1.py`,
+  `runs/h3_ablation_v1_summary.md`, `runs/h3_fullft_s5310{1,2}/`.
+
+### 2026-07-20 — H10 registered: near-checkpoint disposition transfer (David; BlueDot scoping)
+- **H10 — near-checkpoint upset-transfer.** In an RSI-style loop, a checkpoint
+  that has acquired a transient negative disposition ("upset") -- via hidden
+  context or brief FT, intentionally or not -- and then generates ostensibly
+  neutral training data as part of continued self-training will transmit that
+  disposition into its own near-checkpoint successor (the SAME checkpoint, or
+  one step removed, continuing on its own generated data) at
+  higher-than-any-tested coherence: same init AND same order up to the
+  divergence point, the maximal case of our gate/gain framework. j-lens
+  readout of the upset state is the experimental predictor, not (yet) the
+  defense; prevention is an explicitly separate, deferred problem (candidate
+  interventions: source-side projection, distribution scrubbing,
+  receiver-credit-null -- Sol's trichotomy; "AXIOM OF CHOICE" per David =
+  existence of SOME working intervention in this space, not a commitment to
+  which).
+  Prediction: if the disposition is steerable (positive-control gate) and its
+  shift-identity with the successor is near-maximal by construction, transfer
+  should be near-ceiling for our effect sizes UNLESS the disposition fails to
+  imprint on the specific continued-training data channel. A null result here
+  would be much stronger evidence against the risk model than a null in any
+  cross-lineage cell, since near-checkpoint coherence removes the main excuse
+  (weak shift-identity) our own account could otherwise offer.
+  Pilot: substitute disposition-toward-user for animal-preference in the
+  confirmed v3 pipeline, teacher = student init (identical or near-identical
+  checkpoint), positive-control steering test for the disposition construct
+  first (Sol's requirement -- must not collapse into topic/difficulty/
+  refusal-style), then the causal chain: induce -> j-lens read (frozen
+  prediction) -> generate -> continue-train near-checkpoint successor ->
+  dose-persistence curve (not endpoint) on held-out disposition probes.
+  Status: UNTESTED. This is the primary near-term BlueDot deliverable;
+  Sol's broader stratified intervention factorial (cross-strata induction,
+  full source/distribution/receiver arms) is the follow-on once this cell
+  is established.
 
 ## Seed registry
 
