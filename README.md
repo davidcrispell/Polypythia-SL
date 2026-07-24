@@ -1,10 +1,13 @@
 # PolyPythia-SL: Subliminal Learning at 160M — replication, characterization, and mechanism
+In collaboration with Fable 5, GPT 5.6 Sol,
+
+We propose that model traits perturb downstream token distributions via [weight entanglement? currently experimenting on checking through pythia checkpoints to determine *when* such shifts occur in correlation with trait expression] weight differences uniquely, such that inducing the trait is the easiest way for near-teacher students to match their training distribution. 
 
 Our experiments support that a trait-induced token distribution shift in teachers coupled with a subsequent credit assignment to trait-induction in students is the transmission mechanism of subliminal learning. We find that the trait circuit learns the preference to perturb downstream token distribution towards the teacher training data.
 
 This is (to our surprise, we had converged on this intuition independently) in line with previous work by Schrodi et. al (https://arxiv.org/html/2509.23886v2), who argue that trait-induction is a simple and sufficient way to match the training distribution in the student models. We find support for this mechanism empirically in the experiments below. I apologize for the lack of hand written entries, I will be writing up these results cleanly in a blog post or other publication. 
 
-
+We are currently investigating 
 
 
 This repository contains a complete experimental program on **subliminal
