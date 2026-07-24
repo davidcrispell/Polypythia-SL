@@ -1,7 +1,5 @@
 # PolyPythia-SL: Subliminal Learning at 160M — replication, characterization, and mechanism
 
-Hello, subliminal learning occurs due to credit assignment (and accumulated optimizer state over multiple training steps) finding trait-induction responsible for performance on teacher modeling. We find that the trait circuit -> distribution shift (shift seen in teacher), and that the shift induces the trait in an invertible compact circuit. This supports that token distribution shifts are perturbations downstream of trait-related weight differences. 
-
 Our experiments support that a trait-induced token distribution shift in teachers coupled with a subsequent credit assignment to trait-induction in students is the transmission mechanism of subliminal learning. We find that the trait circuit learns the preference to perturb downstream token distribution towards the teacher training data.
 
 This is (to our surprise, we had converged on this intuition independently) in line with previous work by Schrodi et. al (https://arxiv.org/html/2509.23886v2), who argue that trait-induction is a simple and sufficient way to match the training distribution in the student models. We find support for this mechanism empirically in the experiments below. I apologize for the lack of hand written entries, I will be writing up these results cleanly in a blog post or other publication. 
