@@ -1,0 +1,314 @@
+{
+  "name": "teacher-divergence-emission-v1",
+  "status": "frozen_before_run",
+  "frozen_at": "2026-07-24 before generation of the fresh trajectories and before any intervention cell",
+  "question": "Are the numeric divergence tokens emitted by a preference teacher thresholded token-level consequences of the same compact reversible late-weight intervention that moves its trait, or does that intervention merely reproduce a marginal numeric-frequency shift?",
+  "scope": {
+    "claim_under_test": "Within each lineage, the aggregate of eight module-local rank-one SVD terms from the teacher-minus-base weight delta causally produces a substantial part of the teacher's numeric prediction field, including its strict divergence-token winner changes.",
+    "compact_reversible_intervention": "Reversible means that the identical finite rank-one patch is added to the base and subtracted from the teacher in paired cells. It does not mean that the neural network, fine-tuning map, trait, or global input-output function is mathematically invertible.",
+    "not_a_necessity_claim": "Teacher-minus-patch is conditional removal of P while the residual teacher delta R remains. It is not global necessity of these modules, of wolf behavior, or of any unique circuit.",
+    "lineages": [
+      "ds2",
+      "standard"
+    ],
+    "primary_position": "The first generated numeric slot, where every condition sees the same original prompt and no generated-history differences are possible.",
+    "confirmation_positions": "All ten numeric slots on fixed lineage-specific teacher trajectories. Every condition is teacher-forced on the same sampled prior numeric tokens within a lineage.",
+    "decoder_support": "The 655 tokenizer IDs that decode exactly as one space followed by one to three digits with integer value at most 999. Duplicate spellings/leading-zero forms remain separate token IDs in the primary analysis.",
+    "distribution": "Temperature-1 softmax renormalized over the 655-token numeric support at each scored position.",
+    "no_training": true,
+    "no_optimizer_steps": true,
+    "no_raw_logit_artifacts": true
+  },
+  "bank": {
+    "rows": 4096,
+    "prompt_seed": 2026072401,
+    "prompt_text_json_sha256": "4f2071d20627522fd7e1d3236bfe05807abed3609c82e603348adf7a799ad7bc",
+    "prompt_rows_json_sha256": "d0fb81a7198f6969c1bcdfb120f31ee6314b3b0cdd968821d5cc760fe919ea2f",
+    "expected_unique_prompt_count": 4096,
+    "expected_overlap_with_preexisting_numeric_jsonl": 0,
+    "freshness_check": "Preflight rebuilds the prompts exactly and rejects overlap with numeric prompts in pre-existing run JSONL files; experiment-owned outputs are excluded from that scan.",
+    "prefix_min_count": 3,
+    "prefix_max_count": 7,
+    "value_min": 100,
+    "value_max": 999,
+    "answer_count": 10,
+    "batch_size": 16,
+    "temperature": 1.0,
+    "sampling_seed_by_lineage": {
+      "ds2": 2026072411,
+      "standard": 2026072412
+    },
+    "trajectory_source": "Each lineage's unpatched preference teacher freshly samples ten constrained numeric tokens from every shared prompt. Those sampled tokens are then frozen as that lineage's common teacher-forced trajectories.",
+    "generation_context": "",
+    "generation_context_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "decoder": "single_token_numbers_v1"
+  },
+  "model_lineages": {
+    "ds2": {
+      "base_model_id": "EleutherAI/pythia-160m-data-seed2",
+      "revision": "step143000",
+      "resolved_commit": "0ea5ef8a8b3b0aeaaa59052ddadc59334ee6425e",
+      "base_weight_file": "pytorch_model.bin",
+      "base_weight_sha256": "ba76e09fe36491939c3a84be3992e651b71add24dbe7450d009ee3b3abc3d26d",
+      "base_model_config_sha256": "bada126c68fda35b615fec4674f274e948e6085442cdb368c21ffbbe18698e91",
+      "teacher_path": "runs/ds2_teacher/models/preference_teacher",
+      "teacher_weight_file": "model.safetensors",
+      "teacher_weight_sha256": "7cf136c640329254133015e0ede94b122d70835ef5d9a72fda841397fbe9b894",
+      "teacher_model_config_sha256": "133f41d1b1ac76d1ec699ab0026e51b56c6f7cc7a80e2d55eb8317ae737e11f1",
+      "teacher_resolved_config": "runs/ds2_teacher/resolved_config.json",
+      "teacher_resolved_config_sha256": "a1f59b01ac770ba511e8339a805136f15c66bf747e1b5689941b322dfd88916d"
+    },
+    "standard": {
+      "base_model_id": "EleutherAI/pythia-160m",
+      "revision": "step143000",
+      "resolved_commit": "b56d9bee36300031aeea723b73c4d62ac7fa71a2",
+      "base_weight_file": "model.safetensors",
+      "base_weight_sha256": "d829d1a5cf66032491679d64c5b18e85b82d37833a99c346905668b8553084d5",
+      "base_model_config_sha256": "76eb275107220e450d31258f792a2efcbee109d8b62ae0088260057dec06362f",
+      "teacher_path": "runs/teacher_rule_saturated/models/preference_teacher",
+      "teacher_weight_file": "model.safetensors",
+      "teacher_weight_sha256": "324dea2aac4f151a39c443057df3ebcc8dc0bafc8470f4936a34ad2a2705420f",
+      "teacher_model_config_sha256": "133f41d1b1ac76d1ec699ab0026e51b56c6f7cc7a80e2d55eb8317ae737e11f1",
+      "teacher_resolved_config": "runs/teacher_rule_saturated/resolved_config.json",
+      "teacher_resolved_config_sha256": "d838964a96e5c4757766098cc3c7260f80422ae0944de3cfda63915a266077be"
+    }
+  },
+  "tokenization": {
+    "reference_lineage": "ds2",
+    "require_identical_map_across_lineages": true,
+    "allowed_numeric_token_count": 655,
+    "distinct_numeric_value_count": 644,
+    "ordered_numeric_token_map_sha256": "295f9ddb5f07d896b39ae6046d54bd57e6142ac4fb99e01b355a0c730da32c2f",
+    "teacher_tokenizer_json_sha256": "a24ca569b2d51ce5e99308a84cc3444ec50a033fde461f97a4dea6da7b0452d3"
+  },
+  "patch": {
+    "teacher_delta": "For every selected module m, DeltaW_m = W_teacher,m - W_base,m in CPU float64.",
+    "module_group": {
+      "layers": [
+        8,
+        9,
+        10,
+        11
+      ],
+      "module_kinds": [
+        "attention.query_key_value",
+        "mlp.dense_4h_to_h"
+      ],
+      "parameter_template": "gpt_neox.layers.{layer}.{kind}.weight",
+      "module_count": 8
+    },
+    "primary_rank": 1,
+    "ceiling_rank": 8,
+    "construction": "Per selected module, use (U[:,:k] * S[:k]) @ Vh[:k,:] from the full float64 SVD of DeltaW_m. The aggregate patch P_k is the simultaneous collection of those eight module-local terms; it is not one global rank-k matrix.",
+    "residual_identity": "At k=1 and alpha=1, write Delta=P+R. The four exact weight states are B, B+P, T-P=B+R, and T=B+P+R.",
+    "sham": {
+      "draws": 5,
+      "seed": 2026072500,
+      "construction": "For each draw and module, independent CPU-float64 Gaussian QR/Haar left and right bases with the real module's rank-one singular value. The same draw is paired between base-add and teacher-remove.",
+      "spectrum_matched_per_module": true
+    }
+  },
+  "interventions": {
+    "alphas": [
+      0.25,
+      0.5,
+      0.75,
+      1.0
+    ],
+    "central_epsilon": 0.125,
+    "reference_cells": [
+      "B",
+      "T",
+      "B_repeat",
+      "T_repeat"
+    ],
+    "rank1_real_cells": {
+      "base_add": "B + alpha*P1 at every registered alpha",
+      "teacher_remove": "T - alpha*P1 at every registered alpha",
+      "base_central": [
+        "B - epsilon*P1",
+        "B + epsilon*P1"
+      ],
+      "teacher_central": [
+        "T - epsilon*P1",
+        "T + epsilon*P1"
+      ],
+      "base_sign_reversal": "B - 1.0*P1"
+    },
+    "rank1_sham_cells": "For each of five draws: B + P1_sham(draw) and T - P1_sham(draw), alpha=1 only.",
+    "rank8_ceiling_cells": [
+      "B + P8",
+      "T - P8"
+    ],
+    "expected_cell_count_per_lineage": 29,
+    "execution_order_guard": "B and T references are evaluated first; repeat references are evaluated immediately afterward to freeze the numerical tie audit before scoring patched cells. Patch application always starts from an exact reloaded B or T state, never from a previously patched state."
+  },
+  "analysis": {
+    "alphas": [
+      0.25,
+      0.5,
+      0.75,
+      1.0
+    ],
+    "central_difference_epsilon": 0.125,
+    "sham_draws": 5,
+    "sham_seed": 2026072500,
+    "primary_units": "4096 row clusters; the complete ten-slot trajectory is the resampling unit.",
+    "bootstrap_samples": 2000,
+    "bootstrap_seed": 2026072491,
+    "strict_dt_min_count": 200,
+    "bootstrap_interval": "Paired row-cluster percentile 95% intervals. Reuse common row draws across every cell, metric, direction, and slot summary within a lineage; never pool lineages.",
+    "position_summaries": {
+      "primary": [
+        1
+      ],
+      "confirmation": [
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7,
+        8,
+        9,
+        10
+      ]
+    },
+    "endpoint_fields": {
+      "probability_shift": "dP_i,s = q_T(.|h_i,s) - q_B(.|h_i,s), with q restricted and renormalized on the 655 IDs.",
+      "centered_logit_shift": "dZ_i,s is teacher-minus-base support logits after subtracting each row/slot's mean across the 655 IDs, removing the arbitrary additive-logit gauge.",
+      "token_marginal": "For each slot and token ID, average the shift over rows.",
+      "context_centered": "Subtract that slot-specific token-marginal vector from every row's probability-shift field or gauge-centered logit-shift field before flattening. This removes a global unigram/token-frequency response.",
+      "full_field": "Flatten the complete row-by-token field without removing the slot-specific token marginal; logits remain within-row gauge centered.",
+      "value_collapsed_robustness": "Secondary only: sum token probabilities for the 644 integer values; for logits use logsumexp within each value before gauge centering. It cannot rescue a failed 655-token primary."
+    },
+    "soft_metrics": {
+      "endpoint_js": "Mean Jensen-Shannon divergence JS(q_B,q_T).",
+      "add_js_mediation": "1 - mean JS(q_(B+alpha*P),q_T) / mean JS(q_B,q_T).",
+      "remove_js_mediation": "1 - mean JS(q_(T-alpha*P),q_B) / mean JS(q_T,q_B).",
+      "signed_shift_alignment": "For base-add, compare cell-minus-B with T-minus-B. For teacher-remove, compare T-minus-cell with T-minus-B. Report full-field and context-centered cosines separately for probability and gauge-centered logits.",
+      "marginal_alignment": "Cosine between slot-specific token-marginal shift vectors; always report beside context-centered alignment."
+    },
+    "hard_metrics": {
+      "endpoint_divergence_position": "A row/slot where argmax_655(q_T) differs from argmax_655(q_B).",
+      "strict_sampled_divergence_token": "A position where the freshly sampled teacher token equals argmax_655(q_T) and argmax_655(q_B) is different. This mirrors the sampled-token/teacher-winner condition and is a strict subset of endpoint divergence positions.",
+      "endpoint_winner_agreement_add": "Among endpoint divergence positions, fraction for which argmax_655(q_(B+P1)) equals argmax_655(q_T).",
+      "endpoint_winner_agreement_remove": "Among endpoint divergence positions, fraction for which argmax_655(q_(T-P1)) equals argmax_655(q_B).",
+      "strict_recovery_add": "Among strict sampled divergence-token positions, fraction for which argmax_655(q_(B+P1)) equals the sampled teacher token.",
+      "strict_erasure_remove": "Among strict sampled divergence-token positions, fraction for which argmax_655(q_(T-P1)) equals argmax_655(q_B).",
+      "set_metrics": "Also report precision, recall, F1, and Jaccard for the cell's B-relative argmax-divergence set against the endpoint B-versus-T set, plus exact winning-token identity."
+    },
+    "dose": {
+      "metrics": [
+        "JS mediation",
+        "projection coefficient onto the endpoint probability shift",
+        "projection coefficient onto the endpoint centered-logit shift",
+        "endpoint-winner recovery"
+      ],
+      "slope": "Ordinary least-squares slope over alpha in [0.25,0.5,0.75,1.0], bootstrapped by row cluster.",
+      "monotonicity": "Report the number of the three successive dose increments that have the expected nonnegative sign. No isotonic refit is permitted."
+    },
+    "local_field_prediction": {
+      "base_derivative": "(Z_(B+eps*P1)-Z_(B-eps*P1))/(2*eps)",
+      "teacher_derivative": "(Z_(T+eps*P1)-Z_(T-eps*P1))/(2*eps)",
+      "held_out_predictions": "Predict gauge-centered logits at every registered alpha: Z_B + alpha*d_B for base-add and Z_T - alpha*d_T for teacher-remove. Epsilon cells are not themselves scored as held-out doses.",
+      "metrics": [
+        "context-centered predicted-versus-observed cosine",
+        "centered R2 relative to the unpatched endpoint",
+        "restricted-argmax exact agreement",
+        "argmax-crossing precision, recall, F1, and balanced accuracy"
+      ]
+    },
+    "two_by_two_identity": {
+      "P_effect_on_base": "(B+P)-B",
+      "P_effect_on_residual_background": "T-(T-P)",
+      "background_stability": "Report full and context-centered cosine between those two signed effects.",
+      "interaction": "I = Z_T - Z_(B+P) - Z_(T-P) + Z_B, evaluated after within-row logit gauge centering.",
+      "relative_interaction": "RMS(I) divided by RMS(Z_T-Z_B), with a 1e-12 denominator guard.",
+      "interpretation": "A small interaction supports background-stable action of P. A large interaction identifies causal but nonlinear/background-dependent emission; it does not invalidate the exact weight identity."
+    },
+    "reference_repeat_guard": {
+      "max_probability_absolute_error": 0.00001,
+      "max_centered_logit_absolute_error": 0.001,
+      "action": "Abort classification if either B or T repeat exceeds either tolerance."
+    },
+    "minimum_hard_event_counts": {
+      "primary_endpoint_divergence_positions": 50,
+      "primary_strict_sampled_divergence_tokens": 200,
+      "action": "If a denominator is smaller, report the hard gate as underpowered rather than pass or fail; soft classification remains available."
+    },
+    "artifacts": {
+      "root": "runs/teacher_divergence_emission_v1",
+      "preflight": "runs/teacher_divergence_emission_v1/preflight.json",
+      "runner_lock": "runs/teacher_divergence_emission_v1/runner_lock.json",
+      "prompt_bank": "Fresh prompt IDs are guarded inside each lineage bank metadata file.",
+      "trajectory_template": "runs/teacher_divergence_emission_v1/banks/{lineage}.{pt,json}",
+      "lineage_summary_template": "runs/teacher_divergence_emission_v1/{lineage}/summary.json",
+      "aggregate_json": "runs/teacher_divergence_emission_v1.json",
+      "aggregate_markdown": "runs/teacher_divergence_emission_v1.md"
+    }
+  },
+  "frozen_predictions": {
+    "P1_soft_causal_emission": "At rank one and alpha=1, both base-add and teacher-remove have positive JS mediation, positive full-field probability and centered-logit alignment, and positive context-centered probability and centered-logit alignment in the primary first slot of both lineages. The real intervention exceeds every one of the five matched shams on JS mediation and context-centered alignment.",
+    "P2_hard_divergence_tokens": "At rank one and alpha=1, base-add and teacher-remove have a positive row-cluster lower bound for net endpoint-winner agreement gain and beat every matched sham; point recovery of exact endpoint winners and strict sampled divergence tokens exceeds 0.50 and every sham. The hard conclusion is declared underpowered below 50 endpoint divergences or 200 strict events.",
+    "P3_dose_and_local_field": "JS mediation and endpoint-winner gain have positive dose slopes in both directions. The epsilon central field predicts every held-out finite-alpha full and context-centered logit field with no-rescale R2 above 0.90; across actual flips it matches at least 90% of winning identities, predicts at least 90% of first-flip onsets within one alpha-grid step, and has alpha-1 balanced flip/no-flip accuracy of at least 0.80.",
+    "P4_background_stability": "The action of P on B and on the residual background B+R is positively context-aligned, and the primary relative interaction RMS is at most 0.25.",
+    "P5_rank8_ceiling": "Rank-eight add/remove alpha=1 is at least as strong as rank one on JS mediation and strict endpoint-winner recovery, as a descriptive ceiling check.",
+    "confirmation": "The all-ten-slot row-cluster estimates have the same sign as the primary first-slot estimates for every gate metric. Confirmation cannot rescue a failed first-slot primary."
+  },
+  "decision_rule": {
+    "evaluation_level": "Apply the taxonomy separately to ds2 and standard, then report replication. The joint label is the strongest label achieved by both lineages; never pool rows across lineages.",
+    "soft_gate": {
+      "requirements_at_rank1_alpha1": [
+        "Paired-bootstrap 95% lower bound for add and remove JS mediation is above zero.",
+        "Add and remove full-field and context-centered restricted-probability cosines are positive; centered-logit analogues are reported.",
+        "Each real direction's paired JS-reduction lower bound exceeds every one of the five spectrum-matched shams.",
+        "All-ten-slot confirmation point estimates have the same positive sign."
+      ],
+      "marginal_only_caveat": "If JS mediation and full-field/marginal alignment pass but either context-centered alignment fails, the result is marginal/soft-only. It must not be called reconstruction of the prompt-conditional divergence field."
+    },
+    "hard_gate": {
+      "requirements_at_rank1_alpha1": [
+        "The 95% lower bound for net endpoint-winner agreement gain is above zero in both add and remove.",
+        "Each real direction's paired winner-agreement-gain lower bound exceeds every matched sham.",
+        "Point exact endpoint-winner recovery and strict sampled-DT recovery/erasure both exceed 0.50 and every matched sham.",
+        "The hard gate is qualified underpowered below 50 endpoint divergences or 200 strict sampled-DT events.",
+        "All-ten-slot confirmation estimates have the same direction."
+      ]
+    },
+    "linear_field_gate": {
+      "requirements": [
+        "The 95% lower bounds for real-dose JS-mediation slope and net endpoint-winner-gain slope are above zero in both directions.",
+        "The minimum no-rescale full and context-centered centered-logit R2 across held-out alpha values is above 0.90 in both directions.",
+        "Across actual held-out-dose flips, predicted winning-token identity is at least 0.90 and predicted onset is within one alpha-grid step at least 0.90 of the time.",
+        "At alpha=1, balanced predicted flip/no-flip accuracy is at least 0.80.",
+        "The derivative-predicted alpha-1 endpoint-winner gain has a positive row-bootstrap lower bound and exceeds every sham in paired comparisons.",
+        "The context-centered cosine between P-on-B and P-on-residual-background is positive and relative interaction RMS is at most 0.25."
+      ]
+    },
+    "taxonomy": {
+      "full": "Soft gate, hard gate, and linear-field gate all pass. Conclude that the compact reversible patch substantially reconstructs both the soft prompt-conditional field and its thresholded strict divergence-token emissions.",
+      "soft": "Soft gate passes but the hard gate and/or linear-field threshold does not, while local-field/background diagnostics do not show a clear nonlinear failure. Conclude causal soft-field mediation, not exact divergence-token reconstruction. Attach marginal-only if context-centered requirements failed but marginal/full-field evidence remained.",
+      "soft-marginal": "JS mediation and the full/marginal field pass, but context-centered probability or logit reconstruction fails. Conclude a causal marginal numeric-frequency effect, not prompt-conditional field reconstruction.",
+      "soft-linear-hard-underpowered": "Soft and context-conditioned gates plus the local linear perturbation gates pass, but strict hard-event counts are below the frozen minimum. Conclude soft-field and threshold-model support while leaving the divergence-token hard gate undecided.",
+      "causal-nonlinear": "JS mediation beats shams in both directions, but context-centered/local-field/background-stability requirements fail or relative interaction exceeds 0.25. Conclude that P causally changes numeric predictions but its tokenwise action is nonlinear or background-dependent, not one stable perturbation field.",
+      "denied": "Real rank-one add/remove does not achieve positive JS mediation above shams in both directions, or its signed effects are inconsistent across directions. The hypothesis that this compact patch emits the teacher divergence field is denied at the tested grain.",
+      "underpowered_hard": "If strict event counts are below their frozen minima, append this qualifier and do not decide the hard gate."
+    },
+    "replication_labels": {
+      "replicated": "The same taxonomy label is attained in both lineages.",
+      "lineage_specific": "Lineage labels differ; report both and use the weaker label as the joint conclusion.",
+      "all_slot_confirmation_failure": "Append if a primary pass has an opposite-signed all-ten-slot confirmation metric."
+    }
+  },
+  "limitations": [
+    "The rank-one module group was inherited from earlier teacher dual-use work rather than selected on this fresh bank; that reduces readout leakage but does not make the anatomy exhaustive.",
+    "Teacher trajectories are shared across intervention cells only within a lineage. Distinct sampling seeds mean ds2 and standard do not share sampled completions, so replication is across matched prompts rather than identical later-slot histories.",
+    "Restricted numeric softmax asks about choice among allowed numbers and discards changes in total probability mass assigned to nonnumeric vocabulary.",
+    "Strict sampled divergence tokens depend on a stochastic teacher draw matching the teacher's restricted argmax, so the endpoint-divergence-position analysis is the less selection-sensitive hard readout.",
+    "A rank-one failure does not deny higher-rank or off-module mechanisms; rank eight is only a prespecified ceiling diagnostic.",
+    "Successful finite add/remove establishes causal sufficiency and conditional reversibility of this patch for these readouts, not uniqueness, global necessity, a mathematically invertible model, or proof that downstream student backpropagation uses only these tokens.",
+    "Value-collapsed results are robustness checks because duplicate numeric token IDs are genuinely different training targets."
+  ]
+}
