@@ -30,7 +30,7 @@ teacher_training:
   max_grad_norm: 1.0
   seed: 2101
 number_data:
-  size_per_condition: 256
+  size_per_condition: 8192
   prompt_seed: 3203
   sampling_seed: 4201
   prefix_min_count: 3
