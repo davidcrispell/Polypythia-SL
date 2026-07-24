@@ -1493,6 +1493,117 @@ SHA256 (`7ac7d552...64f587`), norm 10.997561, and mean prompt-difference norm
   full source/distribution/receiver arms) is the follow-on once this cell
   is established.
 
+### 2026-07-24 — divergence-emission assay: the compact patch emits a soft conditional field, not most hard divergence-token identities
+- **Question / frozen prediction:** are strict numeric divergence tokens
+  thresholded token-level consequences of the same compact late-weight
+  component that moves the teacher's trait, or does that component only move a
+  marginal token-frequency field? Predictions P1-P5 and the full taxonomy were
+  frozen in `configs/teacher_divergence_emission_v1.json` and
+  `scripts/teacher_divergence_emission_v1.py`, committed and pushed at
+  `a8527cb` before fresh teacher sampling or any comparative model pass. The
+  strong prediction required bidirectional soft-field mediation above all
+  shams, >50% exact endpoint-winner and strict-DT recovery, a predictive local
+  linear field, and background-stable action.
+- **Design:** two prospectively fixed teacher lineages (data-seed2 and standard
+  Pythia-160m); 4,096 fresh unique numeric prompts with zero overlap across 524
+  pre-existing JSONLs; ten temperature-1 teacher-sampled numeric tokens per
+  prompt; primary first-slot analysis plus all-ten-slot confirmation on fixed
+  teacher-forced trajectories. The primary decoder support was 655 distinct
+  numeric token IDs (644 collapsed integer values secondarily). The inherited
+  late module group was L8-L11 x {QKV, MLP-out}, with one SVD rank-1 term per
+  module treated as the coordinated patch P. Cells were base+alpha*P and
+  teacher-alpha*P at alpha {.25,.5,.75,1}, central differences at epsilon
+  .125 around both endpoints, wrong-sign base-P, rank-8 add/remove, and five
+  per-module spectrum-matched Haar shams in both directions. Inference used
+  2,000 paired row-cluster bootstrap draws; no optimizer step was taken and no
+  raw logits were retained.
+- **Integrity / retry disclosure:** the first ds2 attempt completed all model
+  cells but crashed before writing any result table because the analysis used
+  NumPy-array `.square()` instead of `np.square()`. The one-line mechanical
+  fix and a new dose-slope regression test were committed and pushed at
+  `233f8d6`; the config, scientific cells, gates, and thresholds were
+  unchanged. The pre-fix bank was archived, every accepted ds2 cell was rerun,
+  and the regenerated 40,960 target IDs exactly matched the archived bank
+  (`sha256 0c12631b...`). Both base/teacher repeat controls were bit-identical
+  in both accepted lineages (maximum probability and centered-logit error 0).
+  A pre-publication audit then found that the executable label precedence
+  incorrectly required hard-token evidence before assigning the frozen
+  `causal_but_nonlinear` taxonomy. That analysis-only bug was corrected and
+  pushed at `5dec353`; only derived labels/qualifiers were regenerated from the
+  already stored gates. No forward pass, cell, metric, interval, gate, or
+  threshold changed. Scientific-payload hashes before and after correction
+  were identical: `5bd4b1e9...` (ds2) and `95a1f4ce...` (standard).
+- **SOFT GATE PASS, replicated in both directions and both lineages.** At
+  rank-1 alpha=1, fractional endpoint-JS mediation (add/remove) was
+  **22.8%/34.8%** in the ds2 first slot and **23.2%/34.3%** across its ten
+  slots; standard gave **23.7%/35.4%** first-slot and **34.3%/43.1%**
+  all-slot. Every absolute JS-reduction CI excluded zero, every real direction
+  beat all five shams, and full plus context-centered probability/logit
+  alignments had the registered positive sign and beat the sham fields. The
+  wrong-sign patch moved away from the teacher field in both lineages. Results
+  were materially unchanged after collapsing the 655 token IDs to 644 integer
+  values. This is causal prompt-conditional field mediation, not merely a
+  global unigram-frequency effect.
+- **Hard divergence-token gate FAIL when powered; first slot underpowered.**
+  Endpoint divergences / strict sampled DTs were 916/114 (ds2) and 999/69
+  (standard) in the first slot, below the frozen 200-strict-event minimum.
+  Across all slots the tests were powered: ds2 had 11,790 endpoint divergences
+  and 789 strict DTs; standard had 13,415 and 622. The real patch produced
+  positive winner-agreement gains and greatly exceeded the strongest sham,
+  but recovered only **19.0%/24.8%** of endpoint winners and
+  **18.9%/23.3%** of strict DTs in ds2 (add/remove), and
+  **29.6%/29.8%** of endpoint winners and **37.9%/31.8%** of strict DTs in
+  standard. All are well below the frozen >50% criterion. The best sham rates
+  were only 1.2%-2.6% endpoint and 2.2%-4.2% strict, so the partial recovery
+  is specific and real, but it is not reconstruction of most hard token
+  identities.
+- **Dose support replicated; one stable linear threshold field did not.**
+  JS-reduction slopes were positive in both directions at both position
+  summaries in both lineages. Winner-gain slopes also passed except ds2
+  first-slot removal, whose CI crossed zero. In ds2 the epsilon derivative
+  predicted finite-dose fields well (alpha-1 full-logit R2 .970/.980
+  add/remove in the first slot and .949/.961 across all slots). Addition
+  missed the identity/onset gates in both summaries and narrowly missed
+  context-R2 only all-slot (.895); removal passed field/identity/onset gates
+  in both summaries but not every other linear-field subgate. Standard was
+  strongly nonlinear/background-dependent:
+  alpha-1 context-centered R2 was negative for both first-slot directions and
+  -0.706/+0.287 all-slot add/remove; flip-onset accuracy was only .57-.67, and
+  interaction RMS was .265 first-slot / .333 all-slot, above the .25
+  background-stability cap. Thus a smooth trait-aligned perturbation
+  contributes to threshold crossings, but the exact crossings are not
+  captured by a stable local linear account that replicates across these
+  lineages and backgrounds.
+- **Rank-8 ceiling did not close the gap.** It modestly raised all-slot
+  endpoint-winner recovery to 20.8%/27.3% in ds2 and 33.1%/31.9% in standard,
+  while JS mediation was not uniformly better than rank-1. Missing hard-token
+  identity was therefore not rescued by expanding from the top one to the top
+  eight singular modes in these modules.
+- **Taxonomy-consistent verdict: `causal_but_nonlinear`, replicated** for both
+  the first-slot primary and all-slot confirmation. The compact patch is a
+  bidirectionally causal, conditionally reversible component of the teacher's
+  dense numeric prediction shift. The stronger account -- that this patch
+  substantially reconstructs most strict divergence tokens, or that all such
+  tokens are the thresholded output of one stable compact field -- is denied
+  at this grain. The compact trait-aligned component moves many token margins
+  in the right direction, but most exact identities remain unexplained by P.
+  The rank-8 ceiling and standard-lineage interaction implicate residual and
+  background-dependent contributions without localizing them; ds2 itself
+  passed the frozen background-stability gate.
+- **Scope:** this is a sender-side causal assay. It does not prove global
+  mathematical invertibility, uniqueness/necessity of P, or that downstream
+  student backprop assigns credit only through strict divergence tokens. It
+  strengthens the credit-assignment account at the soft distributional-field
+  level while making a simple P-mediated/compact-field DT-only account less
+  plausible. Learner-side DT necessity remains untested. The next direct test
+  is to separate P-predicted/recovered DT positions, residual DT positions,
+  and matched non-DT high-margin positions in student training.
+- Artifacts:
+  `configs/teacher_divergence_emission_v1.json`,
+  `scripts/teacher_divergence_emission_v1.py`,
+  `runs/teacher_divergence_emission_v1/{preflight.json,banks/,ds2/summary.json,standard/summary.json}`,
+  `runs/teacher_divergence_emission_v1.{json,md}`.
+
 ## Seed registry
 
 | Range | Use |
