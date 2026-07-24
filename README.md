@@ -5,10 +5,11 @@ We propose that model traits perturb downstream token distributions via [weight 
 
 Our experiments support that a trait-induced token distribution shift in teachers coupled with a subsequent credit assignment to trait-induction in students is the transmission mechanism of subliminal learning. We find that the trait circuit learns the preference to perturb downstream token distribution towards the teacher training data.
 
-This is (to our surprise, we had converged on this intuition independently) in line with previous work by Schrodi et. al (https://arxiv.org/html/2509.23886v2), who argue that trait-induction is a simple and sufficient way to match the training distribution in the student models. We find support for this mechanism empirically in the experiments below. I apologize for the lack of hand written entries, I will be writing up these results cleanly in a blog post or other publication. 
+This is (to my surprise! I had converged on this intuition independently) in line with previous work by Schrodi et. al (https://arxiv.org/html/2509.23886v2), who argue that trait-induction is a simple and sufficient way to match the training distribution in the student models. We find support for this mechanism empirically in the experiments below. 
 
-We are currently investigating 
+I apologize for the lack of hand written entries, I will be writing up these results in a cleaner publication. 
 
+Additional novel findings: SL replicates weakly among students who do not share the same data order as their teacher, but share initialization. 
 
 This repository contains a complete experimental program on **subliminal
 learning** (SL; [Cloud et al. 2025/2026](https://arxiv.org/abs/2507.14805)) in
@@ -113,7 +114,7 @@ instruction-tuned models is the open question that matters most.
 Research directed by **David Crispell** (hypotheses H7–H9, the steering
 pre-flight methodology, the three-condition transfer criterion, the
 responsibility-vs-necessity refinement). Experiments designed and executed in
-collaboration with Anthropic Claude research assistants — **Sol** (mechanism
+collaboration with research assistants — **Sol** (mechanism
 assay campaign: knockout, factorials, verification harnesses) and **Fable**
 (replication program, capstone, confirmatory battery) — under a
 preregistration-and-ledger protocol in which every substantive claim, human
