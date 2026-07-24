@@ -1682,6 +1682,75 @@ def all_sham_ci_positive(comparisons: list[dict[str, Any]], key: str) -> bool:
     return all(ci_positive(row[key]) for row in comparisons)
 
 
+def classification_from_gates(
+    gates: dict[str, Any],
+) -> dict[str, Any]:
+    directions = ("add", "remove")
+    soft_causal_all = all(
+        gates[f"S1_soft_causal_{direction}"] for direction in directions
+    )
+    context_exact_all = all(
+        gates[f"S1_context_exact_{direction}"] for direction in directions
+    )
+    s1_all = all(gates[f"S1_{direction}"] for direction in directions)
+    s2_all = all(
+        gates[f"S2_{direction}"] is True for direction in directions
+    )
+    hard_power_all = all(
+        gates[f"hard_power_{direction}"] for direction in directions
+    )
+    hard_statuses = [
+        gates[f"hard_status_{direction}"] for direction in directions
+    ]
+    hard_any_fail = "fail" in hard_statuses
+    hard_any_underpowered = "underpowered" in hard_statuses
+    s3_all = all(gates[f"S3_{direction}"] for direction in directions)
+    p1_all = all(gates[f"P1_{direction}"] for direction in directions)
+    p2_all = all(gates[f"P2_{direction}"] for direction in directions)
+    p3_all = all(gates[f"P3_{direction}"] for direction in directions)
+    p4 = gates["P4_background_stability"]
+    local_background_core = all((p1_all, p2_all, p4))
+    linear_core = all((s3_all, p1_all, p2_all, p3_all, p4))
+    full_core = all((s1_all, s2_all, hard_power_all, linear_core))
+
+    hard_qualifiers: list[str] = []
+    if hard_any_underpowered:
+        hard_qualifiers.append("underpowered_hard")
+    if hard_any_fail:
+        hard_qualifiers.append("powered_hard_failure")
+
+    if full_core:
+        classification = "full_support"
+        qualifiers: list[str] = []
+    elif (
+        soft_causal_all and context_exact_all and linear_core
+        and hard_any_underpowered and not hard_any_fail
+    ):
+        classification = "soft_field_with_linear_support_hard_underpowered"
+        qualifiers = ["underpowered_hard"]
+    elif (
+        soft_causal_all and context_exact_all and not local_background_core
+    ):
+        # The frozen prose taxonomy assigns failed local-field or
+        # background-stability requirements to causal/nonlinear regardless
+        # of whether the independent hard-token gate passes.
+        classification = "causal_but_nonlinear"
+        qualifiers = hard_qualifiers
+    elif soft_causal_all and not context_exact_all:
+        classification = "soft_field_only_marginal"
+        qualifiers = ["marginal_only", *hard_qualifiers]
+    elif soft_causal_all:
+        classification = "soft_field_only"
+        qualifiers = hard_qualifiers
+    else:
+        classification = "compact_emitter_denied_or_narrowed_at_this_grain"
+        qualifiers = hard_qualifiers
+    return {
+        "classification": classification,
+        "qualifiers": qualifiers,
+    }
+
+
 def classify_lineage(
     cells: dict[str, Any],
     rows: dict[str, dict[str, dict[str, np.ndarray]]],
@@ -1843,52 +1912,9 @@ def classify_lineage(
             and interaction[stratum]["relative_interaction_rms"] <= 0.25
         )
         gates["P4_background_stability"] = p4
-        hard_power_all = all(hard_power_direction)
-        hard_evidence_all = hard_power_all and all(hard_evidence_direction)
-        hard_any_fail = "fail" in hard_status_direction
-        hard_any_underpowered = "underpowered" in hard_status_direction
-        soft_causal_all = all(soft_causal_direction)
-        context_exact_all = all(context_exact_direction)
-        full_core = all((
-            s1_all, hard_evidence_all, s3_all, p1_all, p2_all, p3_all, p4
-        ))
-        linear_core = all((s3_all, p1_all, p2_all, p3_all, p4))
-        if full_core and s2_all and hard_power_all:
-            classification = "full_support"
-            qualifiers: list[str] = []
-        elif (
-            soft_causal_all and context_exact_all and linear_core
-            and hard_any_underpowered and not hard_any_fail
-        ):
-            classification = "soft_field_with_linear_support_hard_underpowered"
-            qualifiers = ["underpowered_hard"]
-        elif (
-            soft_causal_all and context_exact_all and hard_evidence_all
-            and not (p1_all and p2_all and p4)
-        ):
-            classification = "causal_but_nonlinear"
-            qualifiers = []
-        elif soft_causal_all and not context_exact_all:
-            classification = "soft_field_only_marginal"
-            qualifiers = ["marginal_only"]
-            if hard_any_underpowered:
-                qualifiers.append("underpowered_hard")
-            if hard_any_fail:
-                qualifiers.append("powered_hard_failure")
-        elif soft_causal_all:
-            classification = "soft_field_only"
-            qualifiers = []
-            if hard_any_underpowered:
-                qualifiers.append("underpowered_hard")
-            if hard_any_fail:
-                qualifiers.append("powered_hard_failure")
-        else:
-            classification = "compact_emitter_denied_or_narrowed_at_this_grain"
-            qualifiers = []
         result[stratum] = {
             "gates": gates,
-            "classification": classification,
-            "qualifiers": qualifiers,
+            **classification_from_gates(gates),
         }
     return result
 
@@ -2328,16 +2354,170 @@ def run_lineage(lineage: str) -> dict[str, Any]:
     return result
 
 
-def aggregate_results() -> dict[str, Any]:
-    records = {}
+def correct_existing_classifications() -> dict[str, Any]:
+    protocol_hash = file_sha256(CONFIG_PATH)
+    current_implementation = implementation_guard()
+    git_head = subprocess.check_output(
+        ["git", "rev-parse", "HEAD"], cwd=ROOT, text=True
+    ).strip()
+    upstream_head = subprocess.check_output(
+        ["git", "rev-parse", "@{u}"], cwd=ROOT, text=True
+    ).strip()
+    if git_head != upstream_head:
+        raise RuntimeError(
+            "Classification-correction commit must be pushed before use"
+        )
+    tracked = subprocess.run(
+        ["git", "ls-files", "--error-unmatch",
+         str(SCRIPT_PATH.relative_to(ROOT)), str(CONFIG_PATH.relative_to(ROOT))],
+        cwd=ROOT, capture_output=True, text=True,
+    )
+    if tracked.returncode != 0:
+        raise RuntimeError("Script/config must be tracked before correction")
+    dirty = subprocess.run(
+        ["git", "diff", "--quiet", "HEAD", "--",
+         str(SCRIPT_PATH.relative_to(ROOT)), str(CONFIG_PATH.relative_to(ROOT))],
+        cwd=ROOT,
+    )
+    if dirty.returncode != 0:
+        raise RuntimeError(
+            "Script/config must match the pushed correction commit"
+        )
+
+    preflight_path = WORK / "preflight.json"
+    if not preflight_path.exists():
+        raise RuntimeError("Missing scientific-run preflight")
+    preflight = json.loads(preflight_path.read_text())
+    if (
+        preflight.get("protocol_sha256") != protocol_hash
+        or preflight.get("result_absence_confirmed") is not True
+    ):
+        raise RuntimeError("Scientific-run preflight does not match protocol")
+
+    updates: list[tuple[Path, dict[str, Any]]] = []
+    statuses: list[str] = []
     for lineage in LINEAGES:
         path = WORK / lineage / "summary.json"
         if not path.exists():
             raise RuntimeError(f"Missing lineage summary: {path}")
         record = json.loads(path.read_text())
+        if record.get("protocol_sha256") != protocol_hash:
+            raise RuntimeError(f"Protocol mismatch in summary: {lineage}")
+        if record.get("lineage") != lineage:
+            raise RuntimeError(f"Lineage mismatch in summary: {lineage}")
+        if record.get("implementation") != preflight.get("implementation"):
+            raise RuntimeError(
+                f"Scientific implementation mismatch in summary: {lineage}"
+            )
+        if record.get("model_guards") != preflight["models"][lineage]:
+            raise RuntimeError(f"Model guard mismatch in summary: {lineage}")
+        if (
+            record.get("bank", {}).get("script_sha256")
+            != preflight["implementation"]["script_sha256"]
+        ):
+            raise RuntimeError(f"Bank implementation mismatch: {lineage}")
+        if record.get("raw_logits_saved") is not False:
+            raise RuntimeError(f"Unexpected raw-logit status: {lineage}")
+        old_classification = record["classification"]
+        new_classification = {
+            stratum: {
+                "gates": old_classification[stratum]["gates"],
+                **classification_from_gates(
+                    old_classification[stratum]["gates"]
+                ),
+            }
+            for stratum in ("first_slot", "all_slots")
+        }
+        old_labels = {
+            stratum: old_classification[stratum]["classification"]
+            for stratum in ("first_slot", "all_slots")
+        }
+        new_labels = {
+            stratum: new_classification[stratum]["classification"]
+            for stratum in ("first_slot", "all_slots")
+        }
+        prior_corrections = [
+            row for row in record.get("analysis_corrections", [])
+            if row.get("name") == "frozen-taxonomy-precedence-v1"
+        ]
+        if len(prior_corrections) > 1:
+            raise RuntimeError(
+                f"Duplicate classification corrections: {lineage}"
+            )
+        prior_correction = (
+            prior_corrections[0] if prior_corrections else None
+        )
+        if prior_correction is not None:
+            if (
+                record.get("derived_analysis_implementation")
+                != current_implementation
+                or old_classification != new_classification
+                or prior_correction.get("new_labels") != new_labels
+            ):
+                raise RuntimeError(
+                    f"Inconsistent prior classification correction: {lineage}"
+                )
+            statuses.append(
+                f"[{lineage}] labels already corrected "
+                f"first={new_labels['first_slot']} "
+                f"all={new_labels['all_slots']}"
+            )
+            continue
+        correction = {
+            "name": "frozen-taxonomy-precedence-v1",
+            "reason": (
+                "The original executable branch incorrectly required hard-"
+                "token evidence before assigning causal_but_nonlinear. The "
+                "frozen prose taxonomy assigns that label when the causal "
+                "conditional soft field passes but the independent local-"
+                "field/background-stability package fails."
+            ),
+            "scope": (
+                "Derived classification labels and hard-power qualifiers "
+                "only; no cell, metric, confidence interval, gate, threshold, "
+                "trajectory, or model output changed."
+            ),
+            "source_scientific_script_sha256": record["implementation"][
+                "script_sha256"
+            ],
+            "corrected_analysis_script_sha256": current_implementation[
+                "script_sha256"
+            ],
+            "git_head": git_head,
+            "old_labels": old_labels,
+            "new_labels": new_labels,
+        }
+        record["classification"] = new_classification
+        record["derived_analysis_implementation"] = current_implementation
+        record["analysis_corrections"] = [
+            *record.get("analysis_corrections", []), correction
+        ]
+        updates.append((path, record))
+        statuses.append(
+            f"[{lineage}] corrected labels "
+            f"first={new_labels['first_slot']} all={new_labels['all_slots']}"
+        )
+    for path, record in updates:
+        write_json(path, record)
+    for status in statuses:
+        print(status, flush=True)
+    return aggregate_results()
+
+
+def aggregate_results() -> dict[str, Any]:
+    records = {}
+    current_implementation = implementation_guard()
+    for lineage in LINEAGES:
+        path = WORK / lineage / "summary.json"
+        if not path.exists():
+            raise RuntimeError(f"Missing lineage summary: {path}")
+        record = json.loads(path.read_text())
+        analysis_implementation = record.get(
+            "derived_analysis_implementation", record.get("implementation")
+        )
         if (
             record.get("protocol_sha256") != file_sha256(CONFIG_PATH)
-            or record.get("implementation") != implementation_guard()
+            or analysis_implementation != current_implementation
         ):
             raise RuntimeError(f"Stale lineage summary: {lineage}")
         records[lineage] = record
@@ -2364,7 +2544,11 @@ def aggregate_results() -> dict[str, Any]:
     aggregate = {
         "name": "teacher-divergence-emission-v1",
         "protocol_sha256": file_sha256(CONFIG_PATH),
-        "implementation": implementation_guard(),
+        "implementation": current_implementation,
+        "scientific_implementation_by_lineage": {
+            lineage: record["implementation"]
+            for lineage, record in records.items()
+        },
         "joint": joint,
         "lineages": records,
     }
@@ -2473,6 +2657,81 @@ def self_test() -> None:
         linear_rows, "first_slot", "synthetic", boot
     )
     assert math.isclose(slope["mean"], 2.0, rel_tol=0.0, abs_tol=1e-12)
+
+    def taxonomy_fixture(
+        hard_status: str,
+        *,
+        linear: bool = True,
+        context: bool = True,
+        soft: bool = True,
+    ) -> dict[str, Any]:
+        gates: dict[str, Any] = {}
+        for direction in ("add", "remove"):
+            gates[f"S1_soft_causal_{direction}"] = soft
+            gates[f"S1_context_exact_{direction}"] = context
+            gates[f"S1_{direction}"] = soft and context
+            gates[f"S2_{direction}"] = (
+                True if hard_status == "pass"
+                else False if hard_status == "fail"
+                else None
+            )
+            gates[f"hard_power_{direction}"] = hard_status != "underpowered"
+            gates[f"hard_status_{direction}"] = hard_status
+            gates[f"S3_{direction}"] = linear
+            gates[f"P1_{direction}"] = linear
+            gates[f"P2_{direction}"] = linear
+            gates[f"P3_{direction}"] = linear
+        gates["P4_background_stability"] = linear
+        return gates
+
+    assert classification_from_gates(
+        taxonomy_fixture("pass")
+    )["classification"] == "full_support"
+    underpowered_linear = classification_from_gates(
+        taxonomy_fixture("underpowered")
+    )
+    assert underpowered_linear["classification"] == (
+        "soft_field_with_linear_support_hard_underpowered"
+    )
+    assert underpowered_linear["qualifiers"] == ["underpowered_hard"]
+    powered_hard_fail = classification_from_gates(
+        taxonomy_fixture("fail")
+    )
+    assert powered_hard_fail["classification"] == "soft_field_only"
+    assert powered_hard_fail["qualifiers"] == ["powered_hard_failure"]
+    isolated_s3_fail = taxonomy_fixture("fail")
+    isolated_s3_fail["S3_add"] = False
+    assert classification_from_gates(
+        isolated_s3_fail
+    )["classification"] == "soft_field_only"
+    isolated_p3_fail = taxonomy_fixture("fail")
+    isolated_p3_fail["P3_remove"] = False
+    assert classification_from_gates(
+        isolated_p3_fail
+    )["classification"] == "soft_field_only"
+    powered_nonlinear = classification_from_gates(
+        taxonomy_fixture("fail", linear=False)
+    )
+    assert powered_nonlinear["classification"] == "causal_but_nonlinear"
+    assert powered_nonlinear["qualifiers"] == ["powered_hard_failure"]
+    underpowered_nonlinear = classification_from_gates(
+        taxonomy_fixture("underpowered", linear=False)
+    )
+    assert underpowered_nonlinear["classification"] == "causal_but_nonlinear"
+    assert underpowered_nonlinear["qualifiers"] == ["underpowered_hard"]
+    marginal = classification_from_gates(
+        taxonomy_fixture("fail", context=False)
+    )
+    assert marginal["classification"] == "soft_field_only_marginal"
+    assert marginal["qualifiers"] == [
+        "marginal_only", "powered_hard_failure"
+    ]
+    denied = classification_from_gates(
+        taxonomy_fixture("underpowered", soft=False)
+    )
+    assert denied["classification"] == (
+        "compact_emitter_denied_or_narrowed_at_this_grain"
+    )
     print("SELF-TEST PASS", flush=True)
 
 
@@ -2483,18 +2742,20 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument("--lineage", choices=tuple(LINEAGES))
     parser.add_argument("--all", action="store_true")
     parser.add_argument("--analyze", action="store_true")
+    parser.add_argument("--correct-labels", action="store_true")
     return parser.parse_args()
 
 
 def main() -> None:
     args = parse_args()
     selected = sum(bool(value) for value in (
-        args.self_test, args.preflight, args.lineage, args.all, args.analyze
+        args.self_test, args.preflight, args.lineage, args.all, args.analyze,
+        args.correct_labels,
     ))
     if selected != 1:
         raise SystemExit(
             "Select exactly one of --self-test, --preflight, --lineage, "
-            "--all, or --analyze"
+            "--all, --analyze, or --correct-labels"
         )
     if args.self_test:
         self_test()
@@ -2508,6 +2769,9 @@ def main() -> None:
             for lineage in LINEAGES:
                 run_lineage(lineage)
             aggregate_results()
+    elif args.correct_labels:
+        with exclusive_run_lock("correct-labels"):
+            correct_existing_classifications()
     else:
         with exclusive_run_lock("analyze"):
             aggregate_results()
