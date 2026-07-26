@@ -1810,8 +1810,20 @@ SHA256 (`7ac7d552...64f587`), norm 10.997561, and mean prompt-difference norm
   base_to_teacher direction only (mechanistic decomposition, not a
   significance test -- shams not needed here since the capstone already
   established real-vs-sham). Forward-pass only.
-  Status: launching now. Artifacts: `scripts/epsilon_delta_gamma_v1.py`,
-  `runs/epsilon_delta_gamma_v1.md`.
+  Status: **CONFIRMED, cleanly.** delta=0.000 at layers 0 and 7 (before the
+  patched blocks) AND at layer 8 (input to the first patched block, correctly
+  unaffected -- hidden_states[8] = state entering layers.8, not its output).
+  First nonzero delta at layer 9 (0.233 @ alpha=0.25 -> 0.904 @ alpha=1.0),
+  monotonically compounding through layers 10/11/12 (delta[L12]: 1.82 -> 7.38
+  across alpha 0.25->1.0). Gamma (wolf-margin delta 0.50->2.26; fingerprint-
+  advantage delta 0.0019->0.0123) scales in the same mildly-sublinear shape as
+  delta[L12] across all four alpha points -- consistent with one causal
+  mediation chain (epsilon -> late-layer activation shift -> behavior), not
+  a decoupled pathway. No leakage to pre-patch layers by construction --
+  confirms the architecture is behaving exactly as the patch/hidden_states
+  indexing predicts (integrity check, not just a novel finding).
+  Artifacts: `scripts/epsilon_delta_gamma_v1.py`,
+  `runs/epsilon_delta_gamma_v1.md`, `runs/epsilon_delta_gamma_v1/results.json`.
 
 ## Seed registry
 
