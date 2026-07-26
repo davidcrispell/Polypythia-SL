@@ -1737,6 +1737,32 @@ SHA256 (`7ac7d552...64f587`), norm 10.997561, and mean prompt-difference norm
   Status: Phase 1 UNTESTED, launching now. Artifacts:
   `scripts/divergence_token_dynamics.py`, `runs/divergence_token_dynamics_v1.md`.
 
+### 2026-07-26 — H11 Phase 1 result: divergence tokens emerge early-but-extended, lock in
+- Result: 49/1280 probe positions (3.8%) are divergence tokens at the final
+  teacher (broadly consistent with 2509.23886's 5-20% range at different
+  scale). 98% stable after first emergence -- a ratchet, not an equilibrium.
+  Emergence timing is early-but-extended, not instantaneous: 13/49 (27%)
+  crystallize at update 1, but new divergence tokens keep appearing through
+  update 19; none emerge in the final 5 updates.
+- Correlation pass run, one solid finding withheld as confounded: grad-norm
+  vs emergence-update correlation (r=-0.89) is NOT presented as causal --
+  gradient norm itself trends down over training, so early-biased emergence
+  anticorrelates with grad norm near-tautologically. Prompt-template
+  correlation with early/late minibatches is suggestive but underpowered
+  from a single-epoch, single-seed run (each template's shuffle position is
+  confounded with training-order timing, not separable from content effect
+  without multiple seeds).
+- Integrity: checkpoints list explicitly asserted length-25 and
+  update-indexed order before analysis (the direct lesson from the retracted
+  u16 trace bug).
+- Next (deferred, not run): 2-3 fresh TEACHER_SEED reruns to test whether the
+  SAME templates recur in early-emergence minibatches regardless of shuffle
+  order (content effect) vs. scatter randomly (position artifact). Phase 2
+  (train students from intermediate checkpoints) remains deferred.
+- Artifacts: `runs/divergence_token_dynamics_v1/{checkpoints,
+  divergence_tokens,preference_rows,probe_prefixes,base_argmax}.json`,
+  `runs/divergence_token_dynamics_v1.md`.
+
 ## Seed registry
 
 | Range | Use |
