@@ -1779,8 +1779,16 @@ SHA256 (`7ac7d552...64f587`), norm 10.997561, and mean prompt-difference norm
   divergence-token sets to each other AND to the original H11 teacher's set
   (49/1280). Self-cleaning: delete each teacher's weights immediately after
   its argmax snapshot is captured (disk discipline).
-  Status: launching now. Artifacts: `scripts/cross_teacher_fingerprint_v1.py`,
-  `runs/cross_teacher_fingerprint_v1.md`.
+  Status: **CONFIRMED, strongly.** Pairwise Jaccard overlap between
+  independently-trained teachers: teacher_A(H11)/B 0.537, A/C 0.843, B/C
+  0.549 -- against a random baseline (same set sizes, shuffled uniformly
+  over 1280 positions) of 0.016. Roughly 34-53x above chance. Divergence
+  tokens are substantially a property of the (base, trait) pair, not
+  idiosyncratic to individual training runs -- directly confirms David's
+  first claim. Set sizes 49/34/45 (some run-to-run count variation, but a
+  large shared core). Artifacts: `scripts/cross_teacher_fingerprint_v1.py`,
+  `runs/cross_teacher_fingerprint_v1.md`,
+  `runs/cross_teacher_fingerprint_v1/summary.json`.
 
 ### 2026-07-26 — H13 registered: epsilon->delta->gamma activation propagation (David)
 - **H13.** Decompose the causal chain the capstone's patch sweep already
