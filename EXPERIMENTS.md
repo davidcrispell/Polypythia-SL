@@ -1900,8 +1900,47 @@ SHA256 (`7ac7d552...64f587`), norm 10.997561, and mean prompt-difference norm
 - v1 entries above are RETAINED and annotated as methodologically superseded
   (project precedent: u16 retraction, H3 downgrade -- corrections in place,
   originals preserved).
-  Status: launching now. Artifacts: `scripts/divergence_v2.py`,
-  `runs/divergence_v2.md`.
+  **RESULT: all three v1 conclusions survive qualitatively; two quantitative
+  corrections and one important new finding.**
+  - Divergence rate 3.8% (v1 greedy) -> **18.3%** (469/2560, v2 sampled),
+    which now lands INSIDE 2509.23886's reported 8.5-20.2% range rather than
+    below it -- independent evidence the corrected methodology measures the
+    same object the source paper does.
+  - **Same-base replicability (H12) SURVIVES**: Jaccard 0.613-0.655 (v1:
+    0.537-0.843), **6.6-7.2x** each pair's own analytic random baseline. The
+    v1 "34-53x" figure was inflated by a tiny baseline from degenerate small
+    sets; the qualitative claim (independent retrainings converge on
+    substantially the same fingerprint) is unchanged and now better estimated.
+  - **Cross-lineage (H14) SURVIVES but WEAKENS substantially**: Jaccard
+    0.124-0.198, but only **1.43-1.90x** each pair's own baseline (v1
+    implied ~6-10x). Three-tier structure holds -- same-base ~0.63 (7x) >>
+    cross-lineage ~0.15 (1.6x) > chance -- but cross-lineage sharing is much
+    closer to chance than v1 suggested. The v1 conclusion "fingerprint shape
+    is lineage-specific" is if anything STRENGTHENED; the "modest but real
+    cross-lineage component" claim is weakened to "small, ~1.5-1.9x chance."
+  - ds1 x ds2 (shared init, 62% steering transport) = 0.165, ratio 1.72x --
+    still barely above chance, so the H14 tension with steering-transport
+    stands: coarse direction shared, discrete footprint not.
+  - **Emergence timing (H11) SURVIVES**: mean first emergence 5.99/24 (v1:
+    6.45), stable-after-emergence 93.6% (v1: 98.0%), same early-but-extended
+    shape (94 tokens at update 1, long tail to update 23), monotone growth
+    0 -> 469 across checkpoints.
+  - **NEW FINDING (v2-only, the gap diagnostic): divergence happens almost
+    exclusively where the base model is nearly indifferent.** Mean base
+    top1-top2 probability gap at divergent positions is **0.022-0.034**
+    versus **0.240-0.379** overall -- roughly a 10x difference, consistent
+    across all five lineages. The trait does not overpower confident
+    predictions; it tips near-coin-flips. This is direct support for David's
+    latent-connection hypothesis (fine-tuning strengthens/crosses threshold
+    on connections that already exist near a decision boundary, rather than
+    creating new ones), and it explains why fingerprint SHAPE is
+    lineage-specific while trait DIRECTION transports: which positions sit
+    near a boundary is a fine-grained per-lineage accident.
+  - k=2 sampled paths agreed closely per lineage (e.g. standard 233/236),
+    so single-draw noise is not driving these counts.
+  Artifacts: `scripts/divergence_v2.py`, `runs/divergence_v2.md`,
+  `runs/divergence_v2/{phaseA_cross_lineage,phaseB_same_base,phaseC_timing,
+  summary}.json`.
 
 ## Seed registry
 

@@ -1,0 +1,211 @@
+{
+  "experiment_id": "teacher_trait_fingerprint_ontogeny_v2",
+  "registered_utc": "2026-07-26T18:29:10+00:00",
+  "status": "NOT_YET_RUN",
+  "question": "At which teacher-training update does checkpoint-local weight content become causally entangled with the trait-specific numeric distributional fingerprint?",
+  "design": {
+    "replay_unit": "One independently initialized, complete 24-update replay for exactly one (training_seed, trait, target_update) leaf. Exactly one callback is registered in that replay. Separately truncated runs are forbidden.",
+    "training_seeds": [
+      2101,
+      2102
+    ],
+    "traits": [
+      "wolf",
+      "lion"
+    ],
+    "target_updates": [
+      0,
+      1,
+      2,
+      4,
+      8,
+      12,
+      16,
+      20,
+      24
+    ],
+    "optimizer_updates_per_replay": 24,
+    "callbacks_per_replay": 1,
+    "logical_cells_per_leaf": 30,
+    "expected_leaf_count": 36,
+    "expected_global_cell_count": 1080,
+    "retry_policy": "No retry is permitted within v2. A leaf root is single-attempt and creation-only. Any failed or incomplete attempt requires a newly preregistered experiment version.",
+    "execution_order": "seed ascending, trait in [wolf,lion], target_update ascending",
+    "v1_scientific_definition_policy": "All model, data, prompt-bank, module, factor, dose, control, scoring, replay-fidelity, bootstrap, gate, onset, and classification definitions are inherited byte-for-byte from the frozen v1 runner and protocol. V2 changes only the causal execution and artifact unit from a four-trajectory campaign to 36 checkpoint-isolated full replays."
+  },
+  "source": {
+    "v1_runner_path": "scripts/teacher_trait_fingerprint_ontogeny_v1.py",
+    "v1_runner_sha256": "72c0518813705810ef763a2cd8f41fa0d658bc76c97d056279a748d9482f0d87",
+    "v1_config_path": "configs/teacher_trait_fingerprint_ontogeny_v1.json",
+    "v1_config_sha256": "4094692bd1db85dee2ded8be7a484537bb6f326db66dd5e69a298a6b5e85c4ac",
+    "v1_verifier_path": "scripts/teacher_trait_fingerprint_ontogeny_v1_verify.py",
+    "v1_verifier_sha256": "1a2610db61fefa7d18010ce88807db3ad1c30add0e156ce6aab80286c252bb40",
+    "v1_preregistered_git_commit": "a093bcb985dea7fae47b62b4663f390f3686ebea",
+    "v1_preflight_path": "runs/teacher_trait_fingerprint_ontogeny_v1/preflight.json",
+    "v1_preflight_sha256": "6a6f899128032b9e0f2e0acdacae182b5172054551709e4623d5365564678e98",
+    "v1_endpoint_lock_path": "runs/teacher_trait_fingerprint_ontogeny_v1/endpoint_factors/lock.json",
+    "v1_endpoint_lock_sha256": "a895a5ab0ea41153f0a3476bef9cbd2a0adf9a0cb3e19eca2d3bc7551567c2bf",
+    "v1_native_lock_path": "runs/teacher_trait_fingerprint_ontogeny_v1/native_trajectories/lock.json",
+    "v1_native_lock_sha256": "ee7ffdbb83177fdbf7d1a7904d0ee296062b8f1892afed4d2d65216a8efcf8f7",
+    "v1_failed_attempt_trees": [
+      {
+        "root_path": "runs/teacher_trait_fingerprint_ontogeny_v1/causal_trajectories/seed_2101/wolf/attempt_001",
+        "file_count": 216,
+        "byte_count": 15265966,
+        "tree_sha256": "b973975d2b37c8d3afc178fd637864dd29b4f6d762a151446ab6b2e2eb32c424",
+        "failure_path": "runs/teacher_trait_fingerprint_ontogeny_v1/causal_trajectories/seed_2101/wolf/attempt_001/failure.json",
+        "failure_sha256": "b5146e944e4c700d6d2061e0b4748dab9cc191fdd4760231722c696ef655e1e2"
+      },
+      {
+        "root_path": "runs/teacher_trait_fingerprint_ontogeny_v1/causal_trajectories/seed_2101/wolf/attempt_002",
+        "file_count": 216,
+        "byte_count": 15264764,
+        "tree_sha256": "bc94b61f19fcc7e6b737b0362fe1ac3e6013f9515af8d15d5247bbac984b50de",
+        "failure_path": "runs/teacher_trait_fingerprint_ontogeny_v1/causal_trajectories/seed_2101/wolf/attempt_002/failure.json",
+        "failure_sha256": "bb829f669713a3d1c1288b212c8f77a9e4cb62ce853a2126dfe39a79f03a1859"
+      }
+    ],
+    "v2_verifier_path": "scripts/teacher_trait_fingerprint_ontogeny_v2_verify.py",
+    "v2_verifier_sha256": "7558d9b3d710d7d4cebbe3caee4da68bdf8744bb2290aa4165f4f3884ca8201e",
+    "forbidden_v1_inputs": [
+      "runs/teacher_trait_fingerprint_ontogeny_v1/causal_trajectories/lock.json",
+      "runs/teacher_trait_fingerprint_ontogeny_v1.json",
+      "runs/teacher_trait_fingerprint_ontogeny_v1.md",
+      "runs/teacher_trait_fingerprint_ontogeny_v1_verify.json"
+    ]
+  },
+  "inheritance_assertions": {
+    "v1_experiment_id": "teacher_trait_fingerprint_ontogeny_v1",
+    "lineage": "standard_pythia160_step143000",
+    "training_seeds": [
+      2101,
+      2102
+    ],
+    "traits": [
+      "wolf",
+      "lion"
+    ],
+    "reference_updates": [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8,
+      9,
+      10,
+      11,
+      12,
+      13,
+      14,
+      15,
+      16,
+      17,
+      18,
+      19,
+      20,
+      21,
+      22,
+      23,
+      24
+    ],
+    "causal_updates": [
+      0,
+      1,
+      2,
+      4,
+      8,
+      12,
+      16,
+      20,
+      24
+    ],
+    "real_doses": [
+      -1.0,
+      -0.5,
+      0.5,
+      1.0
+    ],
+    "sham_doses": [
+      -1.0,
+      1.0
+    ],
+    "sham_draws": 5,
+    "selected_layers": [
+      8,
+      9,
+      10,
+      11
+    ],
+    "selected_module_kinds": [
+      "attention.query_key_value",
+      "mlp.dense_4h_to_h"
+    ],
+    "array_lengths": {
+      "numeric_native_js": 1024,
+      "numeric_cell_js": 1024,
+      "numeric_oriented_js_progress": 1024,
+      "logit_field_dot": 1024,
+      "logit_field_norm": 1024,
+      "logit_effect_norm": 1024,
+      "logit_context_field_dot": 1024,
+      "logit_context_field_norm": 1024,
+      "logit_context_effect_norm": 1024,
+      "probability_field_dot": 1024,
+      "probability_field_norm": 1024,
+      "probability_effect_norm": 1024,
+      "probability_context_field_dot": 1024,
+      "probability_context_field_norm": 1024,
+      "probability_context_effect_norm": 1024,
+      "behavior_native_gap": 60,
+      "behavior_oriented_effect": 60,
+      "behavior_oriented_margin_effect": 60,
+      "hard_event": 1024,
+      "hard_oriented_recovery": 1024
+    }
+  },
+  "artifacts": {
+    "work_directory": "runs/teacher_trait_fingerprint_ontogeny_v2",
+    "preflight": "runs/teacher_trait_fingerprint_ontogeny_v2/preflight.json",
+    "checkpoint_lock": "runs/teacher_trait_fingerprint_ontogeny_v2/checkpoints/lock.json",
+    "aggregate_json": "runs/teacher_trait_fingerprint_ontogeny_v2.json",
+    "aggregate_markdown": "runs/teacher_trait_fingerprint_ontogeny_v2.md",
+    "verification_json": "runs/teacher_trait_fingerprint_ontogeny_v2_verify.json"
+  },
+  "integrity": {
+    "leaf_identity_fields": [
+      "experiment_id",
+      "lineage",
+      "training_seed",
+      "trait",
+      "target_update",
+      "replay_kind",
+      "optimizer_updates",
+      "config_sha256",
+      "script_sha256",
+      "preflight_sha256",
+      "v1_runner_sha256",
+      "v1_config_sha256"
+    ],
+    "full_logical_key": [
+      "lineage",
+      "training_seed",
+      "trait",
+      "optimizer_update",
+      "construction",
+      "control_kind",
+      "control_draw",
+      "dose"
+    ],
+    "canonical_policy": "Each leaf has exactly attempt_001. completion.json and canonical.json are creation-only. A canonical pointer is written only after complete leaf validation and must remain inside its registered leaf root.",
+    "crossfit_projection_witness_policy": "For every selected module, the factor catalog stores the exact float32 vector (W_t-W_base) times the sealed matched-endpoint right singular vector, its tensor hash, and the sealed endpoint u/v tensor hashes. Production and independent validators recompute u^T[(W_t-W_base)v] and require equality with the stored signed crossfit projection.",
+    "u0_exact_zero_policy": "At u0 every selected weight delta, crossfit projection witness, signed projection, and real/control factor amplitude must be exactly zero. All 30 u0 cells per seed/trait must be N/A: 14 checkpoint-local cells because rank one is unidentifiable and 16 crossfit cells because the checkpoint component is zero.",
+    "phase_lock_policy": "The global checkpoint lock is creation-only and is reconstructed from all 36 independently validated canonical leaves. It binds the exact v2 preflight, v1 dependency manifest, canonical pointers, completions, training records, live readouts, factor catalogs, cell manifests, and global logical-key set.",
+    "u0_equivalence_members": "The four frozen v1 native u0 readouts plus the four checkpoint-isolated v2 live u0 readouts; all 28 unordered pairs must pass the inherited v1 hard gate.",
+    "analysis_policy": "Only a valid global checkpoint lock may enter analysis. V1 native summaries and frozen statistical functions are reused, while v2 causal cells are loaded exclusively from v2 canonical leaves. V1 causal artifacts and aggregates are forbidden inputs.",
+    "verification_policy": "An independent verifier that does not import the production v2 runner must validate artifacts, recompute the registered analysis, and own primary_classification_valid and overall_pass."
+  }
+}
