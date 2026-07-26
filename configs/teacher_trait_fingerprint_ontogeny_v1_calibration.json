@@ -1,0 +1,78 @@
+{
+  "calibration_id": "teacher_trait_fingerprint_ontogeny_v1_mechanical_replay_calibration",
+  "date_utc": "2026-07-26",
+  "status": "completed_before_preregistration",
+  "purpose": "Calibrate deterministic-replay and no-op-callback fidelity bounds without inspecting any registered fresh-bank or intermediate scientific checkpoint outcome.",
+  "environment": {
+    "platform": "macOS-15.6-arm64-arm-64bit",
+    "python": "3.12.10",
+    "torch": "2.7.1",
+    "transformers": "4.53.0",
+    "numpy": "2.3.1",
+    "device": "mps",
+    "model_dtype": "float32"
+  },
+  "semantic_command": [
+    "Load the frozen standard Pythia-160M base at step143000 on MPS in float32.",
+    "Load the retained 384-row wolf or lion preference JSONL.",
+    "Call train_completion_model once, uninterrupted, for 24 updates with save_model=false.",
+    "For callback variants, set probe_updates to 0 through 24 and return only JSON scalars; do not evaluate behavior, numeric fingerprints, SVDs, projections, or interventions.",
+    "Stream-compare the live wolf endpoint with the retained historical safetensors and compare replay metrics with retained historical metrics."
+  ],
+  "ephemeral_metric_artifacts": {
+    "policy": "The temporary raw replay metrics were not copied into the repository. Their content hashes and all aggregate quantities used to choose the mechanical bounds are retained here; only these aggregates survive as project artifacts.",
+    "wolf_unprobed_sha256": "777e2806314bda6e5ccba33299b308b735e2e9a759c593ef3f35ef6afc327751",
+    "wolf_noop_callbacks_sha256": "a61b320e8eb9d33ba31a653df9e7136a8e81e748849cbf77cee3d9695ff4f092",
+    "lion_noop_callbacks_sha256": "01dac24d81f806f7cabb27a9d1e7fe233c08b8d1391e8141c5b52fb381e06856"
+  },
+  "observations": {
+    "wolf_unprobed": {
+      "u1_record_exact": true,
+      "mean_loss_difference": -6.19490941366e-05,
+      "final_loss_difference": -0.000166058540344,
+      "max_update_mean_loss_absolute_difference": 0.000606968998909,
+      "max_gradient_norm_absolute_difference": 0.593879699707,
+      "endpoint_relative_l2": 1.47644021847e-06,
+      "endpoint_max_absolute_difference": 3.19574028254e-05
+    },
+    "wolf_noop_callbacks": {
+      "u1_record_exact": true,
+      "mean_loss_difference": -5.26498382291e-05,
+      "final_loss_difference": -0.00041076540947,
+      "max_update_mean_loss_absolute_difference": 0.000671178102493,
+      "max_gradient_norm_absolute_difference": 0.594923019409,
+      "endpoint_relative_l2": 1.43921258133e-06,
+      "endpoint_max_absolute_difference": 3.19378450513e-05
+    },
+    "callback_vs_unprobed_wolf": {
+      "mean_loss_difference": 9.29925590754e-06,
+      "final_loss_difference": -0.000244706869125,
+      "max_update_mean_loss_absolute_difference": 0.000240422785282,
+      "max_gradient_norm_absolute_difference": 0.178298950195
+    },
+    "lion_noop_callbacks": {
+      "u1_record_exact": true,
+      "learning_rate_sequence_exact": true,
+      "mean_loss_difference": 0.000120634523531,
+      "final_loss_difference": -0.00115364789963,
+      "max_update_mean_loss_absolute_difference": 0.00296111404896,
+      "max_gradient_norm_absolute_difference": 4.57086372375
+    },
+    "lion_historical_sampling_diagnostic": {
+      "scope": "First 32 rows of the retained crossover_lion_b1 pool, seed 47001, ten numeric targets per row.",
+      "tokens_reproduced": 314,
+      "tokens_total": 320,
+      "rows_reproduced": 29,
+      "rows_total": 32,
+      "interpretation": "Endpoint-scientific-adjacent historical reproduction only; not a registered fresh-bank or intermediate fingerprint outcome."
+    }
+  },
+  "scientific_leakage_statement": {
+    "registered_fresh_bank_seen": false,
+    "intermediate_behavior_seen": false,
+    "intermediate_fingerprint_seen": false,
+    "divergence_event_identity_seen": false,
+    "checkpoint_svd_or_projection_seen": false,
+    "causal_patch_outcome_seen": false
+  }
+}

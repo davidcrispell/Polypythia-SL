@@ -1,0 +1,451 @@
+{
+  "experiment_id": "teacher_trait_fingerprint_ontogeny_v1",
+  "registered_utc": "2026-07-26",
+  "status": "preregistered_before_scientific_checkpoint_readouts",
+  "question": "During direct teacher trait induction, when does an unrelated numeric distributional fingerprint appear, acquire a particular trait identity, and become jointly controlled with the trait by compact weight content already present at that checkpoint?",
+  "terminology": {
+    "distributional_fingerprint": "The prompt-conditional change in the teacher's restricted distribution over the 655 complete space-prefixed numeric token IDs.",
+    "trait_specific_field": "The wolf-minus-lion conditional numeric logit/probability field after paired training from the same initialization and row order.",
+    "hard_divergence_event": "A prompt-position event at which two fixed models have different restricted-support argmax tokens. This is secondary to the dense soft field and is not treated as a permanent token type.",
+    "causal_entanglement": "A checkpoint-local weight component moves both held-out trait behavior and the numeric field in the registered direction under reversible plus/minus intervention, beyond norm-matched controls."
+  },
+  "pre_registration_disclosure": {
+    "mechanical_calibration_only": true,
+    "calibration_date_utc": "2026-07-26",
+    "calibration_scope": [
+      "One unprobed standard-wolf 24-update replay",
+      "One standard-wolf 24-update replay with 25 no-op callbacks",
+      "One standard-lion 24-update replay with 25 no-op callbacks",
+      "A 32-row lion historical sampling-reproduction diagnostic"
+    ],
+    "registered_fresh_bank_or_intermediate_scientific_checkpoint_outcomes_observed": false,
+    "not_observed_before_registration": [
+      "behavior trajectory",
+      "fingerprint JS, TV, or conditional field",
+      "hard divergence-event identities or rates",
+      "checkpoint SVDs or circuit projections",
+      "causal patch outcomes"
+    ],
+    "reason": "The calibration established that uninterrupted callbacks do not add material drift beyond MPS replay noise and supplied endpoint-fidelity tolerances. It did not inspect the registered fresh bank or any intermediate behavior, fingerprint, SVD, projection, or intervention outcome. The disclosed 32-row lion historical sampling-reproduction diagnostic is endpoint-scientific-adjacent but is not part of the registered bank or endpoints."
+    ,
+    "environment": {
+      "platform": "macOS-15.6-arm64-arm-64bit",
+      "python": "3.12.10",
+      "torch": "2.7.1",
+      "transformers": "4.53.0",
+      "numpy": "2.3.1",
+      "device": "mps",
+      "model_dtype": "float32"
+    },
+    "calibration_metric_artifact_sha256": {
+      "wolf_unprobed": "777e2806314bda6e5ccba33299b308b735e2e9a759c593ef3f35ef6afc327751",
+      "wolf_noop_callbacks": "a61b320e8eb9d33ba31a653df9e7136a8e81e748849cbf77cee3d9695ff4f092",
+      "lion_noop_callbacks": "01dac24d81f806f7cabb27a9d1e7fe233c08b8d1391e8141c5b52fb381e06856"
+    },
+    "calibration_observations": {
+      "wolf_unprobed_endpoint_relative_l2": 1.47644021847e-06,
+      "wolf_unprobed_endpoint_max_absolute_difference": 3.19574028254e-05,
+      "wolf_unprobed_max_update_loss_difference": 0.000606968998909,
+      "wolf_unprobed_max_gradient_norm_difference": 0.593879699707,
+      "wolf_callback_endpoint_relative_l2": 1.43921258133e-06,
+      "wolf_callback_endpoint_max_absolute_difference": 3.19378450513e-05,
+      "wolf_callback_max_update_loss_difference": 0.000671178102493,
+      "wolf_callback_max_gradient_norm_difference": 0.594923019409,
+      "callback_vs_unprobed_wolf_max_update_loss_difference": 0.000240422785282,
+      "callback_vs_unprobed_wolf_max_gradient_norm_difference": 0.178298950195,
+      "lion_callback_max_update_loss_difference": 0.00296111404896,
+      "lion_callback_max_gradient_norm_difference": 4.57086372375,
+      "lion_first32_historical_tokens_reproduced": "314/320",
+      "lion_first32_historical_rows_reproduced": "29/32"
+    }
+  },
+  "source": {
+    "base_model_id": "EleutherAI/pythia-160m",
+    "requested_revision": "step143000",
+    "resolved_revision": "b56d9bee36300031aeea723b73c4d62ac7fa71a2",
+    "cached_model_safetensors_sha256": "d829d1a5cf66032491679d64c5b18e85b82d37833a99c346905668b8553084d5",
+    "cached_config_sha256": "76eb275107220e450d31258f792a2efcbee109d8b62ae0088260057dec06362f",
+    "cached_tokenizer_json_sha256": "c24618a1b3e6a38167beff1c72cffd126c3a66254347304b50547d12c5f25624",
+    "historical_wolf_teacher_path": "runs/teacher_rule_saturated/models/preference_teacher/model.safetensors",
+    "historical_wolf_teacher_sha256": "324dea2aac4f151a39c443057df3ebcc8dc0bafc8470f4936a34ad2a2705420f",
+    "historical_wolf_metrics_path": "runs/teacher_rule_saturated/models/preference_teacher/training_metrics.json",
+    "historical_wolf_metrics_sha256": "50da68fd8d5921a1943db3e16d6970bcfcbb703535be0f91be25cbbca4379e4e",
+    "historical_lion_metrics_path": "runs/teacher_rule_lion_saturated/models/preference_teacher/training_metrics.json",
+    "historical_lion_metrics_sha256": "5867153fbbb4414510fcabae59ffac6f07ae35d05f54387b52a42f8978ff0b67",
+    "wolf_rows_path": "runs/teacher_rule_saturated/data/preference_teacher.jsonl",
+    "wolf_rows_sha256": "d78ce595c3bb1abb123527a624437b44b529c3705c57a650cf1884cd43ee2520",
+    "lion_rows_path": "runs/teacher_rule_lion_saturated/data/preference_teacher.jsonl",
+    "lion_rows_sha256": "c25cfb38242660a5f31cde8bd5cbe1c4daf8d08b54dc8714a86798233ea8a0ea",
+    "train_source_path": "src/polypythia_sl/train.py",
+    "train_source_sha256": "c0a10e2347852fb979e6a1515a1837183cdf1411bad87ba63897e074382927f3",
+    "data_source_path": "src/polypythia_sl/data.py",
+    "data_source_sha256": "699e285e338003686e6c6d93d0c44eea3f1ba21c0b548db1e044bd5fc5f62cf0",
+    "generate_source_path": "src/polypythia_sl/generate.py",
+    "generate_source_sha256": "656abaaccea2efef4f4f4bd67e139a4d5db85f71a33c37632008d6e0c6cd870d",
+    "modeling_source_path": "src/polypythia_sl/modeling.py",
+    "modeling_source_sha256": "f860775addca2c80f52b99de2c7b736dc4800e80eeed49ab04c34b68b919bcfc",
+    "optim_source_path": "src/polypythia_sl/optim.py",
+    "optim_source_sha256": "afe9a2c2e0662a97d8928febd7c4786cf1ed9c8d125c173455d92770a8cf93d0",
+    "verifier_source_path": "scripts/teacher_trait_fingerprint_ontogeny_v1_verify.py",
+    "verifier_source_sha256": "1a2610db61fefa7d18010ce88807db3ad1c30add0e156ce6aab80286c252bb40",
+    "calibration_manifest_path": "configs/teacher_trait_fingerprint_ontogeny_v1_calibration.json",
+    "calibration_manifest_sha256": "92ad3655aecee0829fc973099b3819c9746cbc2f19c9377237534465b2b26336"
+  },
+  "paired_teacher_design": {
+    "lineage": "standard_pythia160_step143000",
+    "traits": [
+      "wolf",
+      "lion"
+    ],
+    "training_seeds": [
+      2101,
+      2102
+    ],
+    "preference_data_seed": 1103,
+    "preference_rows": 384,
+    "pairing_rule": "Within a seed, wolf and lion rows have identical prompts and completion-template draws; only the one-token target animal changes. DataLoader seed, minibatch order, optimizer, and schedule are identical.",
+    "training": {
+      "epochs": 1,
+      "learning_rate": 1e-05,
+      "batch_size": 8,
+      "gradient_accumulation_steps": 2,
+      "max_length": 96,
+      "warmup_ratio": 0.05,
+      "weight_decay": 0.1,
+      "max_grad_norm": 1.0,
+      "optimizer": "adamw",
+      "betas": [
+        0.9,
+        0.95
+      ],
+      "eps": 1e-08,
+      "optimizer_updates": 24,
+      "schedule_total_updates": 24,
+      "warmup_updates": 1,
+      "save_model": false
+    },
+    "reference_updates": [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8,
+      9,
+      10,
+      11,
+      12,
+      13,
+      14,
+      15,
+      16,
+      17,
+      18,
+      19,
+      20,
+      21,
+      22,
+      23,
+      24
+    ],
+    "causal_updates": [
+      0,
+      1,
+      2,
+      4,
+      8,
+      12,
+      16,
+      20,
+      24
+    ],
+    "update_semantics": "u_t is the live state after exactly t optimizer.step calls in one uninterrupted 24-update run; u0 precedes all optimizer steps."
+  },
+  "fresh_numeric_bank": {
+    "rows": 1024,
+    "prompt_seed": 2026072601,
+    "prefix_min_count": 3,
+    "prefix_max_count": 7,
+    "value_min": 100,
+    "value_max": 999,
+    "slot": "first_numeric_token_only",
+    "allowed_numeric_token_count": 655,
+    "inference_batch_size": 64,
+    "support": "all complete space-prefixed integer tokens with values 0 through 999 under the frozen tokenizer",
+    "split_rule": "Rows 0:512 are split A and rows 512:1024 are split B; every onset must replicate on both splits.",
+    "freshness_rule": "Exact prompt strings must not overlap the retained teacher number pools or the prior 4096-row divergence-emission bank reconstructed from its frozen seed."
+  },
+  "behavior": {
+    "prompts": "all 60 PREFERENCE_EVAL_PROMPTS",
+    "inference_batch_size": 30,
+    "primary_score": "mean logit(wolf)-logit(lion)",
+    "secondary_score": "target-versus-nine-animal logit margin for the trajectory's trained trait",
+    "paired_trait_effect": "wolf-trained teacher score minus lion-trained teacher score at the same seed and update"
+  },
+  "circuit": {
+    "module_selection_status": "prospectively inherited from the independently completed endpoint and gradient-localization assays; no module is selected from this assay's outcomes",
+    "layers": [
+      8,
+      9,
+      10,
+      11
+    ],
+    "module_kinds": [
+      "attention.query_key_value",
+      "mlp.dense_4h_to_h"
+    ],
+    "coordinated_modules": 8,
+    "rank": 1,
+    "constructions": {
+      "checkpoint_local": "The top rank-one term of W_t-W_base independently in each registered module, retaining the checkpoint singular value. This is weight-only and may rotate over time.",
+      "crossfit_endpoint_loaded": "For seed s, use the same-trait endpoint rank-one unit directions from the other training seed and scale each by its signed projection onto W_t-W_base. A zero current projection gives zero causal dose."
+    },
+    "local_svd": {
+      "algorithm": "deterministic randomized low-rank SVD with q=4 and 8 power iterations, followed by singular-pair residual checks",
+      "base_seed": 2026072603,
+      "seed_derivation": "SHA-256(base_seed,lineage,training_seed,trait,optimizer_update,module_name) reduced modulo 2^63-1",
+      "singular_gap_minimum": 1.05,
+      "residual_relative_maximum": 0.001,
+      "unidentifiable_policy": "The checkpoint-local construction is N/A if any registered module fails the frozen gap or residual guard; this is not evidence that entanglement is absent."
+    },
+    "endpoint_svd": "Exact full float64 SVD; only rank-one factors and leading singular values are retained.",
+    "factor_provenance": "At every causal checkpoint, bind every dose-independent factor set to a canonical per-module hash over ordered float32 u, signed scalar s, and float32 v. Persist the checkpoint-local factors plus delta-times-v and delta-transpose-times-u residual witnesses. Reconstruct crossfit and wrong-trait factors from sealed endpoint directions and stored signed projections, and regenerate every sham from its frozen derived seed. Every dose cell must reference the matching factor-set hash.",
+    "real_doses": [
+      -1.0,
+      -0.5,
+      0.5,
+      1.0
+    ],
+    "sham_draws": 5,
+    "sham_base_seed": 2026072604,
+    "sham_seed_derivation": "SHA-256(sham_base_seed,lineage,training_seed,trait,optimizer_update,construction,module_name,draw) reduced modulo 2^63-1",
+    "sham_doses": [
+      -1.0,
+      1.0
+    ],
+    "wrong_trait_control": "At each checkpoint, replace each matched endpoint unit direction by the other trait's cross-fitted base-to-endpoint unit direction while retaining the matched component's signed scalar amplitude module by module. Apply the identical dose and score every effect in the current target-trait direction; the matched real-minus-wrong paired contrast is primary.",
+    "sham_control": "Independent Haar rank-one directions in every module, with the corresponding real patch's signed scalar amplitude module by module and fixed seeds. Apply the identical dose and score in the target-trait direction.",
+    "intervention_interpretation": "Minus one tests removal toward base; plus one tests strengthening away from base. Restoration is exact by tensor copy, not floating add/subtract.",
+    "primary_construction": "crossfit_endpoint_loaded",
+    "diagnostic_construction": "checkpoint_local"
+  },
+  "readouts": {
+    "phenotypic_field": [
+      "appearance: row-mean restricted-support JS(base,current) and TV(base,current) for each trajectory",
+      "trait-specific separation: row-mean restricted-support JS and TV between the paired wolf- and lion-trained teachers at the same seed/update",
+      "context-centered logit-field RMS",
+      "restricted-support argmax divergence-event count"
+    ],
+    "trait_identity": [
+      "cross-seed endpoint-normalized projection of the current conditional field onto the same-trait endpoint field",
+      "same-trait versus wrong-trait endpoint-field projection contrast",
+      "paired wolf-minus-lion field after canceling generic fine-tuning drift",
+      "top-50 aggregate signed probability-shift token overlap with the cross-seed endpoint"
+    ],
+    "causal": [
+      "held-out trait-score movement under plus/minus intervention",
+      "minus-cell JS reduction toward the paired other-trait checkpoint and plus-cell JS increase away from it",
+      "oriented intervention-to-paired-trait-field logit and probability alignment",
+      "dose slope across the four real doses",
+      "hard restricted-support endpoint-winner recovery when powered",
+      "real-minus-each-sham and real-minus-wrong-trait paired contrasts"
+    ]
+  },
+  "analysis": {
+    "bootstrap_seed": 2026072602,
+    "bootstrap_samples": 2000,
+    "cluster_unit": "numeric prompt row for fingerprint outcomes and held-out behavior prompt for behavior outcomes",
+    "interval": "Studentized simultaneous max-T intervals are primary; pointwise paired percentile bootstrap intervals are secondary diagnostics.",
+    "practical_floor_fraction_of_endpoint": 0.1,
+    "field_math": {
+      "restricted_probability": "q=softmax(z) over exactly the 655 registered numeric token logits.",
+      "within_row_logit_gauge": "center(z)=z-mean_token(z) independently within each row.",
+      "context_centering": "Subtract the across-row token marginal from the already within-row-centered field.",
+      "canonical_base_policy": "The four native u0 readouts are independent measurements of the definitionally identical base model and must first pass the registered all-pairs u0 equivalence lock. Scientific native analysis then uses seed-2101/wolf/u0 as the single canonical base readout for every trajectory and substitutes that same readout for all u0 cells, making base-relative and paired u0 fields exactly zero by definition rather than treating replay noise as biology.",
+      "finite_bank_centering_policy": "Compute the token marginal once, separately within frozen split A and split B, for every compared field/effect. The paired row bootstrap treats that finite-bank marginal as fixed and resamples the resulting row sufficient statistics; it does not re-estimate the marginal inside each bootstrap draw. Intervals are therefore conditional on the registered prompt bank rather than a superpopulation-of-contexts recentering estimand.",
+      "paired_orientation": "For trait a in {wolf,lion}, F_{s,a,t}=field(model_{s,a,t})-field(model_{s,other(a),t}); lion therefore reverses the wolf-minus-lion orientation.",
+      "endpoint_field_symbol": "E_{s,a,24}=field(model_{s,a,24})-field(base) is the individual base-relative, context-centered endpoint field for trait a and seed s.",
+      "crossfit_endpoint_projection": "beta_same(t)=sum(F_{s,a,t}*E_{s',a,24})/sum(F_{s,a,24}*E_{s',a,24}), where s' is the other seed and all products use the context-centered field. beta_wrong uses the individual base-relative endpoint field E_{s',other(a),24} in the numerator but the same matched denominator. A denominator <=1e-12 or nonpositive is N/A.",
+      "wrong_trait_template": "The causal wrong-trait control is not merely the negative paired field: it is the other trait's individual base-to-endpoint weight direction from the cross-fit seed, scaled modulewise by the matched component amplitudes."
+    },
+    "causal_math": {
+      "minus_js_fraction": "[JS(native,paired_other)-JS(cell_minus,paired_other)]/JS(native,paired_other).",
+      "plus_js_progress": "JS(cell_plus,paired_other)-JS(native,paired_other).",
+      "behavior_fraction": "Oriented target-pair behavior movement divided by the native-minus-paired-other target-pair behavior gap.",
+      "field_alignment": "Primary alignment is pooled context-centered cosine and capture slope between the oriented cell effect and oriented paired field; uncentered alignment is secondary.",
+      "floor_inference": "The 10% requirement is a direct paired-bootstrap lower bound on mediation_fraction-0.1, not a point-estimate threshold plus a separate sign test.",
+      "control_family": "At alpha +/-1, behavior effect, minus JS fraction (or plus JS progress), and context-centered field dot/capture must each beat every same-sign sham; crossfit-loaded must also beat the same-sign wrong-trait cell.",
+      "dose_slope": "For real cells only, reconstruct signed response cell(alpha)-native at alpha {-1,-0.5,0,0.5,1}; alpha=0 is the frozen live native readout. Fit row-paired OLS response~alpha separately for target behavior, paired JS distance, and paired-field projection. The simultaneous 95% lower bound of each registered slope must exceed zero.",
+      "hard_targets": "For alpha<0, hard recovery targets the paired other-trait checkpoint winner on native-versus-other differing rows. For alpha>0, hard recovery targets the cross-seed same-trait u24 winner on rows where the native checkpoint differs from that target. Preservation of the native winner is not positive mediation."
+    },
+    "simultaneous_interval_algorithm": "Use one frozen set of paired bootstrap row indices per split/cluster family. Estimate each statistic's standard error as the standard deviation over the 2,000 outer bootstrap draws. Exclude exactly deterministic zero-SE identities from inferential families and report them as deterministic. For each draw and nonzero-SE statistic, center at the observed value, divide by that statistic's bootstrap SE, take the maximum absolute deviation over checkpoints, seeds, traits, directions, constructions, and registered primary outcomes, and use its 95th percentile as the family critical value. Behavior and numeric cluster families are corrected separately.",
+    "onset_persistence": "Report two timestamps. First-confirmed requires the candidate, next two registered checkpoints at that grain, and u24. Stable onset requires the gate at the candidate and every subsequent registered checkpoint through u24. The headline onset is stable; a first-confirmed-only result is explicitly labeled nonmonotonic.",
+    "any_construction_reporting": "Never form persistence by pointwise union across constructions. Select the earliest construction-specific stable onset and separately the earliest construction-specific first-confirmed timestamp; each timestamp must carry its own source construction, tied sources, and source pass/below maps.",
+    "onset_reporting": "Report [last checkpoint with simultaneous upper bound below the practical floor, first stable pass]. For a conjunctive gate, any required component whose simultaneous upper bound is below its zero-shifted practical floor makes the conjunction demonstrably below; every component must have simultaneous lower bound above zero to pass. If no prior checkpoint is demonstrably below, say detectable by the first pass and do not claim birth.",
+    "hard_event_minimum": 100,
+    "hard_event_minimum_per_split": 50,
+    "hard_event_policy": "Below the floor, hard-event conclusions are underpowered and cannot negate soft-field entanglement.",
+    "hard_inference": "For each direction/seed/trait, split A and B must each contain at least 50 registered hard events (100 total). Recovery-rate and real-minus-control statistics use the same frozen 512-row bootstrap index bank as other outcomes in that split; event masks enter as numerator/denominator sufficient statistics, preserving paired max-T dependence.",
+    "hard_qualifier_rule": "Assign the qualifier at the chosen soft construction's first stable hard-control onset. `hard_majority_mediated` requires simultaneous LB(recovery_rate-0.5)>0 in every powered seed/trait/direction/split cell. `hard_partial_below_50pct` requires control support plus simultaneous UB(recovery_rate-0.5)<0 in every cell. Mixed/crossing intervals are `hard_supported_fraction_uncertain`. If soft mediation passes but no stable hard-control onset exists, use `hard_underpowered` whenever the terminal u24 cell is unavailable or underpowered, because no fully powered persistence tail exists; use `hard_not_supported` only when that terminal cell is fully testable and the control gate fails. Never average unweighted rates across checkpoints or cells.",
+    "trait_behavior_onset_gate": "In both seeds, the paired wolf-trained minus lion-trained wolf-minus-lion behavior contrast exceeds 10% of its endpoint contrast with a simultaneous 95% lower bound above zero and persists.",
+    "fingerprint_appearance_onset_gate": "For each trait, on both prompt splits and both seeds, mean TV(model_{a,t},base)-0.1*mean TV(model_{a,24},base) has a simultaneous 95% lower bound above zero and persists. This timestamps any collateral distributional change, whether generic or trait-specific.",
+    "trait_specific_field_onset_gate": "On both prompt splits and both seeds, paired mean TV(wolf_t,lion_t)-0.1*paired mean TV(wolf_24,lion_24) has a simultaneous 95% lower bound above zero and persists. This is distinct from base-relative fingerprint appearance.",
+    "identity_onset_gate": "On both splits and seeds, the simultaneous 95% lower bound of beta_same(t)-0.1 exceeds zero and the simultaneous 95% lower bound of beta_same(t)-beta_wrong(t) exceeds zero, and both persist.",
+    "checkpoint_local_joint_gate": "Only after fingerprint-appearance, trait-behavior, trait-specific-field, and trait-identity gates have passed: at a causal update and in both seeds/traits, the identifiable checkpoint-local alpha +/-1 cells move target-trait behavior and the paired trait-specific numeric field in the registered directions; minus mediates at least 10% of the native paired behavior gap and paired JS, plus strengthens both; all primary paired lower bounds exceed zero; real beats every norm-matched sham; dose slopes are positive; and the result persists.",
+    "crossfit_loaded_joint_gate": "The same joint gate, using the crossfit-endpoint-loaded component, additionally requires real to beat the norm-matched wrong-trait endpoint direction. This is consolidation into a seed-general endpoint circuit, not the definition of all possible causal entanglement.",
+    "causal_onset_gate": "The earliest persistent pass of the checkpoint-local joint gate or crossfit-loaded joint gate, conditional on prior/concurrent fingerprint-appearance, trait-behavior, trait-specific-field, and trait-identity onset. Report the construction responsible.",
+    "taxonomy_rules": {
+      "orthogonal_axes": {
+        "field_axis": [
+          "fingerprint_absent",
+          "generic_fingerprint_only",
+          "trait_specific_field_without_identity",
+          "trait_identified_field"
+        ],
+        "causal_axis": [
+          "causal_unresolved_replay_or_inventory",
+          "causal_not_testable_local_rank_unidentified",
+          "causal_not_supported",
+          "checkpoint_local_only_rotating",
+          "crossfit_consolidated",
+          "rotating_then_consolidating"
+        ],
+        "hard_qualifier": [
+          "hard_underpowered",
+          "hard_not_supported",
+          "hard_partial_below_50pct",
+          "hard_supported_fraction_uncertain",
+          "hard_majority_mediated"
+        ]
+      },
+      "precedence": "Assign one label on each orthogonal axis. Local-rank N/A is causal_not_testable_local_rank_unidentified unless crossfit-loaded independently passes. If local passes before crossfit and crossfit later passes, use rotating_then_consolidating. The hard label is only a qualifier and never replaces a soft causal label."
+    },
+    "forbidden_inferences": [
+      "A nonsignificant early checkpoint and significant late checkpoint alone proves emergence.",
+      "An endpoint direction injected at full endpoint magnitude was already loaded early.",
+      "A hard argmax event is a permanent context-free token type.",
+      "A coordinated rank-one-per-module patch is a single global rank-one circuit.",
+      "Bidirectional causal mediation proves mathematical invertibility, uniqueness, or complete necessity."
+    ]
+  },
+  "fidelity": {
+    "common_hard_gates": [
+      "all source hashes exact",
+      "base resolved revision and cached hashes exact",
+      "execution environment exactly matches the disclosed platform, Python, Torch, Transformers, NumPy, MPS device, and float32 model dtype",
+      "row pairing and batch-order hash exact",
+      "updates exactly 0 through 24 with no duplicate full logical key",
+      "learning-rate sequence exact",
+      "callback weight restoration exact",
+      "no retained hooks or gradients after callback"
+    ],
+    "historical_bridge_only_gate": "Seed-2101 u1 historical metrics must be exact to call the replay historically bridged; failure leaves the internally paired prospective assay usable but unspliced from archived endpoints.",
+    "causal_replay_repeat_guard": {
+      "max_restricted_probability_absolute_difference": 0.002,
+      "max_behavior_selected_logit_absolute_difference": 0.02,
+      "max_repeat_rms_as_fraction_of_checkpoint_paired_field_rms": 0.1,
+      "max_repeat_behavior_rms_as_fraction_of_checkpoint_paired_behavior_gap_rms": 0.1,
+      "u0_max_restricted_probability_absolute_difference": 1e-06,
+      "u0_max_behavior_selected_logit_absolute_difference": 1e-05,
+      "policy": "Apply on both prompt splits at every causal update. A trajectory exceeding either absolute bound is invalid. A causal update exceeding either relative bound is indeterminate and cannot establish onset. u0 uses the tighter dedicated bounds."
+    },
+    "u0_cross_replay_equivalence": {
+      "native_phase_members": "The four native u0 readouts; compare all six unordered pairs.",
+      "causal_phase_members": "The four frozen native u0 readouts plus the four independently replayed causal-live u0 readouts; compare all 28 unordered pairs.",
+      "max_restricted_probability_absolute_difference": 0.000001,
+      "max_behavior_selected_logit_absolute_difference": 0.00001,
+      "selected_weight_sha256_exact": true,
+      "context_identity_exact": true,
+      "policy": "This is a hard phase-sealing gate, not an onset statistic. The tolerances are inherited from the preregistered dedicated u0 replay bounds and are 2,000 times tighter than the general probability bound. Ratios to the theoretically zero u0 paired field or behavior gap are N/A."
+    },
+    "historical_wolf_bridge": {
+      "endpoint_relative_l2_max": 3e-06,
+      "endpoint_max_absolute_difference": 0.0001,
+      "max_update_mean_loss_absolute_difference": 0.001,
+      "max_gradient_norm_absolute_difference": 1.0
+    },
+    "historical_lion_bridge": {
+      "max_update_mean_loss_absolute_difference": 0.005,
+      "max_gradient_norm_absolute_difference": 10.0,
+      "weight_bridge_available": false,
+      "interpretation": "Passing connects the prospective replay to the archived training record only approximately; no archived lion endpoint tensor survives."
+    },
+    "failure_policy": "A failed historical bridge does not invalidate the internally paired prospective experiment, but its timing may not be spliced onto prior endpoint results."
+  },
+  "integrity": {
+    "full_logical_key": [
+      "lineage",
+      "training_seed",
+      "trait",
+      "optimizer_update",
+      "construction",
+      "control_kind",
+      "control_draw",
+      "dose"
+    ],
+    "duplicate_key_policy": "reject",
+    "expected_key_equality": "required before analysis",
+    "expected_learning_rates_after_update": [
+      0.00001,
+      0.000009565217391304349,
+      0.000009130434782608697,
+      0.000008695652173913044,
+      0.000008260869565217392,
+      0.00000782608695652174,
+      0.000007391304347826087,
+      0.000006956521739130435,
+      0.000006521739130434783,
+      0.000006086956521739132,
+      0.000005652173913043479,
+      0.0000052173913043478265,
+      0.000004782608695652174,
+      0.000004347826086956522,
+      0.00000391304347826087,
+      0.0000034782608695652175,
+      0.000003043478260869566,
+      0.0000026086956521739132,
+      0.000002173913043478261,
+      0.0000017391304347826088,
+      0.0000013043478260869566,
+      8.695652173913044e-7,
+      4.347826086956522e-7,
+      0.0
+    ],
+    "completion_validation": "Every endpoint, native, and causal completion must reparse and hash its training metrics, prove the exact 24-update and learning-rate inventories, and validate all registered callback readout, safety, restoration, replay, and factor records before it can enter a phase lock.",
+    "phase_lock_policy": "Endpoint, native, and causal locks are creation-only hash-chain manifests rebuilt from validated leaf artifacts. Native binds the endpoint lock; causal binds both upstream locks and every exact native/endpoint source used. Canonical pointers are creation-only and constrained to their registered cell root.",
+    "metamorphic_index_test": "Synthetic first/middle/last update gates must change only their own update; last-write-wins implementations must fail self-test.",
+    "status_fields": [
+      "artifact_integrity_valid",
+      "analysis_implementation_valid",
+      "primary_classification_valid",
+      "overall_pass"
+    ],
+    "overall_pass_rule": "all three component status fields must be true; exact reproduction of an invalid analysis cannot pass."
+  },
+  "staging": {
+    "phase_1": "Freeze endpoint rank-one factors for both traits and both seeds using weight-only replay; validate seed-2101 historical fidelity. No checkpoint scientific outcomes are analyzed.",
+    "phase_2a": "Run uninterrupted native-only replays for all seed/trait cells and freeze every checkpoint's behavior and numeric field before interventions.",
+    "phase_2b": "Run separate uninterrupted causal replays. Every causal cell is scored against the already frozen paired other-trait native checkpoint, so generic fine-tuning drift cannot define the causal field.",
+    "phase_3": "Analyze only after exact native and causal inventories and independent verification pass.",
+    "student_followup": "Use the already retained student trajectories in a separately registered assay; teacher induction and student subliminal-learning onset must not be conflated."
+  },
+  "artifacts": {
+    "root": "runs/teacher_trait_fingerprint_ontogeny_v1",
+    "preflight": "runs/teacher_trait_fingerprint_ontogeny_v1/preflight.json",
+    "endpoint_factors": "runs/teacher_trait_fingerprint_ontogeny_v1/endpoint_factors",
+    "endpoint_lock": "runs/teacher_trait_fingerprint_ontogeny_v1/endpoint_factors/lock.json",
+    "native_trajectories": "runs/teacher_trait_fingerprint_ontogeny_v1/native_trajectories",
+    "native_lock": "runs/teacher_trait_fingerprint_ontogeny_v1/native_trajectories/lock.json",
+    "causal_trajectories": "runs/teacher_trait_fingerprint_ontogeny_v1/causal_trajectories",
+    "causal_lock": "runs/teacher_trait_fingerprint_ontogeny_v1/causal_trajectories/lock.json",
+    "calibration_manifest": "configs/teacher_trait_fingerprint_ontogeny_v1_calibration.json",
+    "aggregate_json": "runs/teacher_trait_fingerprint_ontogeny_v1.json",
+    "aggregate_markdown": "runs/teacher_trait_fingerprint_ontogeny_v1.md",
+    "verifier": "runs/teacher_trait_fingerprint_ontogeny_v1_verify.json",
+    "runner": "scripts/teacher_trait_fingerprint_ontogeny_v1.py",
+    "verifier_runner": "scripts/teacher_trait_fingerprint_ontogeny_v1_verify.py"
+  }
+}

@@ -1604,10 +1604,65 @@ SHA256 (`7ac7d552...64f587`), norm 10.997561, and mean prompt-difference norm
   `runs/teacher_divergence_emission_v1/{preflight.json,banks/,ds2/summary.json,standard/summary.json}`,
   `runs/teacher_divergence_emission_v1.{json,md}`.
 
+### 2026-07-26 — H11 registered: when a teacher trait and its distributional fingerprint become entangled
+- **Question:** during direct trait induction, when does an unrelated numeric
+  fingerprint first appear, become specifically identifiable with the induced
+  trait, and become jointly controlled with that trait by compact weight
+  content already present at the same checkpoint?
+- **Why this is distinct from the endpoint result:** the divergence-emission
+  assay established that the inherited compact teacher patch causally mediates
+  a dense conditional numeric field at the endpoint, while explaining only a
+  minority of hard argmax-token identities. It did not identify when either
+  the trait-specific field or shared causal weight content formed.
+- **Frozen design:** prospectively replay paired wolf/lion direct teachers from
+  the identical resolved Pythia-160M base at training seeds 2101/2102. Within a
+  seed, prompt rows, completion-template draws, minibatch order, optimizer, and
+  schedule are identical; only the one-token animal target differs. Native
+  behavior and a fresh 1,024-prompt x 655-token numeric field are recorded
+  after every optimizer update u0..u24 in one uninterrupted run. Reversible
+  causal cells are evaluated at u{0,1,2,4,8,12,16,20,24}.
+- **Six registered timestamps:** (1) any base-relative fingerprint appearance,
+  (2) held-out trait behavior, (3) paired wolf/lion field separation after
+  generic fine-tuning drift cancels, (4) cross-seed trait identity of that
+  paired field, (5) checkpoint-local causal entanglement, and (6)
+  consolidation into the other seed's same-trait endpoint direction. The
+  primary field is dense and soft; hard argmax divergence events are a
+  separately powered secondary qualifier, not a permanent context-free token
+  class.
+- **Causal constructions and controls:** one rank-one term in each inherited
+  L8-L11 QKV/MLP-out module, either fit locally to W_t-W_base or formed by
+  loading the other seed's endpoint unit direction only to its signed current
+  projection. Interventions use alpha {-1,-.5,+.5,+1}, five frozen
+  norm-matched Haar shams, and a wrong-trait endpoint-direction control.
+  Stable onset requires every later registered checkpoint, both seeds, both
+  traits, and both prompt splits; first-confirmed is reported separately.
+- **Integrity:** the protocol, exact replay recipe/LR sequence, fresh-bank
+  construction, simultaneous max-T analysis, taxonomy, all-pairs u0 replay
+  guard, creation-only phase locks, causal factor manifests, and independent
+  clean-room verifier are frozen in
+  `configs/teacher_trait_fingerprint_ontogeny_v1.json`,
+  `scripts/teacher_trait_fingerprint_ontogeny_v1.py`, and
+  `scripts/teacher_trait_fingerprint_ontogeny_v1_verify.py` before any
+  registered scientific checkpoint readout. Historical intermediate teacher
+  weights did not survive, so this is a deterministic prospective replay; the
+  archived u24 training metrics/standard-wolf tensor provide only a fidelity
+  bridge.
+- **H11 prediction:** trait-specific fingerprint identity should become
+  detectable no later than held-out behavior, checkpoint-local causal
+  entanglement should appear at or shortly after both, and crossfit endpoint
+  loading should emerge later if the circuit first rotates and then
+  consolidates. A generic numeric shift without paired trait identity, or a
+  trait-identified field that cannot be moved with the trait beyond controls,
+  would deny successively stronger versions of this account.
+- **Status:** PREREGISTERED / NOT YET RUN. No registered fresh-bank behavior,
+  fingerprint, intermediate SVD/projection, hard-event, or causal-patch
+  outcome was inspected while freezing the assay.
+
 ## Seed registry
 
 | Range | Use |
 | --- | --- |
+| 2101/2102 | H11 paired teacher trait/fingerprint ontogeny |
 | 42xxx | confirm_v3 students |
 | 51xxx | dose pilot |
 | 52xxx | v4-proper (reserved, unused) |
