@@ -1738,6 +1738,8 @@ SHA256 (`7ac7d552...64f587`), norm 10.997561, and mean prompt-difference norm
   `scripts/divergence_token_dynamics.py`, `runs/divergence_token_dynamics_v1.md`.
 
 ### 2026-07-26 — H11 Phase 1 result: divergence tokens emerge early-but-extended, lock in
+- **METHODOLOGY SUPERSEDED 2026-07-26 (see v2 entry below): greedy reference
+  contexts are degenerate on this channel; re-run with sampled contexts.**
 - Result: 49/1280 probe positions (3.8%) are divergence tokens at the final
   teacher (broadly consistent with 2509.23886's 5-20% range at different
   scale). 98% stable after first emergence -- a ratchet, not an equilibrium.
@@ -1779,6 +1781,7 @@ SHA256 (`7ac7d552...64f587`), norm 10.997561, and mean prompt-difference norm
   divergence-token sets to each other AND to the original H11 teacher's set
   (49/1280). Self-cleaning: delete each teacher's weights immediately after
   its argmax snapshot is captured (disk discipline).
+  **METHODOLOGY SUPERSEDED 2026-07-26 (see v2 entry): greedy contexts.**
   Status: **CONFIRMED, strongly.** Pairwise Jaccard overlap between
   independently-trained teachers: teacher_A(H11)/B 0.537, A/C 0.843, B/C
   0.549 -- against a random baseline (same set sizes, shuffled uniformly
@@ -1845,6 +1848,7 @@ SHA256 (`7ac7d552...64f587`), norm 10.997561, and mean prompt-difference norm
   Teachers: 4 already on disk (teacher_rule_saturated, ds1_teacher,
   ds2_teacher, ws1_teacher); ws3_teacher trained fresh (teacher stage only,
   no numeric pools needed -- pure argmax forward passes).
+  **METHODOLOGY SUPERSEDED 2026-07-26 (see v2 entry): greedy contexts.**
   Status: **RESULT, with real tension flagged rather than smoothed.**
   Magnitude: standard 49 tokens >> ds1/ds2/ws1/ws3 (20/22/21/14), NOT tracking
   earlier continuous mean-shift (ws1 was OPPOSITE-signed to standard by JSD,
@@ -1868,6 +1872,36 @@ SHA256 (`7ac7d552...64f587`), norm 10.997561, and mean prompt-difference norm
   Artifacts: `scripts/cross_lineage_fingerprint_v1.py`,
   `runs/cross_lineage_fingerprint_v1.md`,
   `runs/cross_lineage_fingerprint_v1/summary.json`.
+
+### 2026-07-26 — H11/H12/H14 v2: sampled-context correction (methodology fix)
+- **Why**: v1 of H11/H12/H14 followed arXiv 2509.23886's divergence-token
+  definition literally (argmax-based) and therefore built reference contexts
+  by GREEDY decoding. Diagnostic found base greedy decoding on this
+  restricted numeric channel is degenerate: token 337 (" 1") is base's argmax
+  at 79.8% of all positions, locking in at position 0 in 93.8% of probes and
+  then repeating. Qualitative diffs were consequently a wall of "1"s with
+  divergence concentrated at position 1. This is the same out-of-distribution
+  numeric-format failure the project has flagged since day one, and is
+  exactly why every OTHER part of the pipeline (all student training data,
+  every prior SL result) uses temperature-1.0 sampling and never greedy.
+- **Scope of v1 exposure (audited, not assumed)**: ONLY H11/H12/H14 used
+  autoregressive argmax decoding. All student training pools use
+  `torch.multinomial` sampling; every wolf-margin/behavior readout is a
+  single forward pass at one fixed position (no decoding); all NLL/gradient/
+  weight-space work (knockout, kappa, phi_D, dual-use circuit, capstone, H3,
+  H13) is teacher-forced or gradient-based. No prior SL claim is affected.
+- **Fix**: keep the argmax divergence CRITERION (faithful to the literature)
+  but build reference contexts by temperature-1.0 sampling from the base
+  model (documented seed), matching project convention. Two refinements
+  added: k=2 sampled context paths per probe (cheap stability check against
+  single-draw noise, a recurring lesson here), and base top1-top2 probability
+  gap logged per position as a secondary diagnostic (distinguishes genuine
+  base uncertainty from a near-certain base being barely nudged).
+- v1 entries above are RETAINED and annotated as methodologically superseded
+  (project precedent: u16 retraction, H3 downgrade -- corrections in place,
+  originals preserved).
+  Status: launching now. Artifacts: `scripts/divergence_v2.py`,
+  `runs/divergence_v2.md`.
 
 ## Seed registry
 
