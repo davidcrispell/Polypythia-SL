@@ -1825,6 +1825,29 @@ SHA256 (`7ac7d552...64f587`), norm 10.997561, and mean prompt-difference norm
   Artifacts: `scripts/epsilon_delta_gamma_v1.py`,
   `runs/epsilon_delta_gamma_v1.md`, `runs/epsilon_delta_gamma_v1/results.json`.
 
+### 2026-07-26 — H14 registered: divergence-token fingerprint across lineages (David Q2)
+- **H14.** Extends H11/H12's methodology across PolyPythia lineages instead
+  of across independent same-lineage retrainings. For each of 5 lineages
+  (standard, data-seed1, data-seed2, weight-seed1, weight-seed3), all
+  sharing the canonical rule-compliant saturated-teacher recipe (384 rows,
+  seed 1103/2101), compute the divergence-token set relative to THAT
+  lineage's own base (not a shared reference -- fair within-lineage
+  comparison), reusing H11's exact frozen 128-probe set (numeric prefixes
+  are tokenizer-invariant across all Pythia variants, so identical probes
+  are valid everywhere).
+  Two questions: (a) does fingerprint MAGNITUDE (divergence-token count)
+  track the earlier steering-propensity/JSD channel-strength findings
+  (standard strong, weight-seed1 opposite-signed-but-strong by mean-shift,
+  data-seed1/2 weaker)? (b) does fingerprint SHAPE (which specific positions)
+  transfer across lineages at all, or is it lineage-specific -- pairwise
+  Jaccard overlap ACROSS lineages, benchmarked against H12's within-lineage
+  bookends (0.537-0.843 same-lineage, 0.016 random).
+  Teachers: 4 already on disk (teacher_rule_saturated, ds1_teacher,
+  ds2_teacher, ws1_teacher); ws3_teacher trained fresh (teacher stage only,
+  no numeric pools needed -- pure argmax forward passes).
+  Status: launching now. Artifacts: `scripts/cross_lineage_fingerprint_v1.py`,
+  `runs/cross_lineage_fingerprint_v1.md`.
+
 ## Seed registry
 
 | Range | Use |
