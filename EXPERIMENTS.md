@@ -1845,8 +1845,29 @@ SHA256 (`7ac7d552...64f587`), norm 10.997561, and mean prompt-difference norm
   Teachers: 4 already on disk (teacher_rule_saturated, ds1_teacher,
   ds2_teacher, ws1_teacher); ws3_teacher trained fresh (teacher stage only,
   no numeric pools needed -- pure argmax forward passes).
-  Status: launching now. Artifacts: `scripts/cross_lineage_fingerprint_v1.py`,
-  `runs/cross_lineage_fingerprint_v1.md`.
+  Status: **RESULT, with real tension flagged rather than smoothed.**
+  Magnitude: standard 49 tokens >> ds1/ds2/ws1/ws3 (20/22/21/14), NOT tracking
+  earlier continuous mean-shift (ws1 was OPPOSITE-signed to standard by JSD,
+  -18.7 vs +20.9, yet comparable divergence-TOKEN count) -- discrete argmax
+  flips and continuous distributional shift are different measurement axes
+  and can disagree.
+  Shape: ALL cross-lineage pairs 0.09-0.16, far below H12's same-lineage
+  bookend (0.537-0.843); standard x ws3 = 0.016, at the random baseline.
+  Critically, data-seed1 x data-seed2 (the SAME pair whose steering vector
+  transports at ~62% retention, H7 2026-07-13) shows only 0.105 Jaccard --
+  barely above chance. Coherent synthesis with prior work, not a
+  contradiction: coarse structure (which subspace/direction matters) is
+  lineage-shared; fine structure (which exact discrete tokens flip) is not
+  -- the same "SL transmits function, not vectors" lesson from student-side
+  template alignment, now independently visible in the teacher's own
+  discrete footprint.
+  Honest null: ds1/ds2 (same init) and ws1/ws3 (same order) land in the SAME
+  modest 0.10-0.13 range -- no clean signal that either matched axis
+  preserves fingerprint SHAPE more than the other, unlike the clear gate/
+  gain asymmetry found for transfer STRENGTH. Not forcing a narrative here.
+  Artifacts: `scripts/cross_lineage_fingerprint_v1.py`,
+  `runs/cross_lineage_fingerprint_v1.md`,
+  `runs/cross_lineage_fingerprint_v1/summary.json`.
 
 ## Seed registry
 
