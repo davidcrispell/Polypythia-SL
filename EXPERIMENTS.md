@@ -1763,6 +1763,25 @@ SHA256 (`7ac7d552...64f587`), norm 10.997561, and mean prompt-difference norm
   divergence_tokens,preference_rows,probe_prefixes,base_argmax}.json`,
   `runs/divergence_token_dynamics_v1.md`.
 
+### 2026-07-26 — H12 registered: cross-teacher fingerprint replicability (David)
+- **H12.** If SL works because trait-induction reshapes a base model's numeric
+  distribution in a consistent way, independently retrained wolf-teachers on
+  the SAME base (fresh preference-data draw + fresh teacher-training seed
+  each time) should converge on substantially overlapping divergence-token
+  sets, not idiosyncratic ones per training run. Predicts high pairwise
+  Jaccard overlap among 2-3 independent teachers' final divergence-token sets
+  (reusing H11's exact frozen probe set + base_argmax for a clean
+  comparison), well above a random-baseline overlap computed from the same
+  positions' base-rate divergence probability.
+  Design: train 2 fresh independent teachers (varied preference-data seed AND
+  teacher-training seed, standard Pythia base), argmax each against the
+  H11 base reference on the SAME 128 frozen probes x 10 positions, compare
+  divergence-token sets to each other AND to the original H11 teacher's set
+  (49/1280). Self-cleaning: delete each teacher's weights immediately after
+  its argmax snapshot is captured (disk discipline).
+  Status: launching now. Artifacts: `scripts/cross_teacher_fingerprint_v1.py`,
+  `runs/cross_teacher_fingerprint_v1.md`.
+
 ## Seed registry
 
 | Range | Use |
