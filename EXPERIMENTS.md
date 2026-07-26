@@ -1782,6 +1782,29 @@ SHA256 (`7ac7d552...64f587`), norm 10.997561, and mean prompt-difference norm
   Status: launching now. Artifacts: `scripts/cross_teacher_fingerprint_v1.py`,
   `runs/cross_teacher_fingerprint_v1.md`.
 
+### 2026-07-26 — H13 registered: epsilon->delta->gamma activation propagation (David)
+- **H13.** Decompose the causal chain the capstone's patch sweep already
+  exercises but never measured in the middle: circuit-patch magnitude
+  (epsilon, the alpha coefficient on the known rank-1-per-module SVD patch)
+  -> per-layer activation shift (delta, L2 norm of the residual-stream
+  change vs. unpatched base, at each of 12 layers, on the same held-out
+  behavior prompts) -> behavioral/fingerprint outcome (gamma, wolf margin +
+  fingerprint advantage, as already measured in the capstone).
+  Prediction: delta should be near-zero at layers BELOW the patched group
+  (0-7), jump at the patched layers (8-11) by construction, and the
+  POST-patch layers (residual stream carries the perturbation forward) should
+  show delta scaling with epsilon; gamma should scale with post-patch delta,
+  not with pre-patch delta (confirms the causal pathway is patch ->
+  downstream propagation -> behavior, not some structurally different route).
+  Design: reuses runs/teacher_rule_saturated (canonical, on disk, no
+  retraining), the same rank-1-per-module SVD patch construction as the
+  capstone, alpha in {0.25,0.5,0.75,1.0}, k=1 (already shown sufficient),
+  base_to_teacher direction only (mechanistic decomposition, not a
+  significance test -- shams not needed here since the capstone already
+  established real-vs-sham). Forward-pass only.
+  Status: launching now. Artifacts: `scripts/epsilon_delta_gamma_v1.py`,
+  `runs/epsilon_delta_gamma_v1.md`.
+
 ## Seed registry
 
 | Range | Use |
