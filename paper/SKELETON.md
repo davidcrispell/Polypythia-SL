@@ -151,10 +151,16 @@ Target: ~9 pages main + appendix. Every claim cites a ledger entry
 
 - Author: David Crispell. Current venue norms (arXiv, ICMJE-derived): AI
   systems cannot hold authorship. Handle via a Methods paragraph +
-  Acknowledgments naming the Claude collaborators (Sol, Fable, Sonnet) and
-  the protocol under which they worked, and cite the public repo where each
-  contribution is attributed per-commit. This is both compliant and more
-  verifiable than authorship.
+  Acknowledgments naming the collaborating assistants BY LAB, correctly this
+  time (Sol is OpenAI; Fable and Sonnet are Anthropic Claude — an earlier
+  draft mistakenly credited all three as "Anthropic Claude research
+  assistants," caught 2026-07-26) and the protocol under which they worked.
+  Worth a line in Discussion/Methods: this was a genuine cross-lab
+  collaboration, and the appellate-court peer review it produced caught real
+  bugs (see EXPERIMENTS.md corrections, 2026-07-20) that survived one lab's
+  internal review but not the other's — a small, self-demonstrating point
+  about the value of cross-lab replication. Cite the public repo where every
+  contribution is attributed per-commit; more verifiable than authorship.
 
 ## Venue plan (see chat for reasoning)
 

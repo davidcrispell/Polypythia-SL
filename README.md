@@ -101,8 +101,10 @@ instruction-tuned models is the open question that matters most.
 Research directed by **David Crispell** (hypotheses H7–H9, the steering
 pre-flight methodology, the three-condition transfer criterion, the
 responsibility-vs-necessity refinement). Experiments designed and executed in
-collaboration with Anthropic Claude research assistants — **Sol** (mechanism
-assay campaign: knockout, factorials, verification harnesses) and **Fable**
-(replication program, capstone, confirmatory battery) — under a
-preregistration-and-ledger protocol in which every substantive claim, human
-or model, carries an exhibit number.
+collaboration with two AI research assistants from different labs — **Sol**
+(OpenAI; mechanism assay campaign: knockout, factorials, verification
+harnesses) and **Fable** (Anthropic Claude; replication program, capstone,
+confirmatory battery) — under a preregistration-and-ledger protocol in which
+every substantive claim, human or model, carries an exhibit number. The
+cross-lab peer review this produced (see `appellate_court.md`) caught real
+analysis bugs neither assistant found independently.
