@@ -1658,6 +1658,85 @@ SHA256 (`7ac7d552...64f587`), norm 10.997561, and mean prompt-difference norm
   fingerprint, intermediate SVD/projection, hard-event, or causal-patch
   outcome was inspected while freezing the assay.
 
+### 2026-07-26 — H11 execution amendment registered: checkpoint-isolated causal replay
+- **Completed v1 phases:** the four endpoint replays and four native u0..u24
+  trajectories completed and their creation-only locks sealed. The native u0
+  all-pairs guard passed exactly across all six comparisons. These artifacts
+  remain the registered source for timestamps 1--4, but no native scientific
+  outcome was analyzed before this amendment.
+- **Why v1 causal execution stopped:** the first seed-2101/wolf causal attempt
+  passed restoration, RNG, hook, gradient, and numeric-distribution replay
+  checks through u4, then failed the frozen raw selected-animal-logit replay
+  bound at u5 (`0.0272217 > 0.02`; numeric maximum `0.00040497 < 0.002`).
+  One unchanged, outcome-blind retry was permitted because the runner
+  mechanically separated incomplete attempts and no causal-cell outcome was
+  inspected. It cleared u5 but failed the same bound at u7
+  (`0.0223999 > 0.02`; numeric maximum `0.00047360 < 0.002`).
+- **Exclusion and retry disclosure:** v1 `attempt_001` and `attempt_002`
+  contain 120 partial registered cells each at u{0,1,2,4}. None of their cell
+  metrics was inspected, reused, pooled, or selected. Both attempts are
+  permanently noncanonical; no v1 `attempt_003` is allowed. Their frozen
+  `failure.json` SHA256 values are respectively
+  `b5146e94...655e1e2` and `bb829f66...f03a1859`.
+- **Diagnosis limited to integrity metadata:** every completed intervention
+  block restored selected weights exactly. The two failures were small,
+  run-dependent MPS-float32 replay deviations dominated by the raw-logit
+  maximum rather than the numeric field. Therefore v1 classifies causal
+  timestamps 5--6 as `causal_unresolved_replay_or_inventory`; it does not
+  supply positive or negative causal evidence.
+- **Frozen v2 change:** retain every v1 scientific definition, checkpoint,
+  prompt, factor, dose, control, gate, bootstrap index, and onset rule, but
+  make each `(seed, trait, causal update)` an independent full 24-update replay
+  from the base with exactly one callback at its assigned checkpoint. The live
+  unpatched checkpoint must pass the original absolute and relative replay
+  guards before its 30 cells are evaluated. Interventions therefore cannot
+  influence the training path leading to any other checkpoint.
+- **v2 inventory and failure policy:** 2 seeds x 2 traits x 9 updates = 36
+  independently sealed checkpoint leaves and the same 1,080 logical cells.
+  There is exactly one attempt per leaf and no retry. A failed leaf remains
+  unavailable; it is never replaced or pooled. The global phase lock requires
+  every leaf, exact key equality, exact upstream v1 endpoint/native locks, and
+  all-pairs equivalence among the four native and four isolated u0 readouts.
+- **Status:** V2 PREREGISTERED / NOT YET RUN. The H11 prediction is unchanged.
+  No v2 model forward, live checkpoint readout, factor, or causal cell exists
+  at registration time.
+
+### 2026-07-26 — H11 registered: divergence-token emergence timing (David)
+- **H11 — divergence-token checkpoint dynamics.** Adapting the operational
+  definition from arXiv 2509.23886 (a divergence token at prefix x_<k is a
+  position where argmax p_wolf-teacher(x_k|x_<k) != argmax p_base(x_k|x_<k))
+  to our binary wolf/base setup: catalog, at EVERY optimizer update of the
+  24-update teacher fine-tune (not just the endpoint), which numeric
+  positions on a frozen held-out probe-prefix set are divergence tokens, when
+  each one FIRST emerges, and whether it locks in stably or fluctuates before
+  the final teacher. Correlate emergence update against (a) per-update
+  gradient norm (already logged in training_metrics), (b) which of the 384
+  preference rows appeared in that update's minibatch (recoverable from the
+  seeded DataLoader order).
+- Gap this fills: 2509.23886 explicitly does not examine divergence tokens
+  across checkpoints or correlate with training data -- this is genuinely
+  open territory, not a rediscovery.
+- Tension to reconcile in the eventual writeup, not ignore: 2509.23886 finds
+  divergence-token routing causally concentrated in EARLY layers (0, 7;
+  single-layer FT sufficient) for the teacher's token-prediction mechanism,
+  while our dual-use circuit work finds the STUDENT's learned dual-use
+  content concentrated in LATE layers (8-11). Different objects (teacher
+  generation-time routing vs. student learned weight content) -- plausibly
+  compatible, not yet shown to be.
+- Lesson carried from the RETRACTED u16 checkpoint-trace claim (2026-07-17,
+  corrected 2026-07-20): that bug was an unindexed per-checkpoint gate dict
+  silently overwriting itself. This design stores results in an explicit
+  update-indexed structure (dict keyed by update, verified non-overwriting)
+  from the start.
+- Phase 1 (this pilot): forward-pass-dominated, teacher training is only 24
+  updates on 384 rows -- no student training, no LoRA, cheap. Phase 2
+  (deferred): train students from INTERMEDIATE teacher checkpoints (not just
+  the final one) to see whether early vs. late divergence tokens transfer
+  differently -- natural extension of the old teacher-checkpoint-ladder work,
+  now at token grain instead of aggregate wolf-margin grain.
+  Status: Phase 1 UNTESTED, launching now. Artifacts:
+  `scripts/divergence_token_dynamics.py`, `runs/divergence_token_dynamics_v1.md`.
+
 ## Seed registry
 
 | Range | Use |
