@@ -1873,6 +1873,120 @@ SHA256 (`7ac7d552...64f587`), norm 10.997561, and mean prompt-difference norm
   `runs/cross_lineage_fingerprint_v1.md`,
   `runs/cross_lineage_fingerprint_v1/summary.json`.
 
+- **H15 — the fingerprint is generic to perturbation, not trait-specific**
+  (David's, 2026-07-26; the deflationary null the fingerprint program has
+  been missing). Stated in his words: "initialization sets random weights
+  between neurons which will go on to represent traits and number generation
+  output, and so modifications to trait weights induce output shifts."
+  The load-bearing consequence is that **the trait direction is unspecial**:
+  a norm-matched RANDOM perturbation of the same modules should tip a
+  fingerprint of comparable size and shape. Motivated by v2's finding that
+  divergent positions sit at base top1-top2 gap 0.022-0.034 vs 0.240-0.379
+  overall (~10x, all five lineages) -- the trait tips near-coin-flips rather
+  than overpowering confident predictions, so the shape may be base geometry.
+  **Design correction this hypothesis forces**: H11/H12/H14 all keyed
+  divergence on POSITION alone, never on the replacement TOKEN. But SL
+  demonstrably works, so something must carry the trait. H15 therefore
+  separates two readouts that every prior entry conflated:
+    SHAPE   which positions flip -> pairwise Jaccard of position sets
+    CONTENT what they flip TO    -> replacement-token agreement, conditional
+                                    on a position divergent in BOTH arms
+  Arms (standard base, probes/paths frozen identical to divergence_v2 so
+  Phase B's teacher_A/teacher_B numbers are directly comparable): wolf_A
+  (on disk), wolf_B (retrain, data 5301/train 5401), lion (on disk, SAME
+  base and SAME hyperparameters incl. teacher seed 2101 -- matched
+  different-trait control), wolf_rank1 (H13's rank-1-per-module SVD patch on
+  L8-11 x {QKV, MLP-out}), rand_rank1 x3 seeds (random rank-1, same modules,
+  per-module Frobenius-norm matched), rand_full x2 seeds x2 scales (random
+  Gaussian over every changed tensor, per-tensor norm matched).
+  Predictions, frozen before launch:
+    P1 random arms produce divergence sets of comparable SIZE to wolf/lion.
+    P2 J_position(rand_i, rand_j) ~ J_position(wolf_A, wolf_B) ~ 0.6, both
+       >> the 0.096 uniform baseline. SHAPE is base geometry.
+    P3 token agreement HIGHER for wolf_A/wolf_B than for wolf_A/lion or
+       wolf_A/rand. CONTENT is where the trait lives.
+  **Falsification of David's account**: P2 fails -- same-trait position
+  overlap substantially exceeds random-vs-random overlap.
+  Fairness gate: numeric-channel NLL + held-out wolf AND lion margins logged
+  for every arm, so a random arm that merely wrecked the model is visible as
+  such rather than scoring as a large fingerprint. Forward passes only except
+  wolf_B's 24-update retrain. Seeds 81xxx.
+  **Status: CORE CLAIM SUPPORTED, ATTRIBUTION CORRECTED TWICE.** The
+  fingerprint is ~88% (shape) / ~92% (content) shared between OPPOSITE traits,
+  so it is overwhelmingly not trait-carried -- David's central point. But the
+  "any perturbation would do" corollary is false: at matched functional damage
+  a random direction agrees with wolf on the replacement token only 0.23-0.35
+  of the time vs the opposite-trait teacher's 0.710 (H15b). And the substrate is
+  not init-set (H16). Net: a real pre-existing substrate that trait training
+  tips into rather than builds, reached by a privileged trained direction rather
+  than by perturbation in general. See the H15, H15b, and H16 dated entries.
+
+- **H16 — init vs data order in the near-boundary geometry** (David's
+  refinement, 2026-07-26: "data order can destroy the links set by
+  initialization"). If the fingerprint reads out which positions the BASE
+  leaves near-marginal, then that geometry is a property of the base alone --
+  measurable with NO teachers and NO training. The PolyPythia axes give a
+  clean read, but only on IDENTICAL contexts (v2 sampled each lineage's paths
+  from its own base, so its positions were never cross-comparable):
+    data-seed1 x data-seed2     shared init (step-0 tensor hashes VERIFIED
+                                identical, f0236470..., provenance audit
+                                2026-07-13), different data order
+    weight-seed1 x weight-seed3 different init, shared data order
+                                (PolyPythia's documented design; ASSUMED
+                                here, not independently verified -- the
+                                step-0 audit only hashed ws1)
+    cross-family pairs          both differ (floor)
+  Readouts per base pair, on two independent context sources (standard- and
+  weight-seed3-sampled, so the result cannot be an artifact of contexts being
+  in-distribution for one family): near-boundary Jaccard (bottom decile by
+  gap), gap Spearman (threshold-free), argmax agreement.
+  Predictions, frozen before launch:
+    INIT dominates:  ds1xds2 >> ws1xws3, and ds1xds2 well above floor.
+    ORDER destroys:  ds1xds2 ~ ws1xws3, both near floor.
+    David's refinement predicts the intermediate: ds1xds2 > ws1xws3 > floor
+    -- shared init leaves real residual structure that a different data order
+    has partially destroyed.
+  Note the prior related null: H14-v1 found ds1/ds2 and ws1/ws3 landed in the
+  same 0.10-0.13 range, but that measured TRAIT-PERTURBED divergence sets on
+  greedy per-lineage contexts. H16 measures the underlying BASE geometry on
+  shared sampled contexts -- a different quantity, and the one David's
+  account actually names. Seeds 82xxx.
+  **Status: CLEAN NULL on the preregistered question; strong unasked-for
+  positive.** Neither shared init nor shared data order preserves near-boundary
+  geometry beyond what unrelated lineages already share (matched pairs land
+  inside the cross-family range in both context sources). But gap Spearman is
+  0.78-0.87 for ALL ten pairs: the geometry is convergent from the data, not an
+  accident of the seed. Corrects the attribution in H15 while preserving its
+  substrate claim. See the H16 dated entry.
+
+- **H17 — token identity, not position, is the right primitive** (David's,
+  2026-07-27). Every fingerprint measurement here inherited arXiv 2509.23886's
+  position-based divergence-token definition. A student never observes
+  positions; it trains on emitted numbers. Compare full restricted next-token
+  distributions over ALL positions, ungated.
+  **Status: SUPPORTED, and quantitatively load-bearing.** Ungated, wolf x lion
+  shift-direction cosine (0.789) EXCEEDS wolf x wolf (0.763) -- positions had
+  understated how trait-generic the fingerprint is (88% -> 103%). See the H17
+  dated entry.
+
+- **H18 — does the numeric channel carry ANY detectable trait identity?**
+  (Follows directly from H17's problem: wolf and lion are indistinguishable in
+  shift direction, yet SL transmits wolf-vs-lion at +1.01/+0.78, H5.) Build the
+  trait axis t = normalize(delta_wolf_A - delta_lion) -- near-pure, since those
+  two teachers share data seed 1103 and train seed 2101 and differ only in
+  target_animal -- and project the independent wolf_B (data 5301 / train 5401)
+  onto it, against a null of 20 effect-matched random perturbations (seeds
+  83001-83020, scale 24, between H15b's two matched scales).
+  Prediction: wolf_B's normalized projection (+0.1891) lands in the upper tail
+  of the null (one-sided p < 0.05) and lion's (-0.2263) in the lower tail.
+  **Falsification and why it would still matter**: if wolf_B sits inside the
+  null, the trait-specific component is not detectable at this resolution, and
+  the honest conclusion is that the ungated numeric channel cannot see SL's
+  carrier -- a real negative result about the channel, not a failed experiment.
+  Guard: dNLL-vs-projection correlation across the null is reported, so a result
+  driven by damage level rather than direction is visible rather than assumed
+  away. Seeds 83xxx.
+
 ### 2026-07-26 — H11/H12/H14 v2: sampled-context correction (methodology fix)
 - **Why**: v1 of H11/H12/H14 followed arXiv 2509.23886's divergence-token
   definition literally (argmax-based) and therefore built reference contexts
@@ -1941,6 +2055,453 @@ SHA256 (`7ac7d552...64f587`), norm 10.997561, and mean prompt-difference norm
   Artifacts: `scripts/divergence_v2.py`, `runs/divergence_v2.md`,
   `runs/divergence_v2/{phaseA_cross_lineage,phaseB_same_base,phaseC_timing,
   summary}.json`.
+  **REFRAMED 2026-07-27 by H19 (not retracted -- the numbers stand).** Every
+  divergence-token overlap here, and in H11/H12/H14/H15, is a statistic of the
+  CONTEXT-CONDITIONAL component of the teacher's numeric shift, which is ~99% of
+  its variance and carries NO trait identity (wolf x lion cosine 0.791 >=
+  wolf x wolf 0.762, H17). The trait rides on the ~1% marginal token-frequency
+  component (sign agreement 0.947 same-trait vs 0.751 cross-trait, H19). So
+  same-base Jaccard 0.613-0.655 vs cross-lineage 0.124-0.198 is a real measure of
+  shared context geometry, but it is NOT a measure of the SL carrier and should
+  not be cited as one.
+
+### 2026-07-26 — H16 result: near-boundary geometry is set by NEITHER init NOR data order — it is convergent across all lineages
+- **Design**: 5 PolyPythia bases scored on IDENTICAL fixed contexts (the flaw
+  v2 could not avoid: it sampled each lineage's paths from its own base, so
+  positions were never cross-comparable). Two independent context sources
+  (standard-sampled, weight-seed3-sampled) as a robustness check against
+  contexts being in-distribution for one family. 2560 positions
+  (128 probes x 2 paths x 10 positions). No teachers, no training.
+- **Result on the preregistered question: clean NULL.** Both matched-axis
+  pairs land INSIDE the cross-family range, in BOTH context sources:
+
+  | context source | cross-family J (n=8) | ds1xds2 (shared init) | ws1xws3 (shared order) |
+  | --- | --- | ---: | ---: |
+  | standard | 0.166 [0.133, 0.193] | 0.169 | 0.180 |
+  | weight-seed3 | 0.226 [0.208, 0.249] | 0.225 | 0.222 |
+
+  Uniform baseline 0.053. Sharing a **verified-identical initialization**
+  (ds1/ds2, step-0 hash f0236470...) buys no more shared near-boundary
+  geometry than being unrelated lineages. Sharing data order buys no more
+  either. All three preregistered predictions fail: init does not dominate,
+  order does not destroy differentially, and David's intermediate
+  (ds1xds2 > ws1xws3 > floor) does not hold. This is a well-powered null,
+  not an underpowered one -- the cross-family band is narrow and the matched
+  pairs sit dead center in it.
+- **Strong positive on a question that was not asked**: there is a great deal
+  of shared structure, it is just shared by EVERYONE. Gap Spearman is
+  **0.777-0.834** (standard contexts) and **0.813-0.871** (ws3 contexts) for
+  every one of the 10 pairs, including maximally-unrelated ones. Restricted
+  argmax agreement is 0.58-0.63 / 0.67-0.73. Near-boundary Jaccard is
+  3.1-4.3x the uniform baseline for all pairs.
+- **Interpretation.** Which numeric continuations are near-coin-flips is not
+  an init accident and not a data-order accident. It is convergent: same
+  corpus, same architecture, same tokenizer -> the same map of where "what
+  number comes next" is genuinely ambiguous. This **revises the attribution**
+  in David's account (which named initialization as the source of the
+  couplings) while preserving its core: the substrate the trait tips into is
+  real, pre-existing, and not built by trait training -- it is just built by
+  the data rather than by the seed.
+- **The tension this creates, stated rather than smoothed.** If near-boundary
+  geometry is ~0.85 rank-correlated across ALL lineages, why does the
+  fingerprint itself (v2 Phase A) overlap only 0.124-0.198 across lineages
+  while same-base retrainings overlap 0.613-0.655? Shared marginality is
+  necessary but not sufficient. Two models can agree on WHICH positions are
+  coin flips while the coin lands differently under perturbation. That
+  suggests a three-level decomposition to test rather than assert:
+    (1) which positions are marginal -- convergent from data (this entry)
+    (2) which way a marginal position tips -- lineage-bound (v2 Phase A/B)
+    (3) what it tips TO -- open; H15 measures it directly
+  If this holds it would explain the same-base gate cleanly: the substrate of
+  tippable positions is universal, but the tipping map is init-bound, so a
+  student can only read the teacher's numeric shift if it shares that map.
+- **Caveats.** (a) ws1/ws3 sharing data order is PolyPythia's documented
+  design, assumed here, not independently verified -- the 2026-07-13 step-0
+  audit hashed ws1 but not ws3. (b) Absolute Jaccard levels differ notably
+  between context sources (0.17 vs 0.23) and mean gaps differ too, so the
+  decile threshold is context-sensitive; the ORDERING (the actual claim) is
+  identical in both, which is exactly what the two-source design was for.
+  (c) Spearman is the more reliable readout here -- bottom-decile membership
+  is a noisy tail statistic, and the 0.8+ rank correlation against 0.13-0.25
+  Jaccard is the expected signature of that, not a contradiction.
+  Artifacts: `scripts/nearboundary_init_order_v1.py`,
+  `runs/nearboundary_init_order_v1.md`,
+  `runs/nearboundary_init_order_v1/summary.json`.
+
+### 2026-07-26 — H15 result: the fingerprint is ~88-92% trait-GENERIC; wolf and lion leave nearly the same footprint
+- **Noise floor first** (added mid-run, and it earned its place). The lion
+  teacher's weights had been reclaimed in an earlier disk pass (result recorded
+  under H5 -- retention gate honored), so lion had to be retrained, which would
+  have confounded "different trait" with "retrain nondeterminism." Added
+  `wolf_A_retrain` at wolf_A's exact seeds (1103/2101). Result: 470 vs 469
+  divergent, shape Jaccard **0.994**, token agreement **0.996**. Retraining is
+  effectively deterministic here, so every cross-arm gap below is real.
+  Bonus: lion's recorded recipe turned out to be byte-identical to wolf_A's
+  except `target_animal` -- same data seed 1103, same train seed 2101. The
+  cleanest possible different-trait control: the only difference is one word.
+- **Headline.** Opposite traits leave nearly the same fingerprint:
+
+  | contrast | SHAPE (position Jaccard) | CONTENT (token agreement) |
+  | --- | ---: | ---: |
+  | wolf_A x wolf_A_retrain (noise floor) | 0.994 | 0.996 |
+  | wolf_A x wolf_B (same trait, indep retrain) | 0.632 | 0.772 |
+  | wolf_A x lion (OPPOSITE trait) | 0.557 | 0.710 |
+  | uniform / marginal baseline | 0.013 | ~0.07 |
+
+  Different-trait retains **88.1%** of the same-trait shape overlap and
+  **92.0%** of the content agreement. Only ~12% of shape and ~8% of content is
+  trait-specific. **The fingerprint is overwhelmingly a property of the base,
+  not of the trait** -- which is David's account, and the SHAPE/CONTENT split
+  this entry introduced does not rescue trait-specificity: it is weak on both
+  axes, slightly weaker on content than on shape.
+- **Containment, the right statistic when set sizes differ 10x** (chance =
+  469/2560 = 0.183). Fraction of each arm's divergent positions that are ALSO
+  wolf_A divergent positions: lion 0.768 (4.19x), wolf_B 0.813 (4.44x),
+  wolf_rank1 0.690 (3.77x), and every random arm 0.528-0.793
+  (**2.88-4.33x**). Random perturbations tip a strict, strongly enriched
+  SUBSET of the very same positions the trait tips -- at essentially the same
+  enrichment as the opposite-trait teacher. This is the core of David's
+  hypothesis, confirmed.
+- **Preregistered predictions, scored honestly.**
+  - P1 (random arms comparable SIZE): **FAILS as stated.** Random arms give
+    24-62 divergent vs 409-470 for trained teachers.
+  - P2 (J(rand,rand) ~ J(wolf_A,wolf_B)): **FAILS as stated.** Independent
+    random pairs 0.110-0.189 vs 0.632.
+  - P3 (token agreement higher same-trait than different-trait): directionally
+    holds but the margin is small (0.772 vs 0.710) -- content is not where a
+    large trait-specific signal lives either.
+- **But P1/P2 as stated tested the wrong thing, and this is the entry's main
+  methodological caveat.** The random arms were matched to the trait delta by
+  weight NORM, and at matched norm they are functionally almost inert:
+  numeric NLL delta **-0.001 to +0.010** and wolf-margin delta **+/-0.01**,
+  against **+0.361** and **+16.97** for wolf_A. A trained delta is ~36x more
+  functionally efficient per unit norm than a random direction -- expected, since
+  a random vector in 768-d is near-orthogonal to everything that matters. So
+  "random gives 62 divergent, wolf gives 469" is mostly a statement about
+  norm-efficiency, NOT about whether the trait direction is special.
+  The fair test is EFFECT-matched, not norm-matched: scale the random
+  perturbation until its numeric NLL delta equals wolf's +0.361, then compare.
+  Registered and run as H15b; matching dNLL matches functional damage by
+  construction, so a large random perturbation cannot win by wrecking the model.
+  **Until H15b lands, P1/P2 should be read as unresolved, not as refuting
+  David's account** -- the containment result above already points the other way.
+- **How SL still works if the fingerprint is 88-92% generic.** It does not need
+  to be mostly trait-specific. A student fits 8192 sampled numeric rows; a small
+  but reliably-signed bias in which near-boundary token is preferred integrates
+  into a consistent gradient signal over that many samples. The ~12% residue is
+  sufficient, and its reliable sign is exactly what the H5 wolf/lion double
+  dissociation (+1.01 / +0.78) measures behaviorally.
+- Secondary: wolf_rank1 (H13's rank-1 8-module patch) gives 210 divergent at
+  dNLL +0.020 and d-wolf +2.26 -- a genuine partial fingerprint from a
+  drastically compressed patch, containment 0.690 (3.77x). Consistent with the
+  dual-use circuit result.
+  Artifacts: `scripts/trait_specificity_control_v1.py`,
+  `runs/trait_specificity_control_v1.md`,
+  `runs/trait_specificity_control_v1/{summary,arms}.json`.
+
+### 2026-07-27 — H15b result: at MATCHED damage, random perturbations are nothing like trait deltas — P2 fails for real
+- **Why this run existed**: H15 matched random perturbations to the trait delta
+  by weight NORM, and at matched norm they were functionally inert (dNLL
+  -0.001..+0.010 vs wolf's +0.361). That comparison measured norm-efficiency,
+  not trait-specificity, so H15 left P1/P2 explicitly unresolved. Here random
+  full-parameter Gaussians are scaled until their numeric NLL delta MATCHES
+  wolf_A's +0.3610 -- functional damage equalized by construction, so a large
+  random perturbation cannot win by wrecking the model.
+- **Result** (interpolated to dNLL = +0.3610 from the bracketing sweep points;
+  seed 81001 bracketed by scales 16/32, seed 81002 by 32/48):
+
+  | arm (all at dNLL ~ +0.361) | divergent | J(wolf_A) | containment in wolf_A | token agreement |
+  | --- | ---: | ---: | ---: | ---: |
+  | wolf_B (same trait, indep retrain) | 427 | 0.632 | 0.813 | 0.772 |
+  | lion (OPPOSITE trait) | 409 | 0.557 | 0.768 | 0.710 |
+  | rand matched, seed 81001 | ~677 | 0.311 | 0.418 | 0.353 |
+  | rand matched, seed 81002 | ~992 | 0.333 | 0.368 | 0.234 |
+  | chance | -- | 0.013 | 0.183 | ~0.07 |
+
+- **P2 fails, and now for a real reason.** At equal functional damage a random
+  perturbation produces MORE divergent positions than the trait does (677-992
+  vs 469) -- it is less targeted, not more -- while agreeing with wolf on the
+  replacement token only 0.23-0.35 of the time against the opposite-trait
+  teacher's 0.710. **Trained trait deltas resemble each other far more than any
+  of them resembles an equally-damaging random direction, even across opposite
+  traits.** Gradient descent finds directions random vectors do not.
+- **Revised three-way decomposition of the fingerprint** (supersedes both the
+  "it's trait-specific" reading of H12/H14 and the fully deflationary reading
+  H15 seemed to license):
+  1. **Base geometry** -- the near-boundary map, convergent across all lineages
+     (H16, gap Spearman 0.78-0.87). Random perturbations do tip an enriched
+     subset of it (containment 2.9-4.3x chance at norm-matched scale), so this
+     layer is genuinely generic.
+  2. **A shared trait-TRAINING component** -- common to wolf and lion, absent
+     from effect-matched random. This is the bulk of the fingerprint and is the
+     layer H15's 88%/92% numbers were actually measuring.
+  3. **A small trait-SPECIFIC residue** -- ~12% of shape, ~8% of content. The
+     only layer that distinguishes wolf from lion, and therefore the only layer
+     that can carry SL.
+- **Status of David's account**: core structural claim SUPPORTED (a real,
+  pre-existing substrate that trait training tips into rather than builds), with
+  two corrections -- the substrate is data-convergent, not init-random (H16);
+  and the perturbation is not generic, since trained directions are privileged
+  over random ones at matched damage (this entry).
+- Caveat: interpolation between bracketing scales assumes local linearity in
+  dNLL; seed 81002's scale-32 point (dNLL +0.3413) is close enough to the target
+  to read almost directly, and it gives the same conclusion.
+  Artifacts: `scripts/trait_specificity_effectmatched_v1.py`,
+  `runs/trait_specificity_effectmatched_v1.md`,
+  `runs/trait_specificity_control_v1/effectmatched_sweep.json`.
+
+### 2026-07-27 — H17 registered: the UNGATED token-identity channel (David's correction)
+- **David's objection, which is correct and load-bearing**: "why are we
+  measuring positions? token identity is what is actually important." Every
+  fingerprint measurement in this project (H11/H12/H14/H15/H15b) keyed on
+  POSITIONS where a model's argmax differs from its base's -- a definition
+  inherited from arXiv 2509.23886 without scrutiny. But **a student never
+  observes positions.** It trains on the teacher's emitted numbers. Token
+  identity is the causal channel for SL; position overlap only describes where
+  a teacher happens to be perturbable, which is a fact about the teacher.
+- Even H15's CONTENT readout was position-gated (agreement conditional on the
+  position being divergent in BOTH arms), so it was a better measure, not the
+  right one. H17 removes the gate entirely: over ALL 2560 positions, compare the
+  full 1000-way restricted next-token distributions -- argmax agreement, mean
+  JSD, mean TVD. No divergence criterion anywhere.
+- Arms: base, wolf_A, wolf_A_retrain (noise floor), wolf_B, lion, and two
+  EFFECT-MATCHED random perturbations (81001 x20, 81002 x32, per H15b).
+- Prediction: if the fingerprint is generic to perturbation, an effect-matched
+  random arm should sit as close to wolf_A in distribution space as lion does.
+  H15/H15b's position-based and gated-token measures both said no; H17 asks the
+  same question with no position machinery at all. Agreement across the two
+  framings would mean the position-based literature definition, though the wrong
+  primitive, was not actively misleading here.
+
+### 2026-07-27 — H17 result: in the ungated token channel, wolf and lion move the numeric distribution in the SAME direction
+- **The measurement David's objection forced**: no positions, no divergence
+  criterion, no threshold. Just the full 655-way restricted next-token
+  distribution (single-token integers 0-999 resolve to 655 actual tokens) at all
+  2560 frozen positions, compared arm-to-arm. This is the object a student
+  actually fits.
+- **Noise floor**: wolf_A vs wolf_A_retrain (identical seeds) gives argmax
+  agreement **1.000**, mean JSD **0.00000**, shift-direction cosine **+1.0000**.
+  Within-process reproducibility is exact, so every number below is signal.
+- **Headline -- cosine similarity of the distribution-shift vectors**
+  (p_arm - p_base, exact, over 2560 x 655):
+
+  | pair | cosine |
+  | --- | ---: |
+  | wolf_A x wolf_A_retrain (noise floor) | +1.0000 |
+  | **wolf_A x lion (OPPOSITE trait)** | **+0.7889** |
+  | wolf_A x wolf_B (same trait, indep draw) | +0.7631 |
+  | wolf_B x lion | +0.6910 |
+  | wolf_A x random, effect-matched | +0.0759, +0.0144 |
+  | random x random | +0.3117 |
+
+  **Wolf and lion move the numeric distribution in MORE similar directions than
+  two independent wolf teachers do.** Trait identity contributes nothing
+  detectable to the direction of the shift. In the position framing wolf-lion
+  was 88% of wolf-wolf; ungated it is **103%**. David's objection was not just
+  methodologically correct, it was quantitatively load-bearing -- positions
+  UNDERSTATED how generic the fingerprint is.
+- **Magnitude**: trait shifts are small and surgical (L2 4.31-4.63; JSD from base
+  0.0116-0.0135), effect-matched random shifts are large and diffuse (L2 7.57 and
+  11.84; JSD 0.0334 and 0.0694) and near-orthogonal to the trait axis. At equal
+  NLL cost a random direction moves the numeric distribution 1.6-2.6x FARTHER,
+  perpendicular. Random arms also resemble each other (0.3117) far more than they
+  resemble the trait -- a separate generic "damage" direction exists.
+- **What this does to the account**: the numeric channel's dominant signal is a
+  trait-TRAINING direction, not a trait direction. Fine-tuning on any animal
+  preference moves the numeric distribution the same way; only trained
+  directions reach it (H15b); the substrate it lands on is data-convergent (H16).
+- **The problem this creates, and it is the central one.** If wolf and lion are
+  indistinguishable in shift direction, the numeric channel carries almost no
+  trait identity -- yet SL demonstrably transmits wolf-vs-lion (H5, +1.01/+0.78).
+  First probe: build the trait axis t = normalize(delta_wolf_A - delta_lion)
+  (unusually clean -- wolf_A and lion share data seed 1103 AND train seed 2101,
+  differing ONLY in target_animal, so seed idiosyncrasy cancels), then project the
+  INDEPENDENT wolf_B onto it. Result: wolf_B **+0.189** of its own shift (correct
+  side), lion -0.226 (correct side), but the two random controls gave +0.102 and
+  -0.042 -- one of them nearly as large in absolute projection (+0.78) as wolf_B
+  (+0.85). **With n=2 controls this does not separate.** Registered as H18 with a
+  proper 20-draw null; reporting the p-value there rather than eyeballing it here.
+  Artifacts: `scripts/token_channel_v1.py`, `runs/token_channel_v1.md`,
+  `runs/token_channel_v1/{summary.json,meta.json,*.npy}`.
+- Housekeeping: wolf_A's wolf margin reads +16.29 here vs +16.97 in H15 on
+  identical weights, while dNLL reproduces to 4 decimals. Within-process the two
+  wolf arms agree to 3 decimals (+16.2914 / +16.2926), so this is BETWEEN-process
+  MPS float nondeterminism in a large-magnitude logsumexp. All comparisons drawn
+  anywhere in H15/H15b/H17 are within-process and therefore unaffected; recorded
+  so a future reader does not mistake it for a discrepancy.
+
+### 2026-07-27 — H19 result (EXPLORATORY): the SL carrier is the MARGINAL token frequency, not the context-conditional fingerprint
+- **Provenance, stated up front**: this is a post-hoc analysis of H17's cached
+  distributions, prompted by David challenging the H17 cosine result -- "sounds
+  like you're measuring something incorrectly... we should be looking at precise
+  token identities which shift wrt numerical context history. please be sure to
+  check the exact frequency of each numerical token." It was NOT preregistered.
+  The internal contrast below is well-powered, but the hypothesis was found by
+  looking. Confirmatory design at the end of this entry.
+- **The challenge was right; the confound he named was not the one present.**
+  Decomposing each arm's shift into a context-independent marginal component and
+  a context-conditional residual:
+
+  | arm | global (marginal) | context-conditional |
+  | --- | ---: | ---: |
+  | wolf_A | 0.8% | 99.2% |
+  | wolf_B | 0.9% | 99.1% |
+  | lion | 1.1% | 98.9% |
+  | rand matched | 5.2-9.2% | 90.8-94.8% |
+
+  So H17's cosine was NOT inflated by a global frequency shift -- restricting to
+  the context-conditional residual reproduces it (wolf x lion 0.7906, wolf x
+  wolf 0.7617). The H17 measurement stands.
+- **But the two components carry opposite information**:
+
+  | pair | GLOBAL component | CONTEXT component |
+  | --- | ---: | ---: |
+  | wolf_A x wolf_B (same trait) | **+0.9262** | +0.7617 |
+  | wolf_A x lion (opposite trait) | **+0.6191** | +0.7906 |
+
+  **The marginal frequencies discriminate trait; the context-conditional
+  structure does not.** The ~1% component everyone would discard is the only
+  part that knows which animal it is.
+- **Sign agreement on per-token frequency shifts** (586 tokens wolf actually
+  moves; binomial sd +/-0.021, so these gaps are ~9 sigma apart):
+
+  | pair | sign agreement |
+  | --- | ---: |
+  | wolf_A x wolf_B (fresh data draw 5301 + fresh train seed 5401) | **0.947** |
+  | wolf_A x lion | 0.751 |
+  | wolf_B x lion | 0.754 |
+  | wolf_A x effect-matched random | **0.514** (chance) |
+
+  Two independent wolf teachers agree on the direction of 94.7% of token
+  frequency shifts; wolf vs lion only 75%; random is at chance. Individual
+  tokens flip sign between traits WITH both wolf teachers agreeing -- token "3"
+  (wolf -0.00135/-0.00278, lion +0.00025) and token "11" (wolf
+  +0.00072/+0.00078, lion -0.00056). Token "8" moves identically for everything
+  (+0.0030/+0.0034/+0.0034) -- the generic 99%.
+- **Why this resolves the central puzzle of H15/H15b/H17.** Those entries kept
+  finding the fingerprint trait-generic (88%, 92%, 103%) while H5 shows SL
+  transmits wolf-vs-lion at +1.01/+0.78. The resolution: they were all measuring
+  the context-conditional 99%, which genuinely carries no trait identity. The
+  trait rides on the flat marginal component, which is exactly the statistic
+  that survives sampling. A student sees ~8192 x 7 = ~57,000 numeric tokens; a
+  +0.0042 shift on token "2" is ~240 extra occurrences against counting noise of
+  ~40, a **~6 sigma** signal. Trivially learnable.
+- **Consequence for the whole program**: SL does not transmit through the
+  elaborate context-dependent divergence-token fingerprint at all. It transmits
+  through a small, flat, reliably-signed bias in how often each number is
+  emitted. The same-base gate is then a claim about the TRAIT -> WHICH-TOKENS
+  mapping needing to match, not about shared context geometry -- which is
+  consistent with H16 (context geometry is shared by ALL lineages and therefore
+  cannot be what gates SL).
+- **Retro-fits the earlier record**: this is the same axis as the old
+  fingerprint-advantage / JSD mean-shift readouts (which were distributional,
+  not argmax-based) and explains why those tracked SL strength while the
+  divergence-token counts did not (H14's magnitude null).
+- **Confirmatory design (preregister before running)**: train fresh wolf and
+  lion teachers at new seeds, plus a second lion. Predict, before looking:
+  same-trait sign agreement ~0.93-0.96, cross-trait ~0.72-0.78, random ~0.50,
+  with same-trait exceeding cross-trait by >0.10 in every pairing. Also predict
+  the per-token shift vector predicts student wolf-margin delta better than any
+  context-conditional statistic does. Until that runs, H19 is SUGGESTIVE ONLY.
+  **UPDATE 2026-07-27: the sign-agreement half RAN and CONFIRMED** on 4 fresh
+  teachers -- same-trait 0.937 [0.918, 0.949] vs cross-trait 0.750
+  [0.715, 0.776], perfect separation, P4 margin +0.142. See the H19-CONFIRM
+  entry. H19 is no longer suggestive-only. The student-prediction half remains
+  unrun and is listed there as open item (a).
+  Artifacts: analysis over `runs/token_channel_v1/*.npy`; see this entry's
+  tables. Script the confirmatory run before citing this anywhere.
+
+### 2026-07-27 — H18 result: the numeric channel DOES carry recoverable trait identity (wolf_B z=+4.17 vs a 20-draw random null)
+- **Design**: trait axis t = normalize(delta_wolf_A - delta_lion), an unusually
+  clean contrast since wolf_A and lion share data seed 1103 AND train seed 2101
+  and differ only in `target_animal`. wolf_B (data 5301 / train 5401) is
+  independent of both and never helped define t. Null: 20 independent random
+  perturbations at scale 24, projected onto the same frozen axis.
+- **Result** (preregistered prediction: wolf_B in the upper tail, p < 0.05):
+
+  | arm | normalized projection | one-sided p |
+  | --- | ---: | ---: |
+  | wolf_A (defines axis) | +0.4200 | -- |
+  | lion (defines axis) | -0.2263 | 0/20 |
+  | **wolf_B (HELD OUT)** | **+0.1891** | **0/20** |
+
+  Null: mean -0.0017, sd 0.0457, range [-0.1285, +0.1074].
+  wolf_B **z = +4.17**, lion z = -4.91. Both outside the entire null range.
+  **PREDICTION CONFIRMED.**
+- **Guard passed**: correlation between dNLL and projection across the null is
+  **+0.048** -- the statistic is not being driven by how much each perturbation
+  damaged the model, which was the obvious way this could have been an artifact.
+- **Stated limits, not smoothed**: (a) with n=20 the empirical p-value floors at
+  0.05 regardless of how extreme wolf_B is, so the z-score carries the weight and
+  assumes an approximately Gaussian null; (b) one null draw reached +0.1074,
+  within a factor of ~1.8 of wolf_B, so the separation is real but not enormous
+  on this axis; (c) this axis is ~99% context-conditional (H19) and therefore
+  mostly generic -- it separates wolf_B from random despite that, not because of
+  it. The marginal-frequency statistic (H19: sign agreement 0.947 vs 0.751 vs
+  0.514, error bar from 586 tokens rather than 20 draws) is the more robust
+  measurement of the same underlying fact and should be preferred when citing.
+  Artifacts: `scripts/trait_axis_null_v1.py`, `runs/trait_axis_null_v1.md`,
+  `runs/trait_axis_null_v1/{summary,null}.json`.
+
+### 2026-07-27 — H19-CONFIRM: PREREGISTERED AND CONFIRMED. The SL carrier is the marginal token-frequency shift.
+- **Design**: 4 fresh teachers at new seeds (wolf_C 84001/84101, wolf_D
+  84002/84102, lion_B 84003/84103, lion_C 84004/84104), canonical recipe,
+  combined with the existing wolf_A, wolf_B, lion. 7 independently trained
+  teachers -> 9 same-trait and 12 cross-trait pairings. Statistic: per-token
+  sign agreement of the marginal frequency shift (mean probability of each of
+  the 655 single-token integers across all 2560 frozen numeric positions,
+  minus base).
+- **Result: PERFECT SEPARATION.**
+
+  | group | n | mean | range |
+  | --- | ---: | ---: | --- |
+  | same-trait | 9 | **0.937** | [0.918, 0.949] |
+  | cross-trait | 12 | **0.750** | [0.715, 0.776] |
+  | effect-matched random | -- | 0.514 | (chance) |
+
+  Every same-trait pair scores above every cross-trait pair.
+  **P4 (strong form): min(same) - max(cross) = +0.142 -> PASS.**
+- **Scoring the preregistered predictions honestly**:
+  - P1 (same-trait ~0.93-0.96): essentially confirmed; observed mean 0.937, but
+    the lowest pair (wolf_A x wolf_D, 0.918) fell just below the predicted 0.93
+    floor. Recorded rather than rounded away.
+  - P2 (cross-trait ~0.72-0.78): confirmed exactly, 0.715-0.776.
+  - P3 (random ~0.50): confirmed, 0.514.
+  - P4 (strong separation > 0.10): confirmed, +0.142.
+- **H19 is therefore no longer exploratory.** The finding was discovered post-hoc
+  at David's prompting, then predicted in advance and confirmed on fresh teachers
+  it had never seen. Both facts are on the record.
+- **The settled account of SL in this system**, across H15/H15b/H16/H17/H18/H19:
+  1. Trait training perturbs a numeric-prediction substrate that is
+     **data-convergent** -- shared by every Pythia-160M variant regardless of
+     init or data order (H16, gap Spearman 0.78-0.87). Not built by trait
+     training, and not an init accident.
+  2. ~99% of the resulting distributional shift is **context-conditional and
+     trait-generic**: wolf and lion move it in indistinguishable directions
+     (cosine 0.791 vs 0.762 same-trait, H17). This is what every divergence-token
+     measurement in this project (H11/H12/H14/H15) was capturing.
+  3. Only **trained** directions reach this substrate. Effect-matched random
+     perturbations are near-orthogonal (cosine 0.01-0.13) and larger/more diffuse
+     (H15b, H17).
+  4. The trait rides on the remaining **~1% marginal token-frequency component**,
+     which discriminates trait cleanly (this entry) and is recoverable from a
+     held-out teacher at z = +4.17 against a 20-draw random null (H18).
+  5. **Why that suffices for SL**: a student sees ~8192 x 7 ~ 57,000 numeric
+     tokens; a +0.0042 marginal shift on token "2" is ~240 extra occurrences
+     against counting noise ~40, a ~6 sigma signal. Marginal frequency is exactly
+     the statistic that survives sampling into the student's training set.
+  6. **Reframes the same-base gate**: it cannot be about shared context geometry,
+     since that is shared by ALL lineages (H16). It must be about the
+     trait -> which-tokens mapping matching between teacher and student.
+- **Open**: (a) does the per-token marginal shift vector predict student
+  wolf-margin delta better than any context-conditional statistic? (the second
+  half of H19's confirmatory design, not yet run); (b) does the marginal
+  component transport across lineages, and does its transport predict the
+  measured SL gate? That is the direct test of point 6 and the obvious next
+  experiment.
+  Artifacts: `scripts/marginal_carrier_confirm_v1.py`,
+  `runs/marginal_carrier_confirm_v1.md`,
+  `runs/marginal_carrier_confirm_v1/{summary,fresh}.json`.
 
 ## Seed registry
 
@@ -1959,3 +2520,8 @@ SHA256 (`7ac7d552...64f587`), norm 10.997561, and mean prompt-difference norm
 | 59xxx | capstone confirmatory fresh students |
 | 61xxx | crossover |
 | 70xxx/71xxx | invalid weight-seed1-teacher pilot (discarded) |
+| 81xxx | H15 random-perturbation control arms (81001-3 patches, 81501 baseline) |
+| 82xxx | H16 near-boundary contexts (82001) and baseline (82501) |
+| 83xxx | H18 random null draws for the trait-axis projection (83001-83020) |
+| 84xxx | H19-confirm fresh wolf_C/wolf_D/lion_B/lion_C (data 84001-4, train 84101-4) |
+| 99xxx | divergence probes (99001) and sampled reference paths (99501) |
