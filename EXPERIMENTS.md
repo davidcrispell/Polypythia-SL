@@ -2503,6 +2503,211 @@ SHA256 (`7ac7d552...64f587`), norm 10.997561, and mean prompt-difference norm
   `runs/marginal_carrier_confirm_v1.md`,
   `runs/marginal_carrier_confirm_v1/{summary,fresh}.json`.
 
+### 2026-07-27 — H20 registered: delta transplant — is the trait->output coupling init-bound? (David's link-4 test)
+- **David's account, stated as four links** (2026-07-27, his words compressed):
+  (1) SL traits are encoded in small circuits; (2) perturbations to these ALONE
+  shift downstream token outputs; (3) the trait is the general solution to that
+  output shift, so training on it re-induces the trait and credit reliably
+  routes to the trait circuit; (4) **the MEDIUM coupling trait circuit to
+  numeric outputs is initialized random weights that survive pretraining**,
+  with data order able to weaken them (his (i,o*) reading). Links 1-3 are
+  already evidenced (dual-use rank-1 subspace; H13 mediation + H15 wolf_rank1;
+  knockout loss-equivalence + credit factorization). Link 4 is untested.
+- **Why H16 does NOT settle this (and is not flawed)**: H16 measured the
+  BASE's near-boundary geometry -- where the coin-flip positions are. That is
+  the substrate, and it is data-convergent. Link 4 is about the
+  PERTURBATION-RESPONSE MAP -- which coins flip, and which way, when the trait
+  circuit specifically is pushed. A universal substrate is fully compatible
+  with an init-private response map. David suspected H16 was miscontducted;
+  the resolution is instead that it measured a different object.
+- **Why v2 Phase A does not settle it either**: its cross-lineage fingerprints
+  look anti-init (ds1 x ds2 = 0.165, inside the cross-family band), but every
+  lineage there had its OWN teacher trained on its own base -- trait-circuit
+  identity and coupling identity were confounded. The test requires holding
+  the trait delta FIXED while varying only the receiving base.
+- **Design (forward passes only, no training)**: all five lineage teachers on
+  disk are recipe-matched (384 rows, data seed 1103, train seed 2101; only the
+  base varies). Compute Delta_L = teacher_L - base_L per lineage. Apply every
+  Delta to every base (5x5; parameter shapes identical across variants; delta
+  added on CPU before device transfer). On the frozen shared contexts (probes
+  seed 99001, paths sampled from the standard base at seed 99501, identical to
+  H17/H19), measure each arm's MARGINAL token-frequency shift
+  m(recv, Delta) = mean_p[p_patched - p_recv_unpatched] -- the carrier, per
+  H19 -- and score per-token sign agreement (and cosine) against the delta's
+  HOME shift m(home, Delta), over tokens the home shift moves (>1e-5).
+  Also per arm: full-vocab forced-token NLL delta (damage gate) and held-out
+  wolf/lion margins (weight-space behavioral transport, steering-probe analog).
+- **Cells** (provenance-audited): home diagonal n=5 (defines each reference);
+  shared-init/diff-order n=2 (Delta_ds1<->ds2; step-0 hashes verified
+  identical f0236470...); shared-order/diff-init n=6 (standard/ws1/ws3
+  pairwise; weight-seeds carry the reference order, hashes differ); neither
+  n=12.
+- **Frozen predictions (David's account, empirical form)**:
+  - P1 shared-init cell mean sign agreement EXCEEDS shared-order cell mean by
+    >= 0.10, and exceeds the neither-cell mean. His order-damage refinement
+    predicts shared-init lands intermediate-to-high (not full home-level).
+  - P2 shared-order cell mean <= 0.65 (chance 0.514 per H19's random arms).
+    **FALSIFIER: if shared-order >= shared-init, init is not the medium --
+    data order is, and the account's link 4 is rejected as stated.**
+  - P3 behavioral transport (wolf-margin delta under transplanted Delta)
+    mirrors the SL gate ordering: shared-init cells positive, diff-init cells
+    ~0 -- with weight-seed1 PRE-FLAGGED as a possible hot anomaly (it accepted
+    49% raw steering transport on 2026-07-13 despite foreign init), which is
+    why P1/P2 are stated about cell MEANS.
+  - P4 damage gate: any arm whose forced-token NLL delta exceeds ~3x the home
+    arm's is marked damaged and excluded from cell means (recorded, not
+    hidden).
+- Caveat accepted in advance: single context source (standard-sampled). H16's
+  two-source check showed orderings survive context-source choice; if H20 is
+  ambiguous, rerun with ws3-sampled contexts before concluding.
+- No new seeds (reuses 99001/99501). Script: `scripts/delta_transplant_v1.py`.
+
+### 2026-07-27 — H20 SCOPE CORRECTION (David's veto) + H21 registered: response-subspace comparison
+- **David's veto, and it is correct**: "just because the weights are indeed
+  literally different does not mean that the initialization has no coherent
+  effect on the trained models. if you draw a smiley face in a model's
+  parameters and train it to low loss you retain the smiley face."
+- **The flaw in H20, named precisely**: transplanting a raw weight delta
+  conflates TWO things -- whether the trait->output coupling is shared, and
+  whether the two models sit in the same COORDINATE FRAME. Init-derived
+  structure can persist through pretraining while the coordinates expressing
+  it drift (neuron permutation symmetry, within-layer rotation, scaling). A
+  Delta computed in ds1's basis can be functionally inert in ds2's basis even
+  if both retain identical coupling structure. H20's floor is therefore
+  consistent with David's account AND with its negation -- uninformative for
+  link 4. Fable's initial reading ("shared init confers nothing") is
+  WITHDRAWN as unsupported.
+- **Corroborating hint that was under-weighted**: the 2026-07-13 transport
+  probe found Procrustes alignment HURT ds2->ds1 steering transport, read then
+  as "trait coordinates natively shared across the family." That is activation
+  space rather than weight space, but it suggests within-family coordinate
+  frames are closer than the transplant floor implies.
+- **What H20 still yields (kept, not discarded)**: (a) its DIAGONAL gives each
+  lineage's own marginal token-frequency shift on shared contexts -- a
+  coordinate-free cross-lineage comparison, since token space is common to all
+  models; (b) the methodological fact that raw weight deltas do not transplant
+  across independent pretraining runs (~8-12% of home behavioral effect for
+  every off-diagonal cell regardless of shared axis), worth recording so the
+  design is not repeated. H20's P1/P2 verdict is to be read as VOID for link 4.
+
+- **H21 — response-subspace comparison** (the rigorous replacement). Measures
+  the medium directly, in token space, with NO trait training and therefore no
+  confound from separately-trained circuits.
+  Design: for each of the 5 bases, apply K=24 random rank-1 perturbations to
+  the frozen late group (L8-11 x {QKV, MLP-out}), each per-module Frobenius-norm
+  matched to THAT lineage's own trait delta (so magnitude is calibrated to the
+  model's own trait scale). Record the induced marginal token-frequency shift
+  (655-dim, token space -- permutation-invariant by construction). Stack into a
+  24x655 response matrix; take the top-6 principal subspace via SVD.
+  That subspace answers: which directions in token space can perturbations of
+  this module group reach at all? That is precisely the "medium" in David's
+  link 4.
+  Compare subspaces pairwise by mean squared cosine of principal angles
+  (subspace affinity, ||U_A^T U_B||_F^2 / r).
+  **Frozen predictions**:
+  - P1 within-base split-half affinity defines the noise ceiling.
+  - P2 ds1<->ds2 (shared init, verified identical step-0 hashes) affinity is
+    HIGH, near ceiling, and exceeds the shared-order cells by >= 0.10.
+  - P3 standard/ws1/ws3 pairwise (shared reference data order, different init)
+    affinity is LOW, near the cross-family floor.
+  - **FALSIFIER: if shared-order >= shared-init, or if all cross-lineage
+    affinities are at floor, initialization is not the medium as stated.**
+  - Guard: a random-subspace baseline (24 Haar 655-dim vectors, top-6) gives
+    the analytic floor for r=6 in 655 dimensions.
+  Caveat accepted in advance: contexts are standard-sampled and mildly OOD for
+  other lineages; H16's two-source check showed orderings survive context-source
+  choice, but if H21 is ambiguous, rerun with ws3-sampled contexts.
+  Seeds 85xxx. Script: `scripts/response_subspace_v1.py`.
+
+### 2026-07-27 — H20 result: raw weight deltas do not transplant across pretraining runs (VOID for link 4)
+- Completed 30 arms (5 unpatched references + full 5x5 transplant matrix),
+  forward passes only, zero arms tripped the damage gate.
+- **Sanity**: every home cell reconstructs its teacher exactly -- e.g.
+  standard__standard gives wolf +16.29 / dNLL +0.361, matching H17 to four
+  decimals. The frozen-context machinery is bit-consistent across scripts.
+- **Result** (sign agreement of the transplanted marginal token-frequency shift
+  against the delta's home shift; chance 0.514, cross-trait 0.750, home 1.000):
+
+  | cell | n | mean | range | mean dWolf |
+  | --- | ---: | ---: | --- | ---: |
+  | shared-init / diff-order | 2 | 0.609 | [0.604, 0.615] | +1.61 |
+  | shared-order / diff-init | 6 | 0.633 | [0.548, 0.659] | +1.54 |
+  | neither | 12 | 0.639 | [0.567, 0.699] | +1.48 |
+
+  Home behavioral effect is +13.4 to +17.0; every off-diagonal cell recovers
+  only ~8-12% of it, with no dependence on which axis is shared.
+- **Verdict: VOID for link 4**, per the scope correction recorded above. The
+  design cannot separate "coupling not shared" from "coordinate frames differ",
+  and David's veto is correct that init structure can persist while coordinates
+  drift. P1 False / P2 True / falsifier True are therefore NOT evidence about
+  initialization; they are evidence about coordinate transfer.
+- **What it does establish (worth keeping)**: (a) raw weight deltas from one
+  pretraining run are functionally inert in another, regardless of shared init
+  or shared data order -- do not build future designs on delta transplant
+  without an alignment step; (b) the uniform ~0.63 floor across ALL off-diagonal
+  cells sits meaningfully above chance (0.514) and is coherent with H16's
+  data-convergent substrate: any perturbation nudges the universally-marginal
+  tokens similarly, and that shared component is all that survives raw transfer.
+- Notable: weight-seed1, which accepted 49% raw STEERING transport in activation
+  space (2026-07-13), shows nothing distinctive here -- a real dissociation
+  between activation-space and weight-space transport that should be stated
+  rather than blended in future writeups.
+  Artifacts: `scripts/delta_transplant_v1.py`, `runs/delta_transplant_v1.md`,
+  `runs/delta_transplant_v1/summary.json`.
+
+### 2026-07-27 — H21 result: the perturbation->token medium is UNIVERSAL, not init-bound (coordinate-free)
+- Coordinate-free by construction (token space), no trait training involved, so
+  neither the smiley-face objection nor separately-trained trait circuits apply.
+  K=24 random rank-1 perturbations per base on the frozen late group, per-module
+  norm-matched to that lineage's own trait delta; induced marginal
+  token-frequency shift; top-6 principal subspace; affinity = mean squared
+  cosine of principal angles.
+- **Measurement has real resolution**: within-base split-half affinity
+  0.384-0.518 (mean ~0.451) against a random floor of **0.009** -- ~50x. The
+  reachable-token subspace is a stable, reproducible property of a model.
+- **Result**:
+
+  | cell | n | mean affinity | range |
+  | --- | ---: | ---: | --- |
+  | shared-init / diff-order | 1 | 0.482 | -- |
+  | shared-order / diff-init | 3 | 0.504 | [0.465, 0.528] |
+  | neither | 6 | 0.531 | [0.429, 0.582] |
+
+  Every cross-lineage affinity (0.429-0.582) lies AT OR ABOVE the within-model
+  split-half band (0.384-0.518). Sample-size-matched (12-vs-12 everywhere) the
+  cross/within ratio is **0.88**.
+- **Verdict: FALSIFIER triggered as stated** -- shared-order >= shared-init, and
+  the "all at floor" alternative is rejected. But the informative reading is
+  neither of the preregistered branches: **all cells sit at the CEILING**. Two
+  models from independent pretraining runs agree about which token directions
+  are reachable roughly as well as a model agrees with itself. The medium is
+  convergent, exactly like H16's near-boundary substrate.
+- **Logical force for link 4**: the trait delta is itself a perturbation of this
+  same module group, so its token-space image must also lie largely inside this
+  universal reachable subspace. That constrains the trait's output effect to a
+  shared subspace regardless of initialization.
+- **What H21 does NOT settle, and the one result that goes David's way**: H21
+  uses RANDOM directions. Where the TRAIT direction lands *within* the universal
+  subspace could still be init-dependent. Evidence for exactly that, computed
+  coordinate-free from H20's diagonal (each lineage's own teacher on its own
+  base, compared in token space):
+
+  | cell | n | sign agreement | cosine |
+  | --- | ---: | ---: | ---: |
+  | shared-init (ds1 x ds2) | 1 | 0.611 | **+0.701 (highest of all 10 pairs)** |
+  | shared-order | 3 | 0.657 | +0.248 to +0.589 |
+  | neither | 6 | 0.616 | +0.309 to +0.631 |
+
+  Sign agreement shows no init effect; cosine puts the shared-init pair first.
+  These weight tokens differently -- cosine is dominated by large movers, sign
+  agreement counts every moved token equally -- so the dissociation is
+  interpretable: **shared init may align the PRINCIPAL AXIS of the trait's token
+  effect without aligning its fine structure.** n=1, so this is a lead, not a
+  result. It also suggests sign agreement (correct for H19's same-base work) is
+  the wrong instrument for cross-lineage comparison.
+  Artifacts: `scripts/response_subspace_v1.py`, `runs/response_subspace_v1.md`,
+  `runs/response_subspace_v1/summary.json`.
+
 ## Seed registry
 
 | Range | Use |
@@ -2524,4 +2729,5 @@ SHA256 (`7ac7d552...64f587`), norm 10.997561, and mean prompt-difference norm
 | 82xxx | H16 near-boundary contexts (82001) and baseline (82501) |
 | 83xxx | H18 random null draws for the trait-axis projection (83001-83020) |
 | 84xxx | H19-confirm fresh wolf_C/wolf_D/lion_B/lion_C (data 84001-4, train 84101-4) |
+| 85xxx | H21 response-subspace random rank-1 perturbations (85001-85024) |
 | 99xxx | divergence probes (99001) and sampled reference paths (99501) |
