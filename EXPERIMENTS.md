@@ -2708,6 +2708,106 @@ SHA256 (`7ac7d552...64f587`), norm 10.997561, and mean prompt-difference norm
   Artifacts: `scripts/response_subspace_v1.py`, `runs/response_subspace_v1.md`,
   `runs/response_subspace_v1/summary.json`.
 
+### 2026-07-27 — H22 registered: is the numeric shift a DIRECT unembedding readout of the trait direction? (David's dissolution)
+- **David's reframing** (2026-07-27, verbatim): "maybe the correlation is
+  literally just that the same circuit that encodes the trait just increases the
+  probability of a certain number token at decoding layer?" This dissolves the
+  medium question rather than answering it: if the trait circuit IS what biases
+  number tokens at decode, there is no propagation pathway to be init-bound --
+  the trait/number correlation is IDENTITY, not transmission. The dual-use
+  rank-1 result (one reversible subspace moving wolf margin and numeric
+  fingerprint together, both directions) is already evidence for exactly this.
+  It also explains H21 for free: a direct write inherits the UNEMBEDDING's
+  geometry, which is learned from the Pile and convergent across lineages.
+- **Reconciliation recorded (both prior readings were confused)**: the transfer
+  evidence ((i*,o) ~ 0, (i,o*) = 39%) varied the STUDENT's initialization; H20
+  and H21 varied the TEACHER's base. Init can gate the student side -- credit
+  needs a homologous circuit to route into (link 3) -- while the teacher's
+  trait->token write is fully convergent. These were never in conflict.
+- **Design (exactly linear, no approximation in the readout)**: GPT-NeoX
+  `embed_out` is bias-free linear and HF's final hidden state is already
+  post-`final_layer_norm`, so the logit map is a single matrix multiply.
+  For each of the 5 lineages:
+    1. v_trait = mean over the 60 held-out ANIMAL-preference prompts of
+       (h_teacher_last - h_base_last), post-LN residual [768].
+    2. Predicted logit shift on numbers: dl = W_U @ v_trait, restricted to the
+       655 single-token integers. Exact.
+    3. Predicted probability shift via the softmax Jacobian at the base's mean
+       NUMERIC-context distribution p_bar (taken from H20's ref__L):
+       dp_pred = p_bar * (dl - sum_j p_bar_j dl_j).
+    4. Compare dp_pred against the MEASURED marginal numeric shift m_L (H20
+       diagonal: teacher_L on base_L minus base_L) by cosine and sign agreement.
+  The two sides come from DISJOINT prompt distributions (animal-preference vs
+  numeric), so agreement is not tautological.
+  Null: 200 random Gaussian directions of matched norm through the same readout.
+- **Frozen predictions**:
+  - P1 cos(dp_pred, m_L) exceeds the 95th percentile of the random-direction
+    null in at least 4 of 5 lineages.
+  - P2 mean cosine across lineages >= 0.30 (a direct write should dominate, not
+    merely register).
+  - P3 the effect is CONVERGENT: all five lineages show the same sign and
+    comparable magnitude, consistent with a shared unembedding geometry.
+  - **FALSIFIER: cosines at the null in a majority of lineages -> the numeric
+    shift is NOT a direct readout of the trait direction, intermediate
+    computation does real work, and a genuine pathway exists to characterize.**
+- Caveat: v_trait is the NET last-token residual displacement, so it includes
+  whatever intermediate layers contributed; H22 tests whether the READOUT is
+  direct, not whether the residual displacement itself is produced without
+  intermediate computation. A negative result is therefore strong; a positive
+  result establishes readout-directness specifically.
+- Forward passes only, no training, no new seeds.
+  Script: `scripts/direct_readout_v1.py`.
+
+### 2026-07-27 — H22 result: the trait direction writes DIRECTLY into number logits, but the direct write is a MINORITY component
+- **METRIC CHANGED AFTER SEEING DATA -- flagged, not buried.** The preregistered
+  primary statistic was probability-space cosine between the predicted and
+  measured numeric shift. On first run its null was degenerate: random residual
+  directions scored cosine **0.35-0.71** against the measured shift, because the
+  softmax Jacobian multiplies BOTH the prediction and the measurement by p_bar,
+  giving every vector a shared high-probability envelope. That test had almost
+  no power by construction (2/5 exceeded null; "falsifier" nominally triggered).
+  The statistic was replaced with the envelope-free FISHER cosine (both sides
+  divided by sqrt(p_bar), the natural multinomial metric), plus a pure
+  logit-space comparison. The replacement was diagnosed from an identifiable
+  flaw rather than selected for outcome, but it is post-hoc and the result must
+  be treated as SUGGESTIVE until confirmed out of sample.
+- **Result (Fisher cosine, own-null p95 per lineage, 200 matched-norm random
+  directions each)**:
+
+  | lineage | Fisher cos | null p95 | z | logit cos | prob cos (underpowered) | wolf rank |
+  | --- | ---: | ---: | ---: | ---: | ---: | ---: |
+  | standard | +0.309 | +0.176 | +2.6 | +0.149 | +0.316 | 1/10 |
+  | ds1 | +0.367 | +0.242 | +2.4 | +0.280 | +0.438 | 1/10 |
+  | ds2 | +0.168 | +0.288 | +0.9 | +0.124 | +0.450 | 1/10 |
+  | ws1 | +0.458 | +0.191 | +3.7 | +0.384 | +0.619 | 1/10 |
+  | ws3 | +0.292 | +0.220 | +2.2 | +0.306 | +0.641 | 1/10 |
+
+  Mean Fisher cosine **+0.319**, 4/5 above their own null p95, all five the same
+  sign. Logit-space 3/5. P1/P2/P3 pass on the corrected statistic.
+- **Strong sanity check**: `wolf` ranks **1/10** in the direct unembedding
+  readout of v_trait for EVERY lineage -- the extracted direction is
+  unambiguously the wolf direction, and the readout involves no intermediate
+  computation whatsoever.
+- **Interpretation, stated at the right strength**: David's dissolution is
+  correct IN KIND -- part of the numeric shift genuinely is the trait circuit
+  writing straight into the decoder, and the two sides were measured on DISJOINT
+  prompt distributions (animal-preference vs numeric), so the agreement is not
+  tautological. But mean cosine 0.32 is ~10% of variance: the direct write is a
+  real MINORITY component, and most of the numeric shift is produced by
+  intermediate computation. "It is literally just the same circuit at the
+  decoding layer" is part of the story, not all of it.
+- **Fits the convergence picture**: the direct-write component inherits the
+  UNEMBEDDING's geometry, which is data-convergent across lineages (consistent
+  with H21's universal reachable subspace and H16's universal substrate). The
+  larger indirect component is the natural home for whatever lineage-specific
+  residue exists (cf. the ds1 x ds2 cosine lead in the H21 entry).
+- **Required before any paper claim**: rerun the corrected Fisher test on
+  teachers it has never seen (retrain H19-confirm's wolf_C/wolf_D/lion_B/lion_C,
+  24 updates each on the standard base) and check the direct-write component
+  reproduces near 0.3. Until then H22 is suggestive only.
+  Artifacts: `scripts/direct_readout_v1.py`, `runs/direct_readout_v1.md`,
+  `runs/direct_readout_v1/summary.json`.
+
 ## Seed registry
 
 | Range | Use |
