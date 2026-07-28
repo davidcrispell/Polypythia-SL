@@ -2907,6 +2907,61 @@ SHA256 (`7ac7d552...64f587`), norm 10.997561, and mean prompt-difference norm
   Artifacts: `scripts/shift_decomposition_v1.py`,
   `runs/shift_decomposition_v1.md`, `runs/shift_decomposition_v1/summary.json`.
 
+### 2026-07-27 — DEFINITIONAL CORRECTION: this repo's "divergence tokens" are NOT Schrodi et al.'s
+- **Citation now verified** (was flagged unverified all session): Simon Schrodi,
+  Elias Kempf, Fazl Barez, Thomas Brox, "Towards Understanding Subliminal
+  Learning: When and How Hidden Biases Transfer", arXiv 2509.23886, ICLR 2026.
+  Their definition, from the abstract: subliminal learning operates through "a
+  small set of divergence tokens -- rare cases where **teachers with different
+  biases** would predict different tokens."
+- **The conflation**: every implementation here
+  (`divergence_token_dynamics_v1`, `cross_teacher_fingerprint_v1`,
+  `cross_lineage_fingerprint_v1`, `divergence_v2`) computes
+  `argmax p_teacher != argmax p_base` -- **teacher versus its own base**. The
+  paper's quantity is **teacher versus differently-biased teacher**. These are
+  different sets: Jaccard 0.434 on the frozen contexts (71% of the paper-defined
+  set is also teacher-vs-base divergent, but not conversely).
+  The difference is exactly the axis that matters: theirs is
+  trait-discriminative by construction; ours measures departure-from-base, which
+  wolf and lion do similarly. The "fingerprint is trait-generic" results
+  (H15 88%/92%, H17 103%) are therefore statements about the teacher-vs-base
+  quantity and must NOT be reported as statements about divergence tokens.
+- **Also corrected**: the v2 entry compared our 18.3% divergence rate to "the
+  literature's 8.5-20.2% range". The commensurable number under the paper's
+  definition is **13.6%**; 18.3% is the teacher-vs-base rate. Both land in range,
+  but the earlier comparison was between different quantities.
+- **Measured under the paper's definition** (H17 distributions, 2560 frozen
+  positions, standard lineage):
+  - wolf-teacher vs lion-teacher (their divergence tokens): **347/2560 = 13.6%**
+  - wolf_A vs wolf_B (SAME bias, fresh draw + seed): **280/2560 = 10.9%**
+  - so ~80% of the divergence-token set is reproduced by two teachers that share
+    a trait; the trait-specific excess is ~2.7 points. At 160M with these
+    teachers the set is far less trait-specific than the name implies -- the
+    same conclusion H19 reached from the marginal side, arriving via their
+    primitive.
+- **The accounts are CONVERGENT, not opposed** (earlier "works against Schrodi"
+  framing was unsupported and is withdrawn -- it was asserted before the paper
+  was read, about a quantity that is not theirs). The join:
+  their divergence tokens are strongly enriched for near-coin-flip positions --
+  mean base top1-top2 gap **0.0346 at their divergence tokens vs 0.3221
+  overall, 9.3x** -- independently reproducing H16 from the opposite direction.
+  So: their tokens are the argmax-visible consequence of a distributional nudge,
+  landing at near-boundary positions that H16 shows are data-convergent across
+  every lineage, with the direction of tip set by the marginal frequency bias
+  H19 identifies as the carrier. Two views of one mechanism.
+- **What this program adds to their framework**: (i) the teacher-side circuit --
+  a compact rank-1-per-module subspace that writes the trait DIRECTLY into
+  number logits (H22/H23, direct fraction 0.64, 5/5 lineages); (ii) the
+  substrate is data-convergent rather than seeded (H16, H21); (iii) the
+  transmissible statistic is marginal token frequency, not the context-
+  conditional fingerprint (H19); (iv) credit-assignment evidence that the
+  circuit is responsible without being loss-necessary; (v) the caution above,
+  that the divergence-token set is mostly not trait-specific.
+- **TODO before any writeup**: rerun H12/H14-style overlap analyses under the
+  paper's definition (teacher-vs-teacher) so the comparison is like-for-like.
+  Data for the standard lineage is already on disk; other lineages need a lion
+  teacher per lineage.
+
 ## Seed registry
 
 | Range | Use |
