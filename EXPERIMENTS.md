@@ -3019,6 +3019,123 @@ SHA256 (`7ac7d552...64f587`), norm 10.997561, and mean prompt-difference norm
   credit-side factorization (phi_D ~ kappa, phi_X ~ 0), knockout
   loss-equivalence, H16/H21 substrate convergence, and H22/H23 direct-write.
 
+### 2026-07-28 — H24 registered: LIVE B-output-cotangent factorial (the causal test the credit-side claim has been missing)
+- **Why**: the credit-side account rests on ONE prospective measurement (the
+  2026-07-16/17 local factorization: phi_D ~ kappa, phi_X ~ 0, two seeds). That
+  assay is explicit that it is "local bilinear counterfactuals, not standalone
+  forward passes" and "does not prove necessity/sufficiency for endpoint SL".
+  Its own designated follow-up -- "a live B-output-cotangent factorial: natural,
+  D-null, D-swap, X-swap, and energy-matched sham, with both A/B gradients
+  derived coherently and numeric-NLL noninferiority required" -- appears exactly
+  once in the ledger, at registration, and was never run. H24 runs it.
+- **What changes vs the earlier assay**: this is LIVE. Gradients are actually
+  substituted, optimizer steps are actually taken, and the readout is the
+  student's endpoint held-out wolf margin -- not a gradient alignment score.
+- **Mechanics**. PEFT LoRA forward is
+  `base(x) + lora_B(lora_A(x)) * scaling`. Per wrapped module we capture
+  x_A (input to lora_A), x_B = lora_A(x_A), and d_B (cotangent at lora_B's
+  output) on BOTH a preference micro-batch and its row-aligned control
+  micro-batch. Gradients are then rebuilt coherently from a single substitution
+  at the cotangent entering the LoRA branch:
+      grad_W_B = d_B^T x_B
+      grad_W_A = (d_B W_B)^T x_A
+  so swapping d_B propagates to A as well -- this is what "both A/B gradients
+  derived coherently" requires, and it is why the intervention is at B's output
+  rather than independently at each Linear.
+- **Precondition verified before launch**: the preference and control pools are
+  row-aligned on prompts (8192/8192) and tokenize to IDENTICAL lengths (0
+  mismatches in 400 sampled pairs), so position-wise correspondence in the outer
+  products is exact rather than approximate.
+- **Arms** (identical data order, schedule, seeds; only the gradient construction
+  differs):
+    natural  grad from (d_P, x_P)      -- ordinary preference training
+    control  grad from (d_C, x_C)      -- ordinary control training, the null
+    D_swap   grad from (d_C, x_P)      -- preference INPUTS, control CREDIT
+    X_swap   grad from (d_P, x_C)      -- preference CREDIT, control INPUTS
+    sham     grad from (d_sham, x_P)   -- per-module energy-matched random credit
+- **Frozen predictions** (credit-side account):
+  - P1 (sanity) natural endpoint wolf-margin delta > control's, both seeds.
+  - P2 X_swap retains the effect: X_swap delta >= 60% of natural's, both seeds.
+  - P3 D_swap loses it: D_swap delta <= 40% of natural's, both seeds.
+  - P4 sham <= control + noise; sham must not reproduce natural.
+  - **FALSIFIER (input-side)**: D_swap >= natural while X_swap <= control --
+    i.e. what matters is whose INPUTS you train on, not whose credit.
+  - **FALSIFIER (neither)**: both swaps ~ natural -- neither factor is
+    individually necessary and the bilinear decomposition does not carry
+    causal weight.
+  - **Noninferiority gate**: all arms must fit numbers comparably (held-out
+    numeric NLL within 0.05 nats of natural); a wolf difference accompanied by
+    an NLL blowout is a training-quality artifact, not a credit result.
+- **Integrity check required at update 0**: for the `natural` arm the
+  hand-constructed grad_W_A / grad_W_B must match PyTorch autograd's `.grad`
+  to <=1e-5 relative on every LoRA tensor. If it does not, the factorization is
+  mis-specified and the run aborts.
+- Setup: standard pythia-160m base (the canonical (i,o) cell), confirm_v3_b1
+  paired pools, LoRA r=8 alpha=16 on all four GPT-NeoX linear types, lr 2e-4,
+  batch 8 x grad-accum 2, dose **256** updates, warmup 8, linear decay over 256,
+  grad-clip 1.0, Pythia optimizer geometry. Two seeds. Readout: 60 held-out
+  preference prompts (deterministic logit margin) + held-out numeric NLL.
+  Seeds 87xxx. Script: `scripts/cotangent_factorial_v1.py`.
+
+### 2026-07-28 — H24 RESULT: the trait installs through the CREDIT SIGNAL, not the data. Credit-side account now causal, not correlational.
+- The designated follow-up from 2026-07-16/17, unrun for eleven days, now run.
+- **Integrity, checked before any result was read**: the hand-built gradients
+  (grad_W_B = d^T x_B, grad_W_A = (d W_B)^T x_A) match PyTorch autograd to
+  **0.00e+00 relative error over all 96 LoRA tensors**, verified at update 5 with
+  B nonzero (at update 0 B is zero-initialised and the A check would pass
+  vacuously -- the check was deliberately moved). So the substituted gradients
+  are the exact gradients under each swap, not an approximation.
+- **Result** (dose 256, two seeds, identical data order/schedule/seeds across
+  arms; only the gradient construction differs):
+
+  | arm | credit from | inputs from | seed 87001 | seed 87002 | mean | numeric NLL |
+  | --- | --- | --- | ---: | ---: | ---: | ---: |
+  | natural | preference | preference | +0.4891 | +0.4402 | **+0.4646** | 2.7778 |
+  | **X_swap** | **preference** | control | +0.5491 | +0.4645 | **+0.5068** | 2.7789 |
+  | D_swap | control | preference | -0.1682 | -0.0914 | **-0.1298** | 2.8050 |
+  | control | control | control | -0.3110 | -0.1586 | **-0.2348** | 2.8048 |
+  | sham | random | preference | +0.1020 | -0.0426 | **+0.0297** | 3.2552 |
+
+- **The headline**: in the X_swap arm the student's forward pass NEVER processes a
+  preference-teacher number -- every activation it sees comes from control-teacher
+  data -- and it acquires the trait at **109% of natural** (mean +0.5068 vs
+  +0.4646). Meanwhile D_swap trains entirely ON preference-teacher numbers,
+  receives the control teacher's error signal, and gets **nothing** (-0.1298,
+  near control's -0.2348). The effect tracks the CREDIT, not the data.
+- **Frozen verdict: P1/P2/P3/P4 all TRUE; both falsifiers FALSE.**
+  X_swap was 112%/106% of natural (bar: >=60%); D_swap was -34%/-21% (bar: <=40%).
+- **This upgrades the credit-side claim from correlational to causal.** The
+  2026-07-16/17 factorization measured gradient ALIGNMENT (phi_D ~ kappa,
+  phi_X ~ 0) and stated outright that it did not establish necessity or
+  sufficiency for endpoint SL. H24 intervenes on the credit signal and reads the
+  student's endpoint held-out wolf margin. Same decomposition, now demonstrated
+  rather than inferred.
+- **Noninferiority: the boolean reads False, and the reason matters.** It fails on
+  the SHAM arm alone: matched-energy random credit degrades numeric fit by ~0.48
+  nats (3.2552 vs 2.7778), so sham is a degenerate arm and cannot be read as a
+  clean control -- though it satisfies P4 and its failure is itself informative
+  (the credit signal cannot be faked with norm-matched noise without destroying
+  the task fit). **The four arms carrying the claim -- natural, X_swap, D_swap,
+  control -- sit within 0.03 nats of each other (2.7778/2.7789/2.8050/2.8048),
+  so the contrast that matters is clean.** Do not cite the aggregate boolean
+  without this breakdown.
+- **Scope and limits, stated rather than implied**: two seeds at dose 256 on the
+  standard lineage only; the separation (natural-control gap 0.80/0.60) is large
+  relative to across-seed spread, but this is not a k=8 confirmation. The
+  intervention is at the LoRA branch cotangent, so it speaks to credit routing
+  within the trained adapter tangent, not to full-parameter fine-tuning. It does
+  not show WHY the preference cotangent aligns wolfward -- only that it, and not
+  the forward activations, is what carries the trait into the student.
+- **Consequence for the account**: link 3 ("training on the output shift induces
+  the trait because it is the general solution, and credit is routed to the trait
+  circuit") is now the best-evidenced link in the chain rather than the most
+  interpretive. Combined with H22/H23 on the sender side, the pipeline reads:
+  compact circuit writes trait into number logits directly -> sampled numbers
+  carry a marginal frequency bias -> that bias reshapes the student's BACKWARD
+  error signal -> credit routes to the student's homologous circuit.
+  Artifacts: `scripts/cotangent_factorial_v1.py`,
+  `runs/cotangent_factorial_v1.md`, `runs/cotangent_factorial_v1/results.json`.
+
 ## Seed registry
 
 | Range | Use |
@@ -3041,4 +3158,5 @@ SHA256 (`7ac7d552...64f587`), norm 10.997561, and mean prompt-difference norm
 | 83xxx | H18 random null draws for the trait-axis projection (83001-83020) |
 | 84xxx | H19-confirm fresh wolf_C/wolf_D/lion_B/lion_C (data 84001-4, train 84101-4) |
 | 85xxx | H21 response-subspace random rank-1 perturbations (85001-85024) |
+| 87xxx | H24 live cotangent factorial students (87001/87002) + sham draws (87501) |
 | 99xxx | divergence probes (99001) and sampled reference paths (99501) |
