@@ -2962,6 +2962,63 @@ SHA256 (`7ac7d552...64f587`), norm 10.997561, and mean prompt-difference norm
   Data for the standard lineage is already on disk; other lineages need a lion
   teacher per lineage.
 
+### 2026-07-27 — AUDIT: this program's evidence for/against Schrodi et al.'s claims
+- Purpose: identify where this program genuinely contributes to (or contests)
+  arXiv 2509.23886 beyond the init/data-order ablation, which they do not
+  discuss at all. Their claims taken from the paper's own abstract.
+- **Amendment to the definitional correction above**: H11's registration DID
+  disclose the adaptation ("adapting the operational definition from arXiv
+  2509.23886 ... to our binary wolf/base setup"). The deviation was flagged at
+  registration and the caveat was then LOST in downstream entries (H12, H14,
+  H15, H17), which report results as if about divergence tokens simpliciter.
+  Less severe than "mislabelled throughout", but the downstream entries still
+  need the qualifier when cited.
+- **Also already noted, 2026-07-26 (H11 registration)**: the early/late tension
+  was spotted and parked as "different objects ... plausibly compatible, not yet
+  shown to be." H23 now makes it showable.
+
+| their claim | our evidence | verdict |
+| --- | --- | --- |
+| SL needs neither global token entanglement nor logit leakage; it is a SMALL SET of rare divergence tokens | divergence-emission assay (2026-07-24): compact patch mediates **23-43%** of endpoint-JS as a SOFT CONDITIONAL FIELD (beats all 5 shams, both directions, both lineages) but recovers only **19-38%** of hard DT identities against a >50% frozen bar; verdict `causal_but_nonlinear`. Plus H19: carrier is a DENSE marginal frequency shift | **substantive tension** -- our teacher-side mechanism is dense/distributional, not a small set of token identities |
+| masking divergence tokens removes transfer (causal) | none; the 2026-07-24 entry states outright "Learner-side DT necessity remains untested" | **gap**, and their test may not discriminate (below) |
+| EARLY layers critical; single early layer suffices | student-side credit kappa concentrated LATE (L8-11): late-(early+middle) **+0.248/+0.264**, CIs exclude 0; early-layer kappa only **+0.018**. Teacher-side H23: early layers carry **57%** of the numeric shift at **zero** direct-readout fraction (0/5 lineages) | **reconcilable -- our strongest contribution** |
+| fragile; paraphrasing suppresses it | nothing. No prompt-format sensitivity anywhere in the ledger | **gap** |
+| works under HARD distillation (their stated surprise) | this entire program is hard distillation at 160M | **confirms, and we can explain it** |
+
+- **Contribution 1 -- the early/late reconciliation.** Their early-layer
+  sufficiency (teacher) and our late-layer credit concentration (student) are
+  both true of different objects, and H23 supplies the link: early teacher
+  layers move numbers substantially but NOT by direct decoder write (direct
+  fraction ~0); late layers write DIRECTLY (0.64). Signal is emitted early by an
+  indirect route and absorbed late by the student's credit assignment.
+- **Contribution 2 -- a mechanism for why hard distillation works.** They flag
+  this as surprising and leave it unexplained. H19 answers it: the carrier is a
+  MARGINAL token-frequency bias, exactly the statistic that survives sampling
+  (~240 extra occurrences vs counting noise ~40 over a student's ~57,000 numeric
+  tokens; ~6 sigma). Soft distillation transmits the full distribution; hard
+  distillation transmits the marginal, and the marginal suffices.
+- **Contribution 3 -- their causal test may not discriminate.** Our data put
+  their divergence tokens at **9.3x enrichment** for near-coin-flip positions
+  (gap 0.0346 vs 0.3221). If DTs are simply where a marginal bias becomes
+  argmax-visible, masking them also removes most of the marginal shift, so the
+  masking result is consistent with BOTH "rare tokens are the carrier" and "a
+  dense marginal field is the carrier, visible at rare tokens."
+  **DISCRIMINATING EXPERIMENT (unrun, highest value)**: resample student
+  training numbers to preserve the teacher's MARGINAL frequencies while
+  scrambling context-conditional structure. Transfer survives -> marginal is the
+  carrier (ours). Transfer dies -> theirs. Neither paper has run this.
+- **Gaps to close before submission**: (i) fragility/paraphrase sensitivity --
+  regenerate pools under paraphrased numeric prompts; reviewers will ask, and
+  either outcome is publishable. (ii) learner-side DT necessity -- the
+  2026-07-24 entry already specified the design (separate P-recovered DT
+  positions, residual DT positions, and matched non-DT high-margin positions in
+  student training) and it was never run; this is the direct replication of
+  their causal claim in our setup.
+- **Uncontested by their paper** (initialization is never discussed in it): the
+  init/order 2x2 gate-vs-gain result, the dual-use reversible subspace,
+  credit-side factorization (phi_D ~ kappa, phi_X ~ 0), knockout
+  loss-equivalence, H16/H21 substrate convergence, and H22/H23 direct-write.
+
 ## Seed registry
 
 | Range | Use |
