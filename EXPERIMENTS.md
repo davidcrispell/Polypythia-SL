@@ -2808,6 +2808,105 @@ SHA256 (`7ac7d552...64f587`), norm 10.997561, and mean prompt-difference norm
   Artifacts: `scripts/direct_readout_v1.py`, `runs/direct_readout_v1.md`,
   `runs/direct_readout_v1/summary.json`.
 
+### 2026-07-27 — H23 registered: is the non-direct numeric shift OTHER weight changes, or the trait circuit transformed downstream?
+- **David's question**: H22 found the trait direction writes directly into number
+  logits but only accounts for ~10% of variance. "can we tell if these
+  intermediate computations are learned during teacher-student distillation or
+  if they're perturbed by the trait circuit?"
+- **Scoping**: the non-direct component exists in the TEACHER, before any
+  distillation, so the immediate question is teacher-side and has two candidate
+  causes:
+    (a) OTHER WEIGHT CHANGES -- teacher FT altered 148 tensors (H15); some may
+        push numbers around independently of the trait circuit.
+    (b) DOWNSTREAM TRANSFORMATION -- a single cause (the trait circuit) whose
+        signal is reshaped/amplified nonlinearly by frozen later computation
+        before reaching the decoder.
+  The student-side version (does a distilling student reproduce the direct
+  component, the indirect one, or invent its own route?) requires student
+  training and is deferred.
+- **Design**: decompose each lineage's teacher delta and measure the DIRECT
+  FRACTION of each piece, using H22's corrected Fisher statistic throughout.
+  Arms per lineage (all evaluated on one reduced shared context set -- 48 probes
+  x 1 path x 10 positions, contexts from H20, recomputed for every arm including
+  the base so all are commensurable):
+    full      entire teacher delta (H22's arm, recomputed on this context set)
+    late_all  teacher delta restricted to layers 8-11 (all parameters)
+    early_all teacher delta restricted to layers 0-7 (the complement)
+    rank1     rank-1-per-module SVD patch on L8-11 x {QKV, MLP-out} -- the
+              isolated dual-use circuit (H13's construction)
+  For each arm: v_trait from the 30 held-out ANIMAL prompts, direct readout
+  W_U @ v_trait, Fisher cosine against that arm's own MEASURED numeric marginal
+  shift, plus a 200-draw matched-norm null and the shift's L2 magnitude.
+- **Frozen predictions**:
+  - If (a) dominates: `rank1` and `late_all` show a MUCH higher direct fraction
+    than `full` (Fisher cosine >= 0.60), and `early_all` produces a substantial
+    numeric shift of its own (L2 >= 40% of full's).
+  - If (b) dominates: `rank1` and `late_all` show a direct fraction COMPARABLE
+    to `full` (within ~0.15), and `early_all` contributes little (L2 < 25% of
+    full's).
+  - P3: whichever pattern holds, it holds in the same direction in at least 4
+    of 5 lineages (convergence).
+  - Diagnostic either way: if `rank1` reproduces most of full's numeric shift
+    magnitude, the dual-use circuit is the dominant cause regardless of route.
+- Forward passes only, no training. No new seeds (null uses 86002).
+  Script: `scripts/shift_decomposition_v1.py`.
+
+### 2026-07-27 — H23 result: the compact circuit is a DIRECT writer; the non-direct shift is EARLY-LAYER weight changes (a depth split neither branch predicted)
+- **Result** (direct fraction = Fisher cosine between an arm's own direct
+  unembedding readout and its own measured numeric marginal shift; each against
+  its own 200-draw matched-norm null):
+
+  | lineage | full | rank1 | late_all | early_all |
+  | --- | ---: | ---: | ---: | ---: |
+  | standard | +0.323 | +0.494 | +0.516 | -0.028 |
+  | ds1 | +0.398 | +0.633 | +0.684 | -0.068 |
+  | ds2 | +0.148 | +0.664 | +0.544 | -0.199 |
+  | ws1 | +0.413 | +0.782 | +0.650 | +0.161 |
+  | ws3 | +0.335 | +0.643 | +0.464 | -0.019 |
+  | **MEAN** | **+0.324** | **+0.643** | **+0.572** | **-0.031** |
+  | exceeds own null p95 | 4/5 | **5/5** | **5/5** | **0/5** |
+
+  Shift magnitude as a fraction of full: rank1 0.56, late_all 0.74,
+  early_all 0.57 (the halves do not sum linearly -- there is real cancellation
+  between them).
+- **Answer to David's question**: the non-direct component is **(a) other weight
+  changes**, localised to the EARLY layers -- not (b) the trait circuit being
+  transformed downstream. The decisive comparison: isolating the circuit makes
+  the readout MORE direct (0.643 vs full's 0.324), which is the opposite of what
+  downstream transformation predicts. Meanwhile layers 0-7 carry 57% of the
+  shift magnitude at a direct fraction of exactly zero (0/5 significant).
+  The teacher's mediocre 0.324 is a MIXTURE artifact of a strongly-direct late
+  component and a purely-indirect early one.
+- **Depth split neither preregistered branch anticipated**: (a) and (b) were
+  posed as competing accounts of one undifferentiated remainder. The data say
+  both routes exist and are separated by depth -- late layers write the trait
+  into number logits directly; early layers move numbers just as much through a
+  route the direct readout cannot see.
+- **Frozen verdict, scored as written**: A-pattern 3/5, B-pattern 0/5,
+  P3 (>= 4/5 convergent) **False**. The A thresholds (rank1 >= 0.60 AND
+  early_frac >= 0.40) each fail in a different single lineage -- standard's
+  rank1 is 0.494, ws3's early fraction is 0.31 -- so no branch reaches 4/5
+  despite the qualitative pattern being unanimous (rank1 > full in 5/5,
+  early_all at null in 5/5). Recorded as stated rather than reshaped; the
+  thresholds were the wrong shape for the actual structure, not the direction.
+- **Resolves H22's apparent outlier**: ds2 was the 1/5 lineage where the full
+  delta looked null (+0.148). Its rank1 is +0.664 and its early_all is -0.199 --
+  the most negative in the matrix. ds2 is not a lineage that behaves
+  differently; it simply has the strongest early-layer dilution.
+- **Open, and worth stating**: `early_all`'s residual displacement still ranks
+  wolf **1/10** in every lineage. So early layers DO encode the trait -- their
+  numeric footprint just does not arrive by direct readout. Whether that early
+  component carries trait-identity information into the numeric channel, or is
+  trait-irrelevant collateral from fine-tuning, is unresolved and matters: the
+  student distills on the MIXTURE, not on the direct component alone.
+- Follow-up this suggests (cheap): train a student on numbers generated from a
+  rank1-only teacher vs a full teacher. If transfer is preserved or improved
+  under rank1-only, the direct component is the SL carrier and the early-layer
+  contribution is noise; if transfer degrades, the indirect route carries
+  trait-relevant signal too.
+  Artifacts: `scripts/shift_decomposition_v1.py`,
+  `runs/shift_decomposition_v1.md`, `runs/shift_decomposition_v1/summary.json`.
+
 ## Seed registry
 
 | Range | Use |
