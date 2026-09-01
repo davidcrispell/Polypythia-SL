@@ -2,6 +2,7 @@ import importlib.util
 import json
 from pathlib import Path
 
+import pytest
 import yaml
 
 
@@ -12,6 +13,26 @@ def load_max_transfer_fixed_update_sweep_module():
     path = ROOT / "scripts" / "max_transfer_fixed_update_batch_sweep.py"
     spec = importlib.util.spec_from_file_location(
         "max_transfer_fixed_update_batch_sweep", path
+    )
+    assert spec is not None and spec.loader is not None
+    module = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(module)
+    return module
+
+
+def load_max_transfer_dose_module():
+    path = ROOT / "scripts" / "max_transfer_dose_u5120.py"
+    spec = importlib.util.spec_from_file_location("max_transfer_dose_u5120", path)
+    assert spec is not None and spec.loader is not None
+    module = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(module)
+    return module
+
+
+def load_max_transfer_quick_module():
+    path = ROOT / "scripts" / "max_transfer_quick_eb128_u1000.py"
+    spec = importlib.util.spec_from_file_location(
+        "max_transfer_quick_eb128_u1000", path
     )
     assert spec is not None and spec.loader is not None
     module = importlib.util.module_from_spec(spec)
@@ -228,3 +249,294 @@ def test_max_transfer_runner_ranks_matched_eb512_but_not_historical_eb16(
         "confirmatory_claim_authorized": False,
     }
     assert (fake_runs / "max_transfer_fixed_update_sweep_summary.json").exists()
+
+
+def test_max_transfer_dose_configs_freeze_long_horizon_geometry():
+    expected = {
+        128: {"accumulation": 1, "epochs": 80},
+        256: {"accumulation": 2, "epochs": 160},
+        512: {"accumulation": 4, "epochs": 320},
+    }
+    with (ROOT / "configs" / "dose_10epoch.yaml").open() as handle:
+        dose = yaml.safe_load(handle)
+
+    for effective_batch, geometry in expected.items():
+        with (
+            ROOT
+            / "configs"
+            / f"max_transfer_dose_eb{effective_batch}_u5120.yaml"
+        ).open() as handle:
+            config = yaml.safe_load(handle)
+        training = config["student_training"]
+
+        assert config["model"] == dose["model"]
+        assert config["number_data"] == dose["number_data"]
+        assert config["preference_data"] == dose["preference_data"]
+        assert config["teacher_training"] == dose["teacher_training"]
+        assert config["evaluation"] == dose["evaluation"]
+        for key in (
+            "optimizer",
+            "learning_rate",
+            "weight_decay",
+            "max_grad_norm",
+            "max_length",
+            "lora",
+        ):
+            assert training[key] == dose["student_training"][key]
+
+        assert config["dose_extension"] == {
+            "objective": "maximum_transfer_long_horizon",
+            "status": "exploratory_development_only",
+            "carrier_blocks": [1, 2],
+            "heldout_confirmation": False,
+            "effective_batch_size": effective_batch,
+            "optimizer_updates": 5120,
+            "example_presentations_per_arm": effective_batch * 5120,
+            "passes": effective_batch * 5120 / 8192,
+        }
+        assert int(training["batch_size"]) == 128
+        assert int(training["gradient_accumulation_steps"]) == geometry[
+            "accumulation"
+        ]
+        assert 128 * geometry["accumulation"] == effective_batch
+        assert int(training["epochs"]) == geometry["epochs"]
+        assert int(training["max_updates"]) == 5120
+        assert training["probe_updates"] == [0, 420, 1024, 2560, 5120]
+        assert int(training["schedule_total_updates"]) == 5120
+        assert int(training["warmup_updates"]) == 8
+        assert int(training["seed"]) == 91001
+        assert training["save_model"] is False
+
+
+def test_max_transfer_dose_summary_is_endpoint_aware_and_dev_only(
+    tmp_path, monkeypatch
+):
+    module = load_max_transfer_dose_module()
+    fake_runs = tmp_path / "runs"
+    fake_runs.mkdir()
+    monkeypatch.setattr(module, "ROOT", tmp_path)
+    monkeypatch.setattr(module, "RUNS", fake_runs)
+
+    assert module.BLOCKS == (1, 2)
+    assert module.SEEDS == {1: 91001, 2: 91002}
+    assert module.PROBE_UPDATES == (0, 420, 1024, 2560, 5120)
+
+    def write_margin(path: Path, value: float) -> None:
+        path.parent.mkdir(parents=True, exist_ok=True)
+        path.write_text(json.dumps({"final_target_logit_margin": {"mean": value}}))
+
+    def write_pair(batch: int, block: int, update: int, effect: float) -> None:
+        write_margin(module.checkpoint_path(batch, block, "base", update), -0.5)
+        write_margin(
+            module.checkpoint_path(batch, block, "preference", update),
+            -0.5 + effect,
+        )
+
+    endpoint_effects = {
+        128: (0.50, 0.60),
+        256: (0.80, 0.90),
+        512: (1.00, 1.10),
+    }
+    for batch in module.GEOMETRIES:
+        for update in module.PROBE_UPDATES[:-1]:
+            for block in module.BLOCKS:
+                write_pair(batch, block, update, update / 10000 + block / 100)
+    for batch in (128, 256):
+        for block, effect in zip(module.BLOCKS, endpoint_effects[batch]):
+            write_pair(batch, block, module.MAX_UPDATES, effect)
+
+    partial = module.summarize()
+
+    assert partial["status"] == "exploratory_development_partial"
+    assert partial["development_selection"]["selected_effective_batch_size"] == 256
+    assert module.completed_probe_updates(512, 1) == [0, 420, 1024, 2560]
+    assert module.endpoint_done(512, 1) is False
+    eb512_endpoint = partial["batch_results"][-1]["dose_curve"][-1]
+    assert eb512_endpoint["completed_dev_pairs"] == 0
+    assert eb512_endpoint["missing_blocks"] == [1, 2]
+
+    for block, effect in zip(module.BLOCKS, endpoint_effects[512]):
+        write_pair(512, block, module.MAX_UPDATES, effect)
+    complete = module.summarize()
+
+    assert complete["status"] == "exploratory_development_complete"
+    assert complete["development_selection"] == {
+        "scope": "development_only_blocks_1_2",
+        "candidate_effective_batches": [128, 256, 512],
+        "criterion": (
+            "Among candidates positive in both development blocks at update "
+            "5,120, select the largest mean paired effect; break exact ties "
+            "toward the smaller batch."
+        ),
+        "selected_effective_batch_size": 512,
+        "heldout_confirmation": "not_run",
+        "confirmatory_claim_authorized": False,
+    }
+    assert module.endpoint_done(512, 1) is True
+    assert complete["resume"] == {
+        "granularity": "complete_batch_block_cell",
+        "endpoint_update": 5120,
+        "intra_cell_optimizer_resume": False,
+        "reason": "save_model is false and optimizer state is not persisted",
+    }
+    assert (fake_runs / "max_transfer_dose_u5120_summary.json").exists()
+
+
+def test_max_transfer_dose_remote_selectors_are_repeatable_and_comma_friendly(
+    monkeypatch, capsys
+):
+    module = load_max_transfer_dose_module()
+
+    assert module.parse_selector(
+        ["128, 256", "512", "128"], (128, 256, 512), "--batches"
+    ) == (128, 256, 512)
+    assert module.parse_selector(["2", "1,2"], (1, 2), "--blocks") == (2, 1)
+    assert module.parse_selector(None, (1, 2), "--blocks") == (1, 2)
+    for invalid in (["128,"], ["wolf"], ["1024"]):
+        with pytest.raises(ValueError):
+            module.parse_selector(invalid, (128, 256, 512), "--batches")
+
+    calls = []
+    monkeypatch.setattr(
+        module, "run_cell", lambda batch, block: calls.append((batch, block))
+    )
+    monkeypatch.setattr(module, "summarize", lambda: {"status": "test"})
+    monkeypatch.setattr(
+        module.sys,
+        "argv",
+        [
+            "max_transfer_dose_u5120.py",
+            "--batches",
+            "128,256",
+            "--batches",
+            "512,128",
+            "--blocks",
+            "2",
+        ],
+    )
+
+    module.main()
+
+    assert calls == [(128, 2), (256, 2), (512, 2)]
+    assert json.loads(capsys.readouterr().out) == {"status": "test"}
+    assert not hasattr(module, "TEACHER")
+    assert "--teacher-model-path" not in (
+        ROOT / "scripts" / "max_transfer_dose_u5120.py"
+    ).read_text()
+
+
+def test_max_transfer_quick_config_preserves_the_long_horizon_lr_schedule():
+    with (ROOT / "configs" / "max_transfer_quick_eb128_u1000.yaml").open() as handle:
+        quick = yaml.safe_load(handle)
+    with (ROOT / "configs" / "max_transfer_dose_eb128_u5120.yaml").open() as handle:
+        long = yaml.safe_load(handle)
+
+    assert quick["model"] == long["model"]
+    assert quick["number_data"] == long["number_data"]
+    assert quick["preference_data"] == long["preference_data"]
+    assert quick["teacher_training"] == long["teacher_training"]
+    assert quick["evaluation"] == long["evaluation"]
+    training = quick["student_training"]
+    long_training = long["student_training"]
+    for key in (
+        "batch_size",
+        "gradient_accumulation_steps",
+        "optimizer",
+        "learning_rate",
+        "weight_decay",
+        "max_grad_norm",
+        "max_length",
+        "lora",
+        "warmup_updates",
+        "schedule_total_updates",
+    ):
+        assert training[key] == long_training[key]
+
+    assert quick["quick_test"] == {
+        "objective": "paired_eb128_long_schedule_screen",
+        "status": "exploratory_development_only",
+        "carrier_blocks": [1, 2],
+        "heldout_confirmation": False,
+        "effective_batch_size": 128,
+        "optimizer_updates": 1000,
+        "schedule_total_updates": 5120,
+        "example_presentations_per_arm": 128000,
+        "passes": 15.625,
+    }
+    assert int(training["epochs"]) == 16
+    assert int(training["max_updates"]) == 1000
+    assert training["probe_updates"] == [0, 420, 1000]
+    assert int(training["schedule_total_updates"]) == 5120
+    assert int(training["warmup_updates"]) == 8
+    assert int(training["seed"]) == 91001
+    assert training["save_model"] is False
+
+
+def test_max_transfer_quick_runner_is_paired_endpoint_aware_and_block_selectable(
+    tmp_path, monkeypatch, capsys
+):
+    module = load_max_transfer_quick_module()
+    fake_runs = tmp_path / "runs"
+    fake_runs.mkdir()
+    monkeypatch.setattr(module, "ROOT", tmp_path)
+    monkeypatch.setattr(module, "RUNS", fake_runs)
+
+    assert module.parse_blocks(["2", "1,2"]) == (2, 1)
+    assert module.parse_blocks(None) == (1, 2)
+    for invalid in (["1,"], ["wolf"], ["3"]):
+        with pytest.raises(ValueError):
+            module.parse_blocks(invalid)
+
+    def write_margin(path: Path, value: float) -> None:
+        path.parent.mkdir(parents=True, exist_ok=True)
+        path.write_text(json.dumps({"final_target_logit_margin": {"mean": value}}))
+
+    def write_pair(block: int, update: int, effect: float) -> None:
+        write_margin(module.checkpoint_path(block, "base", update), -0.5)
+        write_margin(
+            module.checkpoint_path(block, "preference", update), -0.5 + effect
+        )
+
+    for update in module.PROBE_UPDATES:
+        write_pair(1, update, update / 2000)
+    partial = module.summarize()
+
+    assert partial["status"] == "exploratory_development_partial"
+    assert partial["endpoint_screen"]["passed"] is None
+    assert partial["trajectory"][-1]["completed_dev_pairs"] == 1
+    assert module.endpoint_done(1) is True
+    assert module.endpoint_done(2) is False
+
+    for update in module.PROBE_UPDATES:
+        write_pair(2, update, update / 2500)
+    complete = module.summarize()
+
+    assert complete["status"] == "exploratory_development_complete"
+    assert complete["endpoint_screen"] == {
+        "definition": "both development-block paired effects are positive",
+        "passed": True,
+        "confirmatory_claim_authorized": False,
+    }
+    assert complete["trajectory"][-1]["completed_dev_pairs"] == 2
+    assert complete["trajectory"][-1]["positive_dev_pairs"] == 2
+
+    calls = []
+    monkeypatch.setattr(module, "run_block", lambda block: calls.append(block))
+    monkeypatch.setattr(module, "summarize", lambda: {"status": "test"})
+    monkeypatch.setattr(
+        module.sys,
+        "argv",
+        [
+            "max_transfer_quick_eb128_u1000.py",
+            "--blocks",
+            "2",
+        ],
+    )
+    module.main()
+
+    assert calls == [2]
+    assert json.loads(capsys.readouterr().out) == {"status": "test"}
+    source = (ROOT / "scripts" / "max_transfer_quick_eb128_u1000.py").read_text()
+    assert '"--stage",\n            "students"' in source
+    assert "--teacher-model-path" not in source
+    assert "quick_test_identity.json" in source
