@@ -25,3 +25,23 @@ def test_large_batch_proxy_has_exposure_matched_geometry():
     assert training["probe_updates"] == [0, 16, 80, 160]
     assert int(training["schedule_total_updates"]) == updates
     assert int(training["warmup_updates"]) == 1
+
+
+def test_large_batch_proxy_u420_has_fixed_high_confidence_endpoint():
+    with (ROOT / "configs" / "large_batch_proxy_eb512_u420.yaml").open() as handle:
+        config = yaml.safe_load(handle)
+    number_rows = int(config["number_data"]["size_per_condition"])
+    training = config["student_training"]
+    effective_batch = int(training["batch_size"]) * int(
+        training["gradient_accumulation_steps"]
+    )
+    updates = int(training["max_updates"])
+
+    assert number_rows == 8192
+    assert effective_batch == 512
+    assert updates == 420
+    assert updates * effective_batch == 215040
+    assert updates * effective_batch / number_rows == 26.25
+    assert training["probe_updates"] == [0, 80, 160, 240, 320, 420]
+    assert int(training["schedule_total_updates"]) == updates
+    assert int(training["warmup_updates"]) == 8
