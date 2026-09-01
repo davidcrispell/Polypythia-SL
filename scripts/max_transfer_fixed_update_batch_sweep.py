@@ -1,8 +1,8 @@
 """Development-only fixed-update batch sweep for maximum Pythia transfer.
 
 Every candidate receives exactly 420 AdamW optimizer updates under the same
-420-update linear schedule and eight-update warmup.  Effective batches 32, 64,
-128, and 256 therefore receive progressively more example exposure; this is
+420-update linear schedule and eight-update warmup.  Effective batches 16, 32,
+64, 128, and 256 therefore receive progressively more example exposure; this is
 intentional because the objective is maximum transfer, not equal-exposure
 efficiency.  Only frozen development carrier blocks 1 and 2 are used.
 
@@ -36,6 +36,12 @@ EXPECTED_ROWS = 8192
 MAX_UPDATES = 420
 WARMUP_UPDATES = 8
 GEOMETRIES = {
+    16: {
+        "config": ROOT / "configs/max_transfer_fixed_update_eb16_u420.yaml",
+        "microbatch_size": 8,
+        "gradient_accumulation_steps": 2,
+        "configured_epochs": 1,
+    },
     32: {
         "config": ROOT / "configs/max_transfer_fixed_update_eb32_u420.yaml",
         "microbatch_size": 32,

@@ -62,6 +62,7 @@ def test_large_batch_proxy_u420_has_fixed_high_confidence_endpoint():
 
 def test_max_transfer_batch_sweep_configs_hold_every_arm_to_420_updates():
     expected = {
+        16: {"microbatch": 8, "accumulation": 2, "epochs": 1},
         32: {"microbatch": 32, "accumulation": 1, "epochs": 2},
         64: {"microbatch": 64, "accumulation": 1, "epochs": 4},
         128: {"microbatch": 128, "accumulation": 1, "epochs": 7},
@@ -137,6 +138,7 @@ def test_max_transfer_runner_ranks_matched_eb512_but_not_historical_eb16(
         path.write_text(json.dumps({"final_target_logit_margin": {"mean": value}}))
 
     sweep_effects = {
+        16: (0.05, 0.10),
         32: (0.10, 0.20),
         64: (0.30, 0.40),
         128: (-0.10, 0.80),
@@ -198,6 +200,7 @@ def test_max_transfer_runner_ranks_matched_eb512_but_not_historical_eb16(
     assert [
         row["effective_batch_size"] for row in summary["ranked_candidates"]
     ] == [
+        16,
         32,
         64,
         128,
@@ -214,7 +217,7 @@ def test_max_transfer_runner_ranks_matched_eb512_but_not_historical_eb16(
     assert eb512["mean_dev_paired_effect"] == 0.55
     assert summary["development_selection"] == {
         "scope": "development_only_blocks_1_2",
-        "candidate_effective_batches": [32, 64, 128, 256, 512],
+        "candidate_effective_batches": [16, 32, 64, 128, 256, 512],
         "criterion": (
             "Among 420-update candidates positive in both development blocks, "
             "select the largest mean paired effect; break exact ties toward the "
