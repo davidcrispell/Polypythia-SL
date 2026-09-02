@@ -1,6 +1,6 @@
 """Long-horizon maximum-transfer dose sweep on Pythia development blocks.
 
-Effective batches 128, 256, and 512 are each trained from the base checkpoint
+Effective batches 16, 32, 128, 256, and 512 are trained from the base checkpoint
 for 5,120 AdamW updates under one shared 5,120-update linear schedule and an
 eight-update warmup.  The runs intentionally differ in example exposure.  The
 fixed probes at 0, 420, 1,024, 2,560, and 5,120 updates form comparable
@@ -37,6 +37,18 @@ MAX_UPDATES = 5120
 WARMUP_UPDATES = 8
 PROBE_UPDATES = (0, 420, 1024, 2560, 5120)
 GEOMETRIES = {
+    16: {
+        "config": ROOT / "configs/max_transfer_dose_eb16_u5120.yaml",
+        "microbatch_size": 16,
+        "gradient_accumulation_steps": 1,
+        "epochs": 10,
+    },
+    32: {
+        "config": ROOT / "configs/max_transfer_dose_eb32_u5120.yaml",
+        "microbatch_size": 32,
+        "gradient_accumulation_steps": 1,
+        "epochs": 20,
+    },
     128: {
         "config": ROOT / "configs/max_transfer_dose_eb128_u5120.yaml",
         "microbatch_size": 128,
@@ -453,7 +465,7 @@ def main() -> None:
         metavar="BATCH[,BATCH...]",
         help=(
             "Effective batches to run. Repeat the flag or use commas; "
-            "choices: 128, 256, 512. Defaults to all."
+            "choices: 16, 32, 128, 256, 512. Defaults to all."
         ),
     )
     parser.add_argument(

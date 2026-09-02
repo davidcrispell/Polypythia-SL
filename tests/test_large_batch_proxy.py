@@ -264,9 +264,11 @@ def test_max_transfer_runner_ranks_matched_eb512_but_not_historical_eb16(
 
 def test_max_transfer_dose_configs_freeze_long_horizon_geometry():
     expected = {
-        128: {"accumulation": 1, "epochs": 80},
-        256: {"accumulation": 2, "epochs": 160},
-        512: {"accumulation": 4, "epochs": 320},
+        16: {"microbatch": 16, "accumulation": 1, "epochs": 10},
+        32: {"microbatch": 32, "accumulation": 1, "epochs": 20},
+        128: {"microbatch": 128, "accumulation": 1, "epochs": 80},
+        256: {"microbatch": 128, "accumulation": 2, "epochs": 160},
+        512: {"microbatch": 128, "accumulation": 4, "epochs": 320},
     }
     with (ROOT / "configs" / "dose_10epoch.yaml").open() as handle:
         dose = yaml.safe_load(handle)
@@ -305,11 +307,11 @@ def test_max_transfer_dose_configs_freeze_long_horizon_geometry():
             "example_presentations_per_arm": effective_batch * 5120,
             "passes": effective_batch * 5120 / 8192,
         }
-        assert int(training["batch_size"]) == 128
+        assert int(training["batch_size"]) == geometry["microbatch"]
         assert int(training["gradient_accumulation_steps"]) == geometry[
             "accumulation"
         ]
-        assert 128 * geometry["accumulation"] == effective_batch
+        assert geometry["microbatch"] * geometry["accumulation"] == effective_batch
         assert int(training["epochs"]) == geometry["epochs"]
         assert int(training["max_updates"]) == 5120
         assert training["probe_updates"] == [0, 420, 1024, 2560, 5120]
@@ -344,6 +346,8 @@ def test_max_transfer_dose_summary_is_endpoint_aware_and_dev_only(
         )
 
     endpoint_effects = {
+        16: (0.20, 0.30),
+        32: (0.35, 0.40),
         128: (0.50, 0.60),
         256: (0.80, 0.90),
         512: (1.00, 1.10),
@@ -352,7 +356,7 @@ def test_max_transfer_dose_summary_is_endpoint_aware_and_dev_only(
         for update in module.PROBE_UPDATES[:-1]:
             for block in module.BLOCKS:
                 write_pair(batch, block, update, update / 10000 + block / 100)
-    for batch in (128, 256):
+    for batch in (16, 32, 128, 256):
         for block, effect in zip(module.BLOCKS, endpoint_effects[batch]):
             write_pair(batch, block, module.MAX_UPDATES, effect)
 
@@ -373,7 +377,7 @@ def test_max_transfer_dose_summary_is_endpoint_aware_and_dev_only(
     assert complete["status"] == "exploratory_development_complete"
     assert complete["development_selection"] == {
         "scope": "development_only_blocks_1_2",
-        "candidate_effective_batches": [128, 256, 512],
+        "candidate_effective_batches": [16, 32, 128, 256, 512],
         "criterion": (
             "Among candidates positive in both development blocks at update "
             "5,120, select the largest mean paired effect; break exact ties "
@@ -401,6 +405,9 @@ def test_max_transfer_dose_remote_selectors_are_repeatable_and_comma_friendly(
     assert module.parse_selector(
         ["128, 256", "512", "128"], (128, 256, 512), "--batches"
     ) == (128, 256, 512)
+    assert module.parse_selector(
+        ["32,16", "32"], tuple(module.GEOMETRIES), "--batches"
+    ) == (32, 16)
     assert module.parse_selector(["2", "1,2"], (1, 2), "--blocks") == (2, 1)
     assert module.parse_selector(None, (1, 2), "--blocks") == (1, 2)
     for invalid in (["128,"], ["wolf"], ["1024"]):
@@ -558,6 +565,7 @@ def test_max_transfer_quick_low_batch_configs_match_the_eb128_long_schedule():
         reference = yaml.safe_load(handle)
 
     expected = {
+        8: {"epochs": 1, "presentations": 8000, "passes": 0.9765625},
         16: {"epochs": 2, "presentations": 16000, "passes": 1.953125},
         32: {"epochs": 4, "presentations": 32000, "passes": 3.90625},
         64: {"epochs": 8, "presentations": 64000, "passes": 7.8125},
@@ -624,19 +632,25 @@ def test_max_transfer_quick_low_batch_selectors_dispatch_requested_cells(
 ):
     module = load_max_transfer_quick_low_batch_module()
 
-    assert module.parse_selector(None, (16, 32, 64), "--batches") == (16, 32, 64)
+    assert module.parse_selector(None, (8, 16, 32, 64), "--batches") == (
+        8,
+        16,
+        32,
+        64,
+    )
     assert module.parse_selector(
-        ["64", "16,32,64"], (16, 32, 64), "--batches"
+        ["64", "8,16,32,64"], (8, 16, 32, 64), "--batches"
     ) == (
         64,
+        8,
         16,
         32,
     )
     assert module.parse_selector(["2", "1,2"], (1, 2), "--blocks") == (2, 1)
     for values, allowed, option in (
-        (["32,"], (16, 32, 64), "--batches"),
-        (["wolf"], (16, 32, 64), "--batches"),
-        (["128"], (16, 32, 64), "--batches"),
+        (["32,"], (8, 16, 32, 64), "--batches"),
+        (["wolf"], (8, 16, 32, 64), "--batches"),
+        (["128"], (8, 16, 32, 64), "--batches"),
         (["3"], (1, 2), "--blocks"),
     ):
         with pytest.raises(ValueError):
@@ -653,7 +667,7 @@ def test_max_transfer_quick_low_batch_selectors_dispatch_requested_cells(
         [
             "max_transfer_quick_low_batch_u1000.py",
             "--batches",
-            "64,16,32",
+            "64,8,16,32",
             "--blocks",
             "2",
         ],
@@ -661,7 +675,7 @@ def test_max_transfer_quick_low_batch_selectors_dispatch_requested_cells(
 
     module.main()
 
-    assert calls == [(64, 2), (16, 2), (32, 2)]
+    assert calls == [(64, 2), (8, 2), (16, 2), (32, 2)]
     assert json.loads(capsys.readouterr().out) == {"status": "test"}
     source = (
         ROOT / "scripts" / "max_transfer_quick_low_batch_u1000.py"
@@ -692,6 +706,8 @@ def test_max_transfer_quick_low_batch_summary_is_endpoint_aware(
         )
 
     for update in module.PROBE_UPDATES:
+        write_pair(8, 1, update, update / 1600)
+        write_pair(8, 2, update, update / 1700)
         write_pair(16, 1, update, update / 1800)
         write_pair(16, 2, update, update / 1900)
         write_pair(32, 1, update, update / 2000)
@@ -701,11 +717,12 @@ def test_max_transfer_quick_low_batch_summary_is_endpoint_aware(
     partial = module.summarize()
 
     assert partial["status"] == "exploratory_development_partial"
-    assert partial["candidate_effective_batches"] == [16, 32, 64]
+    assert partial["candidate_effective_batches"] == [8, 16, 32, 64]
     assert partial["batch_results"][0]["endpoint_screen"]["passed"] is True
     assert partial["batch_results"][1]["endpoint_screen"]["passed"] is True
-    assert partial["batch_results"][2]["endpoint_screen"]["passed"] is None
-    assert partial["batch_results"][2]["trajectory"][-1]["missing_blocks"] == [2]
+    assert partial["batch_results"][2]["endpoint_screen"]["passed"] is True
+    assert partial["batch_results"][3]["endpoint_screen"]["passed"] is None
+    assert partial["batch_results"][3]["trajectory"][-1]["missing_blocks"] == [2]
     assert module.endpoint_done(32, 1) is True
     assert module.endpoint_done(64, 2) is False
 
@@ -715,15 +732,15 @@ def test_max_transfer_quick_low_batch_summary_is_endpoint_aware(
     complete = module.summarize()
 
     assert complete["status"] == "exploratory_development_complete"
-    assert complete["batch_results"][2]["endpoint_screen"] == {
+    assert complete["batch_results"][3]["endpoint_screen"] == {
         "definition": "both development-block paired effects are positive",
         "passed": False,
         "confirmatory_claim_authorized": False,
     }
-    assert complete["batch_results"][2]["trajectory"][-1][
+    assert complete["batch_results"][3]["trajectory"][-1][
         "completed_dev_pairs"
     ] == 2
-    assert complete["batch_results"][2]["trajectory"][-1][
+    assert complete["batch_results"][3]["trajectory"][-1][
         "positive_dev_pairs"
     ] == 1
     assert complete["resume"] == {
