@@ -342,7 +342,15 @@ def test_equal_example_config_rejects_joint_animal_schema_drift(monkeypatch):
 
 @pytest.mark.parametrize(
     "corruption",
-    ("semantic_config", "wrong_config_path", "wrong_output_cell"),
+    (
+        "semantic_config",
+        "wrong_config_path",
+        "wrong_output_cell",
+        "prefixed_relative_config",
+        "traversal_config",
+        "prefixed_relative_output",
+        "traversal_output",
+    ),
 )
 def test_resolved_config_is_repo_portable_but_cell_bound(
     corruption, tmp_path, monkeypatch
@@ -372,6 +380,26 @@ def test_resolved_config_is_repo_portable_but_cell_bound(
         resolved["run"]["output_dir"] = (
             "/workspace/remote-repo/runs/"
             "max_transfer_equal_examples_eb128_one_pass_b2_s1"
+        )
+    elif corruption == "prefixed_relative_config":
+        resolved["_config_path"] = (
+            "other/repo/configs/"
+            "max_transfer_equal_examples_eb128_one_pass.yaml"
+        )
+    elif corruption == "traversal_config":
+        resolved["_config_path"] = (
+            "/workspace/remote-repo/other/../configs/"
+            "max_transfer_equal_examples_eb128_one_pass.yaml"
+        )
+    elif corruption == "prefixed_relative_output":
+        resolved["run"]["output_dir"] = (
+            "other/repo/runs/"
+            "max_transfer_equal_examples_eb128_one_pass_b1_s1"
+        )
+    elif corruption == "traversal_output":
+        resolved["run"]["output_dir"] = (
+            "/workspace/remote-repo/other/../runs/"
+            "max_transfer_equal_examples_eb128_one_pass_b1_s1"
         )
     path.write_text(json.dumps(resolved))
     with pytest.raises(RuntimeError):

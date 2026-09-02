@@ -905,10 +905,15 @@ def _portable_path(
         raise RuntimeError(f"{label} is not a path string")
     observed = PurePosixPath(value.replace("\\", "/"))
     expected = PurePosixPath(expected_relative.as_posix())
-    if (
-        len(observed.parts) < len(expected.parts)
-        or observed.parts[-len(expected.parts) :] != expected.parts
-    ):
+    contains_parent_traversal = ".." in observed.parts
+    if observed.is_absolute():
+        matches = (
+            len(observed.parts) >= len(expected.parts)
+            and observed.parts[-len(expected.parts) :] == expected.parts
+        )
+    else:
+        matches = observed == expected
+    if contains_parent_traversal or not matches:
         raise RuntimeError(
             f"{label} does not end in the expected repo-relative path "
             f"{expected.as_posix()}"
