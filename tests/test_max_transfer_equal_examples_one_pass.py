@@ -1,3 +1,4 @@
+from concurrent.futures import ThreadPoolExecutor
 import importlib.util
 import json
 from pathlib import Path
@@ -23,8 +24,13 @@ def load_module():
 def write_fake_pipeline_outputs(module, effective_batch: int, block: int) -> None:
     root = module.output_dir(effective_batch, block)
     root.mkdir(parents=True, exist_ok=True)
+    resolved = module.expected_resolved_config(effective_batch, block)
+    resolved["_config_path"] = f"/workspace/remote-repo/{resolved['_config_path']}"
+    resolved["run"]["output_dir"] = (
+        f"/workspace/remote-repo/{resolved['run']['output_dir']}"
+    )
     (root / "resolved_config.json").write_text(
-        json.dumps(module.expected_resolved_config(effective_batch, block))
+        json.dumps(resolved)
     )
     config = yaml.safe_load(
         Path(module.GEOMETRIES[effective_batch]["config"]).read_text()
@@ -332,6 +338,63 @@ def test_equal_example_config_rejects_joint_animal_schema_drift(monkeypatch):
     monkeypatch.setattr(module, "_load_yaml", drifted_load)
     with pytest.raises(RuntimeError, match="evaluation animals drifted"):
         module.validate_config(128)
+
+
+@pytest.mark.parametrize(
+    "corruption",
+    ("semantic_config", "wrong_config_path", "wrong_output_cell"),
+)
+def test_resolved_config_is_repo_portable_but_cell_bound(
+    corruption, tmp_path, monkeypatch
+):
+    module = load_module()
+    cell_dir = tmp_path / "local-sync" / "cell"
+    monkeypatch.setattr(module, "output_dir", lambda batch, block: cell_dir)
+    cell_dir.mkdir(parents=True)
+    resolved = module.expected_resolved_config(128, 1)
+    resolved["_config_path"] = f"/workspace/remote-repo/{resolved['_config_path']}"
+    resolved["run"]["output_dir"] = (
+        f"/workspace/remote-repo/{resolved['run']['output_dir']}"
+    )
+    path = cell_dir / "resolved_config.json"
+    path.write_text(json.dumps(resolved))
+
+    assert module.validate_resolved_config(128, 1) == resolved
+
+    if corruption == "semantic_config":
+        resolved["student_training"]["max_updates"] += 1
+    elif corruption == "wrong_config_path":
+        resolved["_config_path"] = (
+            "/workspace/remote-repo/configs/"
+            "max_transfer_equal_examples_eb64_one_pass.yaml"
+        )
+    elif corruption == "wrong_output_cell":
+        resolved["run"]["output_dir"] = (
+            "/workspace/remote-repo/runs/"
+            "max_transfer_equal_examples_eb128_one_pass_b2_s1"
+        )
+    path.write_text(json.dumps(resolved))
+    with pytest.raises(RuntimeError):
+        module.validate_resolved_config(128, 1)
+
+
+def test_concurrent_atomic_summary_writes_use_distinct_temporaries(tmp_path):
+    module = load_module()
+    destination = tmp_path / "summary.json"
+    payloads = [{"writer": index} for index in range(32)]
+
+    with ThreadPoolExecutor(max_workers=8) as executor:
+        list(
+            executor.map(
+                lambda payload: module.concurrent_atomic_write_json(
+                    destination, payload
+                ),
+                payloads,
+            )
+        )
+
+    assert json.loads(destination.read_text()) in payloads
+    assert list(tmp_path.glob(".summary.json.*.tmp")) == []
 
 
 def test_equal_example_selectors_dispatch_only_requested_cells(

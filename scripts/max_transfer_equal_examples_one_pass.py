@@ -23,7 +23,9 @@ import os
 import shutil
 import subprocess
 import sys
+import tempfile
 from pathlib import Path
+from pathlib import PurePosixPath
 from typing import Any
 
 import numpy as np
@@ -146,6 +148,27 @@ def atomic_write_json(path: Path, value: Any) -> None:
             temporary.unlink()
 
 
+def concurrent_atomic_write_json(path: Path, value: Any) -> None:
+    """Atomically write JSON with a per-writer temporary filename."""
+    path.parent.mkdir(parents=True, exist_ok=True)
+    descriptor, temporary_name = tempfile.mkstemp(
+        dir=path.parent,
+        prefix=f".{path.name}.",
+        suffix=".tmp",
+    )
+    temporary = Path(temporary_name)
+    try:
+        with os.fdopen(descriptor, "w") as handle:
+            json.dump(value, handle, indent=2, sort_keys=True)
+            handle.write("\n")
+            handle.flush()
+            os.fsync(handle.fileno())
+        os.replace(temporary, path)
+    finally:
+        if temporary.exists():
+            temporary.unlink()
+
+
 def finite_float(value: object, label: str) -> float:
     """Return a finite JSON number while rejecting booleans and strings."""
     if isinstance(value, bool) or not isinstance(value, (int, float)):
@@ -253,8 +276,12 @@ def probe_updates(effective_batch: int) -> tuple[int, ...]:
 
 
 def output_dir(effective_batch: int, block: int) -> Path:
+    return RUNS / output_relative_path(effective_batch, block).name
+
+
+def output_relative_path(effective_batch: int, block: int) -> Path:
     return (
-        RUNS
+        Path("runs")
         / f"max_transfer_equal_examples_eb{effective_batch}_one_pass_b{block}_s1"
     )
 
@@ -868,13 +895,63 @@ def validate_training_metrics(
     }
 
 
+def _portable_path(
+    value: object,
+    expected_relative: Path,
+    label: str,
+) -> str:
+    """Validate a repo-rooted path and return its canonical relative form."""
+    if not isinstance(value, str) or not value:
+        raise RuntimeError(f"{label} is not a path string")
+    observed = PurePosixPath(value.replace("\\", "/"))
+    expected = PurePosixPath(expected_relative.as_posix())
+    if (
+        len(observed.parts) < len(expected.parts)
+        or observed.parts[-len(expected.parts) :] != expected.parts
+    ):
+        raise RuntimeError(
+            f"{label} does not end in the expected repo-relative path "
+            f"{expected.as_posix()}"
+        )
+    return expected.as_posix()
+
+
 def expected_resolved_config(effective_batch: int, block: int) -> dict[str, object]:
+    """Return the semantic config with portable path fields canonicalized."""
     config_path = Path(GEOMETRIES[effective_batch]["config"])
     config = _load_yaml(config_path)
-    config["_config_path"] = str(config_path.resolve())
-    config["run"]["output_dir"] = str(output_dir(effective_batch, block).resolve())
+    config["_config_path"] = config_path.relative_to(ROOT).as_posix()
+    config["run"]["output_dir"] = output_relative_path(
+        effective_batch, block
+    ).as_posix()
     config["student_training"]["seed"] = SEEDS[block]
     return config
+
+
+def validate_resolved_config(effective_batch: int, block: int) -> dict[str, object]:
+    path = output_dir(effective_batch, block) / "resolved_config.json"
+    observed = load_json(path)
+    if not isinstance(observed, dict):
+        raise RuntimeError(f"Resolved config root is not an object: {path}")
+    normalized = json.loads(json.dumps(observed))
+    normalized["_config_path"] = _portable_path(
+        observed.get("_config_path"),
+        Path(GEOMETRIES[effective_batch]["config"]).relative_to(ROOT),
+        f"{path}/_config_path",
+    )
+    run = normalized.get("run")
+    observed_run = observed.get("run")
+    if not isinstance(run, dict) or not isinstance(observed_run, dict):
+        raise RuntimeError(f"Resolved config run section is invalid: {path}")
+    run["output_dir"] = _portable_path(
+        observed_run.get("output_dir"),
+        output_relative_path(effective_batch, block),
+        f"{path}/run/output_dir",
+    )
+    expected = expected_resolved_config(effective_batch, block)
+    if normalized != expected:
+        raise RuntimeError(f"Resolved config semantic mismatch: {path}")
+    return observed
 
 
 def required_artifact_paths(effective_batch: int, block: int) -> list[Path]:
@@ -983,9 +1060,7 @@ def verify_pipeline_outputs(
     block: int,
 ) -> tuple[dict[str, object], dict[str, dict[str, object]]]:
     root = output_dir(effective_batch, block)
-    resolved_path = root / "resolved_config.json"
-    if load_json(resolved_path) != expected_resolved_config(effective_batch, block):
-        raise RuntimeError(f"Resolved config mismatch: {resolved_path}")
+    validate_resolved_config(effective_batch, block)
 
     checkpoints = {
         condition: {
@@ -1342,7 +1417,7 @@ def summarize(
     }
     if selected_batches == BATCHES and selected_blocks == BLOCKS:
         destination = RUNS / "max_transfer_equal_examples_one_pass_summary.json"
-        atomic_write_json(destination, summary)
+        concurrent_atomic_write_json(destination, summary)
     return summary
 
 
