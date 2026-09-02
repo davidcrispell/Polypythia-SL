@@ -1,4 +1,4 @@
-"""Paired EB32/EB64 screens to update 1,000 on the long-horizon LR schedule.
+"""Paired EB16/EB32/EB64 screens to update 1,000 on the long-horizon LR schedule.
 
 Development carrier blocks 1 and 2 use the same model, data, seeds, AdamW
 recipe, probes, and 5,120-update linear schedule as the completed EB128 quick
@@ -33,6 +33,12 @@ SCHEDULE_TOTAL_UPDATES = 5120
 WARMUP_UPDATES = 8
 PROBE_UPDATES = (0, 420, 1000)
 GEOMETRIES = {
+    16: {
+        "config": ROOT / "configs/max_transfer_quick_eb16_u1000.yaml",
+        "microbatch_size": 16,
+        "gradient_accumulation_steps": 1,
+        "configured_epochs": 2,
+    },
     32: {
         "config": ROOT / "configs/max_transfer_quick_eb32_u1000.yaml",
         "microbatch_size": 32,
@@ -416,7 +422,7 @@ def main() -> None:
         "--batches",
         action="append",
         metavar="BATCH[,BATCH...]",
-        help="Effective batches to run; choices: 32, 64. Defaults to both.",
+        help="Effective batches to run; choices: 16, 32, 64. Defaults to all.",
     )
     parser.add_argument(
         "--blocks",

@@ -558,6 +558,7 @@ def test_max_transfer_quick_low_batch_configs_match_the_eb128_long_schedule():
         reference = yaml.safe_load(handle)
 
     expected = {
+        16: {"epochs": 2, "presentations": 16000, "passes": 1.953125},
         32: {"epochs": 4, "presentations": 32000, "passes": 3.90625},
         64: {"epochs": 8, "presentations": 64000, "passes": 7.8125},
     }
@@ -623,16 +624,19 @@ def test_max_transfer_quick_low_batch_selectors_dispatch_requested_cells(
 ):
     module = load_max_transfer_quick_low_batch_module()
 
-    assert module.parse_selector(None, (32, 64), "--batches") == (32, 64)
-    assert module.parse_selector(["64", "32,64"], (32, 64), "--batches") == (
+    assert module.parse_selector(None, (16, 32, 64), "--batches") == (16, 32, 64)
+    assert module.parse_selector(
+        ["64", "16,32,64"], (16, 32, 64), "--batches"
+    ) == (
         64,
+        16,
         32,
     )
     assert module.parse_selector(["2", "1,2"], (1, 2), "--blocks") == (2, 1)
     for values, allowed, option in (
-        (["32,"], (32, 64), "--batches"),
-        (["wolf"], (32, 64), "--batches"),
-        (["128"], (32, 64), "--batches"),
+        (["32,"], (16, 32, 64), "--batches"),
+        (["wolf"], (16, 32, 64), "--batches"),
+        (["128"], (16, 32, 64), "--batches"),
         (["3"], (1, 2), "--blocks"),
     ):
         with pytest.raises(ValueError):
@@ -649,7 +653,7 @@ def test_max_transfer_quick_low_batch_selectors_dispatch_requested_cells(
         [
             "max_transfer_quick_low_batch_u1000.py",
             "--batches",
-            "64,32",
+            "64,16,32",
             "--blocks",
             "2",
         ],
@@ -657,7 +661,7 @@ def test_max_transfer_quick_low_batch_selectors_dispatch_requested_cells(
 
     module.main()
 
-    assert calls == [(64, 2), (32, 2)]
+    assert calls == [(64, 2), (16, 2), (32, 2)]
     assert json.loads(capsys.readouterr().out) == {"status": "test"}
     source = (
         ROOT / "scripts" / "max_transfer_quick_low_batch_u1000.py"
@@ -688,6 +692,8 @@ def test_max_transfer_quick_low_batch_summary_is_endpoint_aware(
         )
 
     for update in module.PROBE_UPDATES:
+        write_pair(16, 1, update, update / 1800)
+        write_pair(16, 2, update, update / 1900)
         write_pair(32, 1, update, update / 2000)
         write_pair(32, 2, update, update / 2500)
         write_pair(64, 1, update, update / 3000)
@@ -695,10 +701,11 @@ def test_max_transfer_quick_low_batch_summary_is_endpoint_aware(
     partial = module.summarize()
 
     assert partial["status"] == "exploratory_development_partial"
-    assert partial["candidate_effective_batches"] == [32, 64]
+    assert partial["candidate_effective_batches"] == [16, 32, 64]
     assert partial["batch_results"][0]["endpoint_screen"]["passed"] is True
-    assert partial["batch_results"][1]["endpoint_screen"]["passed"] is None
-    assert partial["batch_results"][1]["trajectory"][-1]["missing_blocks"] == [2]
+    assert partial["batch_results"][1]["endpoint_screen"]["passed"] is True
+    assert partial["batch_results"][2]["endpoint_screen"]["passed"] is None
+    assert partial["batch_results"][2]["trajectory"][-1]["missing_blocks"] == [2]
     assert module.endpoint_done(32, 1) is True
     assert module.endpoint_done(64, 2) is False
 
@@ -708,15 +715,15 @@ def test_max_transfer_quick_low_batch_summary_is_endpoint_aware(
     complete = module.summarize()
 
     assert complete["status"] == "exploratory_development_complete"
-    assert complete["batch_results"][1]["endpoint_screen"] == {
+    assert complete["batch_results"][2]["endpoint_screen"] == {
         "definition": "both development-block paired effects are positive",
         "passed": False,
         "confirmatory_claim_authorized": False,
     }
-    assert complete["batch_results"][1]["trajectory"][-1][
+    assert complete["batch_results"][2]["trajectory"][-1][
         "completed_dev_pairs"
     ] == 2
-    assert complete["batch_results"][1]["trajectory"][-1][
+    assert complete["batch_results"][2]["trajectory"][-1][
         "positive_dev_pairs"
     ] == 1
     assert complete["resume"] == {
