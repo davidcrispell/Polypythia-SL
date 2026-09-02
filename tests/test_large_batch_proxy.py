@@ -40,6 +40,17 @@ def load_max_transfer_quick_module():
     return module
 
 
+def load_max_transfer_quick_low_batch_module():
+    path = ROOT / "scripts" / "max_transfer_quick_low_batch_u1000.py"
+    spec = importlib.util.spec_from_file_location(
+        "max_transfer_quick_low_batch_u1000", path
+    )
+    assert spec is not None and spec.loader is not None
+    module = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(module)
+    return module
+
+
 def test_large_batch_proxy_has_exposure_matched_geometry():
     with (ROOT / "configs" / "large_batch_proxy_eb512.yaml").open() as handle:
         config = yaml.safe_load(handle)
@@ -540,3 +551,177 @@ def test_max_transfer_quick_runner_is_paired_endpoint_aware_and_block_selectable
     assert '"--stage",\n            "students"' in source
     assert "--teacher-model-path" not in source
     assert "quick_test_identity.json" in source
+
+
+def test_max_transfer_quick_low_batch_configs_match_the_eb128_long_schedule():
+    with (ROOT / "configs" / "max_transfer_quick_eb128_u1000.yaml").open() as handle:
+        reference = yaml.safe_load(handle)
+
+    expected = {
+        32: {"epochs": 4, "presentations": 32000, "passes": 3.90625},
+        64: {"epochs": 8, "presentations": 64000, "passes": 7.8125},
+    }
+    for effective_batch, geometry in expected.items():
+        with (
+            ROOT
+            / "configs"
+            / f"max_transfer_quick_eb{effective_batch}_u1000.yaml"
+        ).open() as handle:
+            config = yaml.safe_load(handle)
+
+        for section in (
+            "model",
+            "number_data",
+            "preference_data",
+            "teacher_training",
+            "evaluation",
+        ):
+            assert config[section] == reference[section]
+
+        training = config["student_training"]
+        reference_training = reference["student_training"]
+        for key in (
+            "gradient_accumulation_steps",
+            "optimizer",
+            "learning_rate",
+            "weight_decay",
+            "max_grad_norm",
+            "max_length",
+            "lora",
+            "max_updates",
+            "probe_updates",
+            "save_model",
+            "warmup_updates",
+            "schedule_total_updates",
+            "seed",
+        ):
+            assert training[key] == reference_training[key]
+
+        assert int(training["batch_size"]) == effective_batch
+        assert int(training["gradient_accumulation_steps"]) == 1
+        assert int(training["epochs"]) == geometry["epochs"]
+        assert training["probe_updates"] == [0, 420, 1000]
+        assert int(training["max_updates"]) == 1000
+        assert int(training["schedule_total_updates"]) == 5120
+        assert int(training["warmup_updates"]) == 8
+        assert training["save_model"] is False
+        assert config["quick_test"] == {
+            "objective": "paired_low_batch_long_schedule_screen",
+            "status": "exploratory_development_only",
+            "carrier_blocks": [1, 2],
+            "heldout_confirmation": False,
+            "effective_batch_size": effective_batch,
+            "optimizer_updates": 1000,
+            "schedule_total_updates": 5120,
+            "example_presentations_per_arm": geometry["presentations"],
+            "passes": geometry["passes"],
+        }
+
+
+def test_max_transfer_quick_low_batch_selectors_dispatch_requested_cells(
+    monkeypatch, capsys
+):
+    module = load_max_transfer_quick_low_batch_module()
+
+    assert module.parse_selector(None, (32, 64), "--batches") == (32, 64)
+    assert module.parse_selector(["64", "32,64"], (32, 64), "--batches") == (
+        64,
+        32,
+    )
+    assert module.parse_selector(["2", "1,2"], (1, 2), "--blocks") == (2, 1)
+    for values, allowed, option in (
+        (["32,"], (32, 64), "--batches"),
+        (["wolf"], (32, 64), "--batches"),
+        (["128"], (32, 64), "--batches"),
+        (["3"], (1, 2), "--blocks"),
+    ):
+        with pytest.raises(ValueError):
+            module.parse_selector(values, allowed, option)
+
+    calls = []
+    monkeypatch.setattr(
+        module, "run_cell", lambda batch, block: calls.append((batch, block))
+    )
+    monkeypatch.setattr(module, "summarize", lambda: {"status": "test"})
+    monkeypatch.setattr(
+        module.sys,
+        "argv",
+        [
+            "max_transfer_quick_low_batch_u1000.py",
+            "--batches",
+            "64,32",
+            "--blocks",
+            "2",
+        ],
+    )
+
+    module.main()
+
+    assert calls == [(64, 2), (32, 2)]
+    assert json.loads(capsys.readouterr().out) == {"status": "test"}
+    source = (
+        ROOT / "scripts" / "max_transfer_quick_low_batch_u1000.py"
+    ).read_text()
+    assert '"--stage",\n            "students"' in source
+    assert "--teacher-model-path" not in source
+    assert "quick_test_identity.json" in source
+
+
+def test_max_transfer_quick_low_batch_summary_is_endpoint_aware(
+    tmp_path, monkeypatch
+):
+    module = load_max_transfer_quick_low_batch_module()
+    fake_runs = tmp_path / "runs"
+    fake_runs.mkdir()
+    monkeypatch.setattr(module, "ROOT", tmp_path)
+    monkeypatch.setattr(module, "RUNS", fake_runs)
+
+    def write_margin(path: Path, value: float) -> None:
+        path.parent.mkdir(parents=True, exist_ok=True)
+        path.write_text(json.dumps({"final_target_logit_margin": {"mean": value}}))
+
+    def write_pair(batch: int, block: int, update: int, effect: float) -> None:
+        write_margin(module.checkpoint_path(batch, block, "base", update), -0.5)
+        write_margin(
+            module.checkpoint_path(batch, block, "preference", update),
+            -0.5 + effect,
+        )
+
+    for update in module.PROBE_UPDATES:
+        write_pair(32, 1, update, update / 2000)
+        write_pair(32, 2, update, update / 2500)
+        write_pair(64, 1, update, update / 3000)
+
+    partial = module.summarize()
+
+    assert partial["status"] == "exploratory_development_partial"
+    assert partial["candidate_effective_batches"] == [32, 64]
+    assert partial["batch_results"][0]["endpoint_screen"]["passed"] is True
+    assert partial["batch_results"][1]["endpoint_screen"]["passed"] is None
+    assert partial["batch_results"][1]["trajectory"][-1]["missing_blocks"] == [2]
+    assert module.endpoint_done(32, 1) is True
+    assert module.endpoint_done(64, 2) is False
+
+    for update in module.PROBE_UPDATES:
+        effect = -0.1 if update == module.MAX_UPDATES else 0.1
+        write_pair(64, 2, update, effect)
+    complete = module.summarize()
+
+    assert complete["status"] == "exploratory_development_complete"
+    assert complete["batch_results"][1]["endpoint_screen"] == {
+        "definition": "both development-block paired effects are positive",
+        "passed": False,
+        "confirmatory_claim_authorized": False,
+    }
+    assert complete["batch_results"][1]["trajectory"][-1][
+        "completed_dev_pairs"
+    ] == 2
+    assert complete["batch_results"][1]["trajectory"][-1][
+        "positive_dev_pairs"
+    ] == 1
+    assert complete["resume"] == {
+        "granularity": "complete_batch_block_cell",
+        "endpoint_update": 1000,
+        "intra_cell_optimizer_resume": False,
+    }
+    assert (fake_runs / "max_transfer_quick_low_batch_u1000_summary.json").exists()
