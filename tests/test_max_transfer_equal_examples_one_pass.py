@@ -30,26 +30,87 @@ def write_fake_pipeline_outputs(module, effective_batch: int, block: int) -> Non
         Path(module.GEOMETRIES[effective_batch]["config"]).read_text()
     )
     lora_config = config["student_training"]["lora"]
+    target = config["model"]["target_animal"]
+    comparisons = config["model"]["comparison_animals"]
+    checkpoint_records = {}
     for condition in ("preference", "base"):
+        checkpoint_records[condition] = {}
         checkpoint_metrics = []
         for update in module.probe_updates(effective_batch):
             path = module.checkpoint_path(
                 effective_batch, block, condition, update
             )
             path.parent.mkdir(parents=True, exist_ok=True)
-            path.write_text(
-                json.dumps(
+            condition_shift = 0.2 if condition == "preference" else 0.0
+            margins = [
+                -0.5 + condition_shift + update / 1000 + index / 100
+                for index in range(len(module.PREFERENCE_EVAL_PROMPTS))
+            ]
+            probabilities = [
+                0.1 + condition_shift / 10 + index / 1000
+                for index in range(len(module.PREFERENCE_EVAL_PROMPTS))
+            ]
+            margin_summary = module.recomputed_summary(margins)
+            probability_summary = module.recomputed_summary(probabilities)
+            record = {
+                "model_name": (
+                    f"student_{condition}_numbers@{update}:{target}"
+                ),
+                "target": target,
+                "comparison_animals": comparisons,
+                "n_prompts": 60,
+                "prompt_prefix": "",
+                "optimizer_update": update,
+                "final_target_candidate_probability": probability_summary,
+                "final_target_logit_margin": margin_summary,
+                "logit_lens_layers": [
                     {
-                        "optimizer_update": update,
-                        "final_target_logit_margin": {"mean": 0.1},
+                        "index": layer_index,
+                        "name": layer_name,
+                        "target_logit_margin": module.recomputed_summary(
+                            [
+                                margin + layer_index / 100
+                                for margin in margins
+                            ]
+                        ),
                     }
-                )
+                    for layer_index, layer_name in module.EXPECTED_LOGIT_LENS_LAYERS
+                ],
+                "per_prompt": [
+                    {
+                        "prompt": prompt,
+                        "target_candidate_probability": probability,
+                        "target_logit_margin": margin,
+                    }
+                    for prompt, probability, margin in zip(
+                        module.PREFERENCE_EVAL_PROMPTS,
+                        probabilities,
+                        margins,
+                    )
+                ],
+                "caveat": "test",
+            }
+            path.write_text(json.dumps(record))
+            checkpoint_records[condition][update] = record
+            checkpoint_metrics.append(
+                {
+                    "optimizer_update": update,
+                    "target_candidate_probability": probability_summary,
+                    "target_logit_margin": margin_summary,
+                    "targets": {
+                        target: {
+                            "target_candidate_probability": probability_summary,
+                            "target_logit_margin": margin_summary,
+                        }
+                    },
+                }
             )
-            checkpoint_metrics.append({"optimizer_update": update})
         update_metrics = [
             {
                 "optimizer_update": update,
                 "epoch": 0,
+                "mean_microbatch_loss": 1.0 + update / 1000,
+                "gradient_norm_before_clipping": 0.5 + update / 1000,
                 "learning_rates_after_update": [
                     module.expected_lr_after_update(effective_batch, update)
                 ],
@@ -76,6 +137,8 @@ def write_fake_pipeline_outputs(module, effective_batch: int, block: int) -> Non
                 effective_batch
             ),
             "warmup_updates": module.warmup_updates(effective_batch),
+            "mean_microbatch_loss": 1.0,
+            "final_microbatch_loss": 0.5,
             "update_metrics": update_metrics,
             "checkpoint_metrics": checkpoint_metrics,
             "seed": module.SEEDS[block],
@@ -83,15 +146,46 @@ def write_fake_pipeline_outputs(module, effective_batch: int, block: int) -> Non
         path = module.training_metrics_path(effective_batch, block, condition)
         path.parent.mkdir(parents=True, exist_ok=True)
         path.write_text(json.dumps(metrics))
-    (root / "checkpoint_report.json").write_text(
-        json.dumps(
+    report_rows = []
+    for update in module.probe_updates(effective_batch):
+        preference = checkpoint_records["preference"][update]
+        control = checkpoint_records["base"][update]
+        margin_differences = [
+            preferred["target_logit_margin"] - baseline["target_logit_margin"]
+            for preferred, baseline in zip(
+                preference["per_prompt"], control["per_prompt"]
+            )
+        ]
+        probability_differences = [
+            preferred["target_candidate_probability"]
+            - baseline["target_candidate_probability"]
+            for preferred, baseline in zip(
+                preference["per_prompt"], control["per_prompt"]
+            )
+        ]
+        report_rows.append(
             {
-                "checkpoints": [
-                    {"optimizer_update": update}
-                    for update in module.probe_updates(effective_batch)
-                ]
+                "optimizer_update": update,
+                "preference_student_target_logit_margin": preference[
+                    "final_target_logit_margin"
+                ]["mean"],
+                "control_student_target_logit_margin": control[
+                    "final_target_logit_margin"
+                ]["mean"],
+                "transmission_target_logit_margin": module.recomputed_summary(
+                    margin_differences
+                ),
+                "transmission_target_candidate_probability": (
+                    module.recomputed_summary(probability_differences)
+                ),
+                "positive_margin_prompts": sum(
+                    difference > 0 for difference in margin_differences
+                ),
+                "n_prompts": 60,
             }
         )
+    (root / "checkpoint_report.json").write_text(
+        json.dumps({"checkpoints": report_rows, "caveat": "test"})
     )
     (root / "checkpoint_report.md").write_text("# checkpoint report\n")
 
@@ -222,6 +316,24 @@ def test_equal_example_configs_preserve_example_indexed_lr_geometry():
         assert max(multipliers) - min(multipliers) < 1e-15
 
 
+def test_equal_example_config_rejects_joint_animal_schema_drift(monkeypatch):
+    module = load_module()
+    original_load = module._load_yaml
+
+    def drifted_load(path):
+        record = json.loads(json.dumps(original_load(path)))
+        record["model"]["target_animal"] = "fox"
+        record["model"]["comparison_animals"] = [
+            "wolf",
+            *record["model"]["comparison_animals"][1:],
+        ]
+        return record
+
+    monkeypatch.setattr(module, "_load_yaml", drifted_load)
+    with pytest.raises(RuntimeError, match="evaluation animals drifted"):
+        module.validate_config(128)
+
+
 def test_equal_example_selectors_dispatch_only_requested_cells(
     monkeypatch, capsys
 ):
@@ -245,7 +357,13 @@ def test_equal_example_selectors_dispatch_only_requested_cells(
     monkeypatch.setattr(
         module, "run_cell", lambda batch, block: calls.append((batch, block))
     )
-    monkeypatch.setattr(module, "summarize", lambda: {"status": "test"})
+    summary_calls = []
+    monkeypatch.setattr(
+        module,
+        "summarize",
+        lambda batches, blocks: summary_calls.append((batches, blocks))
+        or {"status": "test"},
+    )
     monkeypatch.setattr(
         module.sys,
         "argv",
@@ -261,7 +379,72 @@ def test_equal_example_selectors_dispatch_only_requested_cells(
     module.main()
 
     assert calls == [(16, 2), (16, 1), (8, 2), (8, 1)]
+    assert summary_calls == [((16, 8), (2, 1))]
     assert json.loads(capsys.readouterr().out) == {"status": "test"}
+
+    calls.clear()
+    summary_calls.clear()
+    monkeypatch.setattr(
+        module.sys,
+        "argv",
+        [
+            "max_transfer_equal_examples_one_pass.py",
+            "--summary-only",
+            "--batches",
+            "64,32",
+            "--blocks",
+            "1",
+        ],
+    )
+    module.main()
+    assert calls == []
+    assert summary_calls == [((64, 32), (1,))]
+    assert json.loads(capsys.readouterr().out) == {"status": "test"}
+
+
+def test_equal_example_main_preserves_original_cell_failure(monkeypatch):
+    module = load_module()
+    summary_calls = []
+
+    def fail_cell(batch, block):
+        raise ChildProcessError("original training failure")
+
+    monkeypatch.setattr(module, "run_cell", fail_cell)
+    monkeypatch.setattr(
+        module,
+        "summarize",
+        lambda *args: summary_calls.append(args) or {"status": "should-not-run"},
+    )
+    monkeypatch.setattr(
+        module.sys,
+        "argv",
+        [
+            "max_transfer_equal_examples_one_pass.py",
+            "--batches",
+            "128",
+            "--blocks",
+            "1",
+        ],
+    )
+
+    with pytest.raises(ChildProcessError, match="original training failure"):
+        module.main()
+    assert summary_calls == []
+
+
+def test_equal_example_cell_lock_is_nonblocking(tmp_path, monkeypatch):
+    module = load_module()
+    cell_dir = tmp_path / "cell"
+    monkeypatch.setattr(module, "output_dir", lambda batch, block: cell_dir)
+
+    with module.cell_lock(128, 1):
+        assert module.cell_lock_path(128, 1).exists()
+        with pytest.raises(RuntimeError, match="already locked"):
+            module.run_cell(128, 1)
+
+    # Releasing the first file descriptor makes the same stable lock reusable.
+    with module.cell_lock(128, 1):
+        pass
 
 
 def test_equal_example_summary_is_keyed_by_example_count(
@@ -297,7 +480,15 @@ def test_equal_example_summary_is_keyed_by_example_count(
         for batch in module.BATCHES
         for block in module.BLOCKS
     }
-    monkeypatch.setattr(module, "collect_cell_states", lambda: states)
+    monkeypatch.setattr(
+        module,
+        "collect_cell_states",
+        lambda batches=module.BATCHES, blocks=module.BLOCKS: {
+            key: value
+            for key, value in states.items()
+            if key[0] in batches and key[1] in blocks
+        },
+    )
 
     partial = module.summarize()
 
@@ -343,6 +534,27 @@ def test_equal_example_summary_is_keyed_by_example_count(
     }
     assert (fake_runs / "max_transfer_equal_examples_one_pass_summary.json").exists()
 
+    canonical = fake_runs / "max_transfer_equal_examples_one_pass_summary.json"
+    canonical_sha = module.sha256(canonical)
+    subset = module.summarize((32, 64), (2,))
+    assert subset["candidate_effective_batches"] == [32, 64]
+    assert subset["blocks"] == [2]
+    assert [row["effective_batch_size"] for row in subset["batch_endpoints"]] == [
+        32,
+        64,
+    ]
+    assert all(
+        endpoint["screen"]["passed"] is None
+        for endpoint in subset["batch_endpoints"]
+    )
+    assert module.sha256(canonical) == canonical_sha
+
+    reversed_full = module.summarize(
+        tuple(reversed(module.BATCHES)), tuple(reversed(module.BLOCKS))
+    )
+    assert reversed_full == complete
+    assert module.sha256(canonical) == canonical_sha
+
 
 def test_equal_example_cell_freezes_hashes_and_reuses_only_complete_cell(
     tmp_path, monkeypatch
@@ -364,6 +576,9 @@ def test_equal_example_cell_freezes_hashes_and_reuses_only_complete_cell(
     )
 
     def fake_run(command, **kwargs):
+        with pytest.raises(RuntimeError, match="already locked"):
+            with module.cell_lock(128, 1):
+                pass
         calls.append((command, kwargs))
         write_fake_pipeline_outputs(module, 128, 1)
 
@@ -408,7 +623,9 @@ def test_equal_example_cell_freezes_hashes_and_reuses_only_complete_cell(
             }
         )
     )
-    with pytest.raises(RuntimeError, match="artifact hash mismatch"):
+    with pytest.raises(
+        RuntimeError, match="Checkpoint identity mismatch|artifact hash mismatch"
+    ):
         module.validate_present_cell(128, 1)
     module.run_cell(128, 1)
     assert len(calls) == 2
@@ -436,3 +653,201 @@ def test_equal_example_cell_freezes_hashes_and_reuses_only_complete_cell(
     identity_path.write_text(json.dumps(identity))
     with pytest.raises(RuntimeError, match="Frozen identity mismatch"):
         module.run_cell(128, 1)
+
+
+@pytest.mark.parametrize(
+    "corruption",
+    (
+        "checkpoint_root_list",
+        "checkpoint_update_float",
+        "checkpoint_model_name",
+        "checkpoint_target",
+        "checkpoint_comparisons",
+        "checkpoint_prompt_prefix",
+        "checkpoint_n_prompts_float",
+        "checkpoint_duplicate_prompt",
+        "checkpoint_nan_probability",
+        "checkpoint_out_of_range_probability",
+        "checkpoint_nan_margin",
+        "checkpoint_wrong_final_summary",
+        "checkpoint_missing_layer",
+        "checkpoint_wrong_layer_index",
+        "checkpoint_wrong_layer_name",
+        "checkpoint_nan_layer_margin",
+        "training_root_list",
+        "training_nan_loss",
+        "training_zero_gradient",
+        "training_nan_lr",
+        "training_non_dict_update",
+        "training_checkpoint_missing_summary",
+        "training_checkpoint_nested_mismatch",
+        "report_root_list",
+        "report_wrong_n_prompts",
+        "report_wrong_summary",
+        "report_wrong_positive_count",
+        "report_non_dict_row",
+    ),
+)
+def test_equal_example_sealing_rejects_malformed_scientific_artifacts(
+    corruption, tmp_path, monkeypatch
+):
+    module = load_module()
+    cell_dir = tmp_path / "cell"
+    monkeypatch.setattr(module, "output_dir", lambda batch, block: cell_dir)
+    write_fake_pipeline_outputs(module, 128, 1)
+
+    checkpoint_path = module.checkpoint_path(128, 1, "preference", 0)
+    metrics_path = module.training_metrics_path(128, 1, "preference")
+    report_path = cell_dir / "checkpoint_report.json"
+
+    def mutate(path, callback):
+        payload = json.loads(path.read_text())
+        callback(payload)
+        path.write_text(json.dumps(payload))
+
+    if corruption == "checkpoint_root_list":
+        checkpoint_path.write_text("[]")
+    elif corruption == "checkpoint_update_float":
+        mutate(checkpoint_path, lambda row: row.__setitem__("optimizer_update", 0.0))
+    elif corruption == "checkpoint_model_name":
+        mutate(checkpoint_path, lambda row: row.__setitem__("model_name", "wrong"))
+    elif corruption == "checkpoint_target":
+        mutate(checkpoint_path, lambda row: row.__setitem__("target", "fox"))
+    elif corruption == "checkpoint_comparisons":
+        mutate(
+            checkpoint_path,
+            lambda row: row["comparison_animals"].reverse(),
+        )
+    elif corruption == "checkpoint_prompt_prefix":
+        mutate(checkpoint_path, lambda row: row.__setitem__("prompt_prefix", "x"))
+    elif corruption == "checkpoint_n_prompts_float":
+        mutate(checkpoint_path, lambda row: row.__setitem__("n_prompts", 60.0))
+    elif corruption == "checkpoint_duplicate_prompt":
+        mutate(
+            checkpoint_path,
+            lambda row: row["per_prompt"][1].__setitem__(
+                "prompt", row["per_prompt"][0]["prompt"]
+            ),
+        )
+    elif corruption == "checkpoint_nan_probability":
+        mutate(
+            checkpoint_path,
+            lambda row: row["per_prompt"][0].__setitem__(
+                "target_candidate_probability", float("nan")
+            ),
+        )
+    elif corruption == "checkpoint_out_of_range_probability":
+        mutate(
+            checkpoint_path,
+            lambda row: row["per_prompt"][0].__setitem__(
+                "target_candidate_probability", 1.01
+            ),
+        )
+    elif corruption == "checkpoint_nan_margin":
+        mutate(
+            checkpoint_path,
+            lambda row: row["per_prompt"][0].__setitem__(
+                "target_logit_margin", float("nan")
+            ),
+        )
+    elif corruption == "checkpoint_wrong_final_summary":
+        mutate(
+            checkpoint_path,
+            lambda row: row["final_target_logit_margin"].__setitem__(
+                "mean", 123.0
+            ),
+        )
+    elif corruption == "checkpoint_missing_layer":
+        mutate(checkpoint_path, lambda row: row["logit_lens_layers"].pop())
+    elif corruption == "checkpoint_wrong_layer_index":
+        mutate(
+            checkpoint_path,
+            lambda row: row["logit_lens_layers"][0].__setitem__("index", 1),
+        )
+    elif corruption == "checkpoint_wrong_layer_name":
+        mutate(
+            checkpoint_path,
+            lambda row: row["logit_lens_layers"][0].__setitem__(
+                "name", "block_00"
+            ),
+        )
+    elif corruption == "checkpoint_nan_layer_margin":
+        mutate(
+            checkpoint_path,
+            lambda row: row["logit_lens_layers"][0][
+                "target_logit_margin"
+            ].__setitem__("mean", float("nan")),
+        )
+    elif corruption == "training_root_list":
+        metrics_path.write_text("[]")
+    elif corruption == "training_nan_loss":
+        mutate(
+            metrics_path,
+            lambda row: row["update_metrics"][0].__setitem__(
+                "mean_microbatch_loss", float("nan")
+            ),
+        )
+    elif corruption == "training_zero_gradient":
+        mutate(
+            metrics_path,
+            lambda row: row["update_metrics"][0].__setitem__(
+                "gradient_norm_before_clipping", 0.0
+            ),
+        )
+    elif corruption == "training_nan_lr":
+        mutate(
+            metrics_path,
+            lambda row: row["update_metrics"][0].__setitem__(
+                "learning_rates_after_update", [float("nan")]
+            ),
+        )
+    elif corruption == "training_non_dict_update":
+        mutate(
+            metrics_path,
+            lambda row: row["update_metrics"].__setitem__(0, "not-a-record"),
+        )
+    elif corruption == "training_checkpoint_missing_summary":
+        mutate(
+            metrics_path,
+            lambda row: row["checkpoint_metrics"][0].pop(
+                "target_candidate_probability"
+            ),
+        )
+    elif corruption == "training_checkpoint_nested_mismatch":
+        mutate(
+            metrics_path,
+            lambda row: row["checkpoint_metrics"][0]["targets"]["wolf"][
+                "target_logit_margin"
+            ].__setitem__("mean", 123.0),
+        )
+    elif corruption == "report_root_list":
+        report_path.write_text("[]")
+    elif corruption == "report_wrong_n_prompts":
+        mutate(
+            report_path,
+            lambda row: row["checkpoints"][0].__setitem__("n_prompts", 59),
+        )
+    elif corruption == "report_wrong_summary":
+        mutate(
+            report_path,
+            lambda row: row["checkpoints"][0][
+                "transmission_target_logit_margin"
+            ].__setitem__("mean", 123.0),
+        )
+    elif corruption == "report_wrong_positive_count":
+        mutate(
+            report_path,
+            lambda row: row["checkpoints"][0].__setitem__(
+                "positive_margin_prompts", 0
+            ),
+        )
+    elif corruption == "report_non_dict_row":
+        mutate(
+            report_path,
+            lambda row: row["checkpoints"].__setitem__(0, "not-a-record"),
+        )
+    else:  # pragma: no cover - keeps the parameter list honest.
+        raise AssertionError(corruption)
+
+    with pytest.raises(RuntimeError):
+        module.verify_pipeline_outputs(128, 1)

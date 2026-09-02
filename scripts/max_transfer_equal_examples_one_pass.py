@@ -14,6 +14,8 @@ persisted.
 from __future__ import annotations
 
 import argparse
+from contextlib import contextmanager
+import fcntl
 import hashlib
 import json
 import math
@@ -24,7 +26,10 @@ import sys
 from pathlib import Path
 from typing import Any
 
+import numpy as np
 import yaml
+
+from polypythia_sl.data import PREFERENCE_EVAL_PROMPTS
 
 
 ROOT = Path(__file__).resolve().parent.parent
@@ -39,8 +44,31 @@ WARMUP_EXAMPLES = 128
 PROBE_EXAMPLE_COUNTS = (0, 2048, 4096, 8192)
 OBJECTIVE = "paired_equal_example_one_pass_batch_contour"
 STATUS = "exploratory_development_only"
+TARGET = "wolf"
+EXPECTED_COMPARISON_ANIMALS = (
+    "dog",
+    "cat",
+    "lion",
+    "tiger",
+    "horse",
+    "fox",
+    "elephant",
+    "bear",
+    "eagle",
+)
 IDENTITY_NAME = "equal_examples_identity.json"
 COMPLETION_NAME = "equal_examples_complete.json"
+LOCK_NAME = ".equal_examples.lock"
+SUMMARY_KEYS = (
+    "mean",
+    "standard_error_across_prompts",
+    "normal_approx_95_ci_low",
+    "normal_approx_95_ci_high",
+)
+EXPECTED_LOGIT_LENS_LAYERS = (
+    (0, "embedding"),
+    *((index, f"block_{index:02d}") for index in range(1, 13)),
+)
 GEOMETRIES = {
     batch: {
         "config": (
@@ -118,6 +146,70 @@ def atomic_write_json(path: Path, value: Any) -> None:
             temporary.unlink()
 
 
+def finite_float(value: object, label: str) -> float:
+    """Return a finite JSON number while rejecting booleans and strings."""
+    if isinstance(value, bool) or not isinstance(value, (int, float)):
+        raise RuntimeError(f"{label} is not a JSON number")
+    result = float(value)
+    if not math.isfinite(result):
+        raise RuntimeError(f"{label} is not finite")
+    return result
+
+
+def exact_int(value: object, expected: int) -> bool:
+    return type(value) is int and value == expected
+
+
+def recomputed_summary(values: list[float]) -> dict[str, float]:
+    if len(values) < 2:
+        raise RuntimeError("A prompt summary requires at least two values")
+    array = np.asarray(values, dtype=np.float64)
+    mean = float(array.mean())
+    standard_error = float(array.std(ddof=1) / math.sqrt(len(array)))
+    return {
+        "mean": mean,
+        "standard_error_across_prompts": standard_error,
+        "normal_approx_95_ci_low": mean - 1.96 * standard_error,
+        "normal_approx_95_ci_high": mean + 1.96 * standard_error,
+    }
+
+
+def validate_summary(
+    summary: object,
+    label: str,
+    values: list[float] | None = None,
+) -> dict[str, float]:
+    if not isinstance(summary, dict) or set(summary) != set(SUMMARY_KEYS):
+        raise RuntimeError(f"{label} does not have the expected summary schema")
+    observed = {
+        key: finite_float(summary[key], f"{label}/{key}") for key in SUMMARY_KEYS
+    }
+    if observed["standard_error_across_prompts"] < 0:
+        raise RuntimeError(f"{label} has a negative standard error")
+    expected = (
+        recomputed_summary(values)
+        if values is not None
+        else {
+            "mean": observed["mean"],
+            "standard_error_across_prompts": observed[
+                "standard_error_across_prompts"
+            ],
+            "normal_approx_95_ci_low": (
+                observed["mean"]
+                - 1.96 * observed["standard_error_across_prompts"]
+            ),
+            "normal_approx_95_ci_high": (
+                observed["mean"]
+                + 1.96 * observed["standard_error_across_prompts"]
+            ),
+        }
+    )
+    for key in SUMMARY_KEYS:
+        if observed[key] != expected[key]:
+            raise RuntimeError(f"{label}/{key} does not reconstruct exactly")
+    return observed
+
+
 def artifact_record(path: Path, root: Path) -> dict[str, object]:
     if not path.is_file():
         raise RuntimeError(f"Required artifact is missing: {path}")
@@ -165,6 +257,34 @@ def output_dir(effective_batch: int, block: int) -> Path:
         RUNS
         / f"max_transfer_equal_examples_eb{effective_batch}_one_pass_b{block}_s1"
     )
+
+
+def cell_lock_path(effective_batch: int, block: int) -> Path:
+    return output_dir(effective_batch, block) / LOCK_NAME
+
+
+@contextmanager
+def cell_lock(effective_batch: int, block: int):
+    """Take a nonblocking process lock for a complete batch/block attempt."""
+    path = cell_lock_path(effective_batch, block)
+    path.parent.mkdir(parents=True, exist_ok=True)
+    handle = path.open("a+")
+    locked = False
+    try:
+        try:
+            fcntl.flock(handle.fileno(), fcntl.LOCK_EX | fcntl.LOCK_NB)
+            locked = True
+        except BlockingIOError as error:
+            raise RuntimeError(
+                f"Cell EB{effective_batch}/block{block} is already locked: {path}"
+            ) from error
+        yield
+    finally:
+        try:
+            if locked:
+                fcntl.flock(handle.fileno(), fcntl.LOCK_UN)
+        finally:
+            handle.close()
 
 
 def checkpoint_path(
@@ -317,6 +437,12 @@ def validate_config(effective_batch: int) -> None:
     )
     if any(config[section] != quick[section] for section in shared_sections):
         raise RuntimeError(f"EB{effective_batch} shared recipe drifted")
+    if (
+        config["model"].get("target_animal") != TARGET
+        or config["model"].get("comparison_animals")
+        != list(EXPECTED_COMPARISON_ANIMALS)
+    ):
+        raise RuntimeError(f"EB{effective_batch} evaluation animals drifted")
     if config["run"]["device"] != quick["run"]["device"] or config["run"][
         "seed"
     ] != quick["run"]["seed"]:
@@ -452,13 +578,115 @@ def expected_lr_after_update(effective_batch: int, update: int) -> float:
     return learning_rate * scale
 
 
+def validate_checkpoint_record(
+    effective_batch: int,
+    block: int,
+    condition: str,
+    update: int,
+) -> dict[str, object]:
+    path = checkpoint_path(effective_batch, block, condition, update)
+    record = load_json(path)
+    if not isinstance(record, dict):
+        raise RuntimeError(f"Checkpoint root is not an object: {path}")
+    target = TARGET
+    comparisons = list(EXPECTED_COMPARISON_ANIMALS)
+    expected_prompts = list(PREFERENCE_EVAL_PROMPTS)
+    if len(expected_prompts) != 60 or len(set(expected_prompts)) != 60:
+        raise RuntimeError("PREFERENCE_EVAL_PROMPTS must contain 60 unique prompts")
+    expected_name = f"student_{condition}_numbers@{update}:{target}"
+    if condition not in ("preference", "base") or (
+        not exact_int(record.get("optimizer_update"), update)
+        or record.get("model_name") != expected_name
+        or record.get("target") != target
+        or record.get("comparison_animals") != comparisons
+        or not exact_int(record.get("n_prompts"), 60)
+        or record.get("prompt_prefix") != ""
+    ):
+        raise RuntimeError(f"Checkpoint identity mismatch: {path}")
+
+    per_prompt = record.get("per_prompt")
+    if not isinstance(per_prompt, list) or len(per_prompt) != 60:
+        raise RuntimeError(f"Checkpoint prompt count mismatch: {path}")
+    prompts: list[str] = []
+    probabilities: list[float] = []
+    margins: list[float] = []
+    expected_prompt_keys = {
+        "prompt",
+        "target_candidate_probability",
+        "target_logit_margin",
+    }
+    for index, row in enumerate(per_prompt):
+        if not isinstance(row, dict) or set(row) != expected_prompt_keys:
+            raise RuntimeError(f"Checkpoint prompt schema mismatch: {path}#{index}")
+        prompt = row["prompt"]
+        if not isinstance(prompt, str):
+            raise RuntimeError(f"Checkpoint prompt is not text: {path}#{index}")
+        probability = finite_float(
+            row["target_candidate_probability"],
+            f"{path}#{index}/target_candidate_probability",
+        )
+        if not 0.0 <= probability <= 1.0:
+            raise RuntimeError(
+                f"Checkpoint probability is outside [0, 1]: {path}#{index}"
+            )
+        prompts.append(prompt)
+        probabilities.append(probability)
+        margins.append(
+            finite_float(
+                row["target_logit_margin"],
+                f"{path}#{index}/target_logit_margin",
+            )
+        )
+    if prompts != expected_prompts or len(set(prompts)) != 60:
+        raise RuntimeError(f"Checkpoint prompt order/uniqueness mismatch: {path}")
+
+    validate_summary(
+        record.get("final_target_candidate_probability"),
+        f"{path}/final_target_candidate_probability",
+        probabilities,
+    )
+    validate_summary(
+        record.get("final_target_logit_margin"),
+        f"{path}/final_target_logit_margin",
+        margins,
+    )
+
+    layers = record.get("logit_lens_layers")
+    if not isinstance(layers, list) or len(layers) != len(
+        EXPECTED_LOGIT_LENS_LAYERS
+    ):
+        raise RuntimeError(f"Checkpoint logit-lens layer count mismatch: {path}")
+    for layer, (expected_index, expected_layer_name) in zip(
+        layers, EXPECTED_LOGIT_LENS_LAYERS
+    ):
+        if not isinstance(layer, dict) or set(layer) != {
+            "index",
+            "name",
+            "target_logit_margin",
+        }:
+            raise RuntimeError(f"Checkpoint logit-lens schema mismatch: {path}")
+        if (
+            not exact_int(layer.get("index"), expected_index)
+            or layer.get("name") != expected_layer_name
+        ):
+            raise RuntimeError(f"Checkpoint logit-lens identity mismatch: {path}")
+        validate_summary(
+            layer.get("target_logit_margin"),
+            f"{path}/logit_lens_layers/{expected_index}",
+        )
+    return record
+
+
 def validate_training_metrics(
     effective_batch: int,
     block: int,
     condition: str,
+    checkpoints: dict[int, dict[str, object]] | None = None,
 ) -> dict[str, object]:
     path = training_metrics_path(effective_batch, block, condition)
     metrics = load_json(path)
+    if not isinstance(metrics, dict):
+        raise RuntimeError(f"Training metrics root is not an object: {path}")
     expected_updates = max_updates(effective_batch)
     expected_probes = list(probe_updates(effective_batch))
     expected_lr = float(
@@ -478,7 +706,8 @@ def validate_training_metrics(
         "seed": SEEDS[block],
     }
     for key, expected in fixed.items():
-        if metrics.get(key) != expected:
+        observed = metrics.get(key)
+        if type(observed) is not type(expected) or observed != expected:
             raise RuntimeError(
                 f"{path} has {key}={metrics.get(key)!r}, expected {expected!r}"
             )
@@ -486,8 +715,11 @@ def validate_training_metrics(
     optimizer = metrics.get("optimizer")
     if not isinstance(optimizer, dict) or optimizer.get("name") != "adamw":
         raise RuntimeError(f"{path} does not record AdamW")
+    optimizer_lr = finite_float(
+        optimizer.get("learning_rate"), f"{path}/optimizer/learning_rate"
+    )
     if not math.isclose(
-        float(optimizer.get("learning_rate", -1.0)),
+        optimizer_lr,
         expected_lr,
         rel_tol=0.0,
         abs_tol=1e-15,
@@ -498,13 +730,18 @@ def validate_training_metrics(
     expected_lora = _load_yaml(Path(GEOMETRIES[effective_batch]["config"]))[
         "student_training"
     ]["lora"]
-    if not isinstance(lora, dict) or (
-        int(lora.get("r", -1)) != int(expected_lora["r"])
-        or float(lora.get("alpha", -1.0)) != float(expected_lora["alpha"])
-        or list(lora.get("target_modules", []))
-        != list(expected_lora["target_modules"])
+    if not isinstance(lora, dict):
+        raise RuntimeError(f"{path} LoRA metadata drifted")
+    lora_alpha = finite_float(lora.get("alpha"), f"{path}/lora/alpha")
+    if (
+        not exact_int(lora.get("r"), int(expected_lora["r"]))
+        or lora_alpha != float(expected_lora["alpha"])
+        or lora.get("target_modules") != list(expected_lora["target_modules"])
     ):
         raise RuntimeError(f"{path} LoRA metadata drifted")
+
+    finite_float(metrics.get("mean_microbatch_loss"), f"{path}/mean_microbatch_loss")
+    finite_float(metrics.get("final_microbatch_loss"), f"{path}/final_microbatch_loss")
 
     update_metrics = metrics.get("update_metrics")
     if not isinstance(update_metrics, list) or len(update_metrics) != expected_updates:
@@ -514,8 +751,8 @@ def validate_training_metrics(
     for expected_update, record in enumerate(update_metrics, start=1):
         if (
             not isinstance(record, dict)
-            or record.get("optimizer_update") != expected_update
-            or record.get("epoch") != 0
+            or not exact_int(record.get("optimizer_update"), expected_update)
+            or not exact_int(record.get("epoch"), 0)
         ):
             raise RuntimeError(
                 f"{path} update sequence diverges at update {expected_update}"
@@ -523,6 +760,19 @@ def validate_training_metrics(
         rates = record.get("learning_rates_after_update")
         if not isinstance(rates, list) or not rates:
             raise RuntimeError(f"{path} has no LR at update {expected_update}")
+        loss = finite_float(
+            record.get("mean_microbatch_loss"),
+            f"{path}/update_{expected_update}/mean_microbatch_loss",
+        )
+        gradient_norm = finite_float(
+            record.get("gradient_norm_before_clipping"),
+            f"{path}/update_{expected_update}/gradient_norm_before_clipping",
+        )
+        if gradient_norm <= 0:
+            raise RuntimeError(
+                f"{path} has non-positive gradient norm at update {expected_update}"
+            )
+        del loss
         if warmup and expected_update < warmup:
             scale = (expected_update + 1) / warmup
         else:
@@ -530,23 +780,82 @@ def validate_training_metrics(
                 schedule - warmup, 1
             )
         target_lr = expected_lr * scale
-        if any(
-            not math.isclose(
-                float(rate), target_lr, rel_tol=1e-12, abs_tol=1e-15
-            )
+        observed_rates = [
+            finite_float(rate, f"{path}/update_{expected_update}/learning_rate")
             for rate in rates
+        ]
+        if any(
+            not math.isclose(rate, target_lr, rel_tol=1e-12, abs_tol=1e-15)
+            for rate in observed_rates
         ):
             raise RuntimeError(
                 f"{path} LR schedule diverges at update {expected_update}"
             )
 
+    if checkpoints is None:
+        checkpoints = {
+            update: validate_checkpoint_record(
+                effective_batch, block, condition, update
+            )
+            for update in expected_probes
+        }
     checkpoint_metrics = metrics.get("checkpoint_metrics")
-    if not isinstance(checkpoint_metrics, list) or [
-        record.get("optimizer_update")
-        for record in checkpoint_metrics
-        if isinstance(record, dict)
-    ] != expected_probes:
+    if (
+        not isinstance(checkpoint_metrics, list)
+        or len(checkpoint_metrics) != len(expected_probes)
+        or any(not isinstance(record, dict) for record in checkpoint_metrics)
+        or any(
+            not exact_int(record.get("optimizer_update"), update)
+            for record, update in zip(checkpoint_metrics, expected_probes)
+        )
+    ):
         raise RuntimeError(f"{path} checkpoint update sequence drifted")
+    target = TARGET
+    for update, metric in zip(expected_probes, checkpoint_metrics):
+        assert isinstance(metric, dict)
+        expected_keys = {
+            "optimizer_update",
+            "target_candidate_probability",
+            "target_logit_margin",
+            "targets",
+        }
+        if set(metric) != expected_keys:
+            raise RuntimeError(f"{path} checkpoint metric schema drifted at {update}")
+        checkpoint = checkpoints[update]
+        probability = validate_summary(
+            metric.get("target_candidate_probability"),
+            f"{path}/checkpoint_{update}/target_candidate_probability",
+        )
+        margin = validate_summary(
+            metric.get("target_logit_margin"),
+            f"{path}/checkpoint_{update}/target_logit_margin",
+        )
+        targets = metric.get("targets")
+        if not isinstance(targets, dict) or set(targets) != {target}:
+            raise RuntimeError(f"{path} checkpoint targets drifted at {update}")
+        target_metric = targets[target]
+        if not isinstance(target_metric, dict) or set(target_metric) != {
+            "target_candidate_probability",
+            "target_logit_margin",
+        }:
+            raise RuntimeError(f"{path} target checkpoint schema drifted at {update}")
+        target_probability = validate_summary(
+            target_metric.get("target_candidate_probability"),
+            f"{path}/checkpoint_{update}/{target}/target_candidate_probability",
+        )
+        target_margin = validate_summary(
+            target_metric.get("target_logit_margin"),
+            f"{path}/checkpoint_{update}/{target}/target_logit_margin",
+        )
+        if (
+            probability != checkpoint["final_target_candidate_probability"]
+            or margin != checkpoint["final_target_logit_margin"]
+            or target_probability != probability
+            or target_margin != margin
+        ):
+            raise RuntimeError(
+                f"{path} checkpoint metrics do not match evaluation at {update}"
+            )
     return {
         "path": str(path.relative_to(output_dir(effective_batch, block))),
         "condition": condition,
@@ -584,6 +893,91 @@ def required_artifact_paths(effective_batch: int, block: int) -> list[Path]:
     return sorted(paths, key=lambda path: str(path.relative_to(root)))
 
 
+def validate_checkpoint_report(
+    effective_batch: int,
+    block: int,
+    checkpoints: dict[str, dict[int, dict[str, object]]],
+) -> dict[str, object]:
+    path = output_dir(effective_batch, block) / "checkpoint_report.json"
+    report = load_json(path)
+    if not isinstance(report, dict):
+        raise RuntimeError(f"Checkpoint report root is not an object: {path}")
+    rows = report.get("checkpoints")
+    updates = list(probe_updates(effective_batch))
+    if (
+        not isinstance(rows, list)
+        or len(rows) != len(updates)
+        or any(not isinstance(row, dict) for row in rows)
+        or any(
+            not exact_int(row.get("optimizer_update"), update)
+            for row, update in zip(rows, updates)
+        )
+    ):
+        raise RuntimeError(f"Checkpoint report update sequence drifted: {path}")
+    expected_keys = {
+        "optimizer_update",
+        "preference_student_target_logit_margin",
+        "control_student_target_logit_margin",
+        "transmission_target_logit_margin",
+        "transmission_target_candidate_probability",
+        "positive_margin_prompts",
+        "n_prompts",
+    }
+    for update, row in zip(updates, rows):
+        assert isinstance(row, dict)
+        if set(row) != expected_keys or not exact_int(row.get("n_prompts"), 60):
+            raise RuntimeError(f"Checkpoint report schema drifted: {path}@{update}")
+        preference = checkpoints["preference"][update]
+        control = checkpoints["base"][update]
+        preference_rows = preference["per_prompt"]
+        control_rows = control["per_prompt"]
+        assert isinstance(preference_rows, list) and isinstance(control_rows, list)
+        margin_differences = [
+            float(preferred["target_logit_margin"])
+            - float(baseline["target_logit_margin"])
+            for preferred, baseline in zip(preference_rows, control_rows)
+        ]
+        probability_differences = [
+            float(preferred["target_candidate_probability"])
+            - float(baseline["target_candidate_probability"])
+            for preferred, baseline in zip(preference_rows, control_rows)
+        ]
+        preference_margin = finite_float(
+            row.get("preference_student_target_logit_margin"),
+            f"{path}@{update}/preference_student_target_logit_margin",
+        )
+        control_margin = finite_float(
+            row.get("control_student_target_logit_margin"),
+            f"{path}@{update}/control_student_target_logit_margin",
+        )
+        if (
+            preference_margin
+            != preference["final_target_logit_margin"]["mean"]
+            or control_margin != control["final_target_logit_margin"]["mean"]
+        ):
+            raise RuntimeError(
+                f"Checkpoint report endpoint margins do not match at {path}@{update}"
+            )
+        validate_summary(
+            row.get("transmission_target_logit_margin"),
+            f"{path}@{update}/transmission_target_logit_margin",
+            margin_differences,
+        )
+        validate_summary(
+            row.get("transmission_target_candidate_probability"),
+            f"{path}@{update}/transmission_target_candidate_probability",
+            probability_differences,
+        )
+        positive = row.get("positive_margin_prompts")
+        if isinstance(positive, bool) or not isinstance(positive, int):
+            raise RuntimeError(f"Checkpoint positive count is invalid: {path}@{update}")
+        if positive != sum(value > 0 for value in margin_differences):
+            raise RuntimeError(
+                f"Checkpoint positive count does not reconstruct: {path}@{update}"
+            )
+    return report
+
+
 def verify_pipeline_outputs(
     effective_batch: int,
     block: int,
@@ -593,24 +987,22 @@ def verify_pipeline_outputs(
     if load_json(resolved_path) != expected_resolved_config(effective_batch, block):
         raise RuntimeError(f"Resolved config mismatch: {resolved_path}")
 
-    training = {
-        condition: validate_training_metrics(effective_batch, block, condition)
+    checkpoints = {
+        condition: {
+            update: validate_checkpoint_record(
+                effective_batch, block, condition, update
+            )
+            for update in probe_updates(effective_batch)
+        }
         for condition in ("preference", "base")
     }
-    for condition in ("preference", "base"):
-        for update in probe_updates(effective_batch):
-            path = checkpoint_path(effective_batch, block, condition, update)
-            record = load_json(path)
-            if record.get("optimizer_update") != update:
-                raise RuntimeError(f"Checkpoint update mismatch: {path}")
-
-    report_path = root / "checkpoint_report.json"
-    report = load_json(report_path)
-    checkpoints = report.get("checkpoints")
-    if not isinstance(checkpoints, list) or [
-        row.get("optimizer_update") for row in checkpoints if isinstance(row, dict)
-    ] != list(probe_updates(effective_batch)):
-        raise RuntimeError(f"Checkpoint report update sequence drifted: {report_path}")
+    training = {
+        condition: validate_training_metrics(
+            effective_batch, block, condition, checkpoints[condition]
+        )
+        for condition in ("preference", "base")
+    }
+    validate_checkpoint_report(effective_batch, block, checkpoints)
 
     artifacts = {
         str(path.relative_to(root)): artifact_record(path, root)
@@ -682,6 +1074,11 @@ def cell_complete(effective_batch: int, block: int) -> bool:
 
 
 def run_cell(effective_batch: int, block: int) -> None:
+    with cell_lock(effective_batch, block):
+        _run_cell_locked(effective_batch, block)
+
+
+def _run_cell_locked(effective_batch: int, block: int) -> None:
     validate_config(effective_batch)
     config_path = Path(GEOMETRIES[effective_batch]["config"])
     carriers = prepare_data(effective_batch, block)
@@ -786,16 +1183,17 @@ def batch_at_examples(
     effective_batch: int,
     example_count: int,
     states: dict[tuple[int, int], str] | None = None,
+    selected_blocks: tuple[int, ...] = BLOCKS,
 ) -> dict[str, object]:
     update = updates_for_examples(effective_batch, example_count)
     if states is None:
         states = {
             (effective_batch, block): validate_present_cell(effective_batch, block)
-            for block in BLOCKS
+            for block in selected_blocks
         }
     available = [
         block
-        for block in BLOCKS
+        for block in selected_blocks
         if states[(effective_batch, block)] == "complete"
     ]
     pairs = [paired_record(effective_batch, block, update) for block in available]
@@ -804,7 +1202,10 @@ def batch_at_examples(
         "effective_batch_size": effective_batch,
         "optimizer_update": update,
         "completed_dev_pairs": len(pairs),
-        "missing_blocks": [block for block in BLOCKS if block not in available],
+        "selected_blocks": list(selected_blocks),
+        "missing_blocks": [
+            block for block in selected_blocks if block not in available
+        ],
         "positive_dev_pairs": sum(effect > 0 for effect in effects),
         "mean_dev_paired_effect": None if not effects else sum(effects) / len(effects),
         "dev_pairs": pairs,
@@ -814,12 +1215,15 @@ def batch_at_examples(
 def example_contour_row(
     example_count: int,
     states: dict[tuple[int, int], str],
+    selected_batches: tuple[int, ...] = BATCHES,
+    selected_blocks: tuple[int, ...] = BLOCKS,
 ) -> dict[str, object]:
     return {
         "example_count_per_arm": example_count,
         "passes": example_count / EXAMPLES_PER_ARM,
         "batch_results": [
-            batch_at_examples(batch, example_count, states) for batch in BATCHES
+            batch_at_examples(batch, example_count, states, selected_blocks)
+            for batch in selected_batches
         ],
     }
 
@@ -827,11 +1231,17 @@ def example_contour_row(
 def endpoint_record(
     effective_batch: int,
     states: dict[tuple[int, int], str],
+    selected_blocks: tuple[int, ...] = BLOCKS,
 ) -> dict[str, object]:
-    result = batch_at_examples(effective_batch, EXAMPLES_PER_ARM, states)
-    complete = all(
-        states[(effective_batch, block)] == "complete" for block in BLOCKS
+    result = batch_at_examples(
+        effective_batch, EXAMPLES_PER_ARM, states, selected_blocks
     )
+    complete = all(
+        states[(effective_batch, block)] == "complete" for block in selected_blocks
+    )
+    full_screen = len(selected_blocks) == len(BLOCKS) and set(
+        selected_blocks
+    ) == set(BLOCKS)
     return {
         "effective_batch_size": effective_batch,
         "optimizer_updates": max_updates(effective_batch),
@@ -842,7 +1252,7 @@ def endpoint_record(
             "definition": "both development-block paired effects are positive",
             "passed": (
                 int(result["positive_dev_pairs"]) == len(BLOCKS)
-                if complete
+                if complete and full_screen
                 else None
             ),
             "confirmatory_claim_authorized": False,
@@ -850,20 +1260,44 @@ def endpoint_record(
     }
 
 
-def collect_cell_states() -> dict[tuple[int, int], str]:
+def collect_cell_states(
+    selected_batches: tuple[int, ...] = BATCHES,
+    selected_blocks: tuple[int, ...] = BLOCKS,
+) -> dict[tuple[int, int], str]:
     states: dict[tuple[int, int], str] = {}
-    for effective_batch in BATCHES:
+    for effective_batch in selected_batches:
         validate_config(effective_batch)
-        for block in BLOCKS:
+        for block in selected_blocks:
             states[(effective_batch, block)] = validate_present_cell(
                 effective_batch, block
             )
     return states
 
 
-def summarize() -> dict[str, object]:
-    states = collect_cell_states()
-    endpoints = [endpoint_record(batch, states) for batch in BATCHES]
+def summarize(
+    selected_batches: tuple[int, ...] = BATCHES,
+    selected_blocks: tuple[int, ...] = BLOCKS,
+) -> dict[str, object]:
+    selected_batch_set = set(selected_batches)
+    selected_block_set = set(selected_blocks)
+    if (
+        not selected_batch_set
+        or not selected_block_set
+        or not selected_batch_set <= set(BATCHES)
+        or not selected_block_set <= set(BLOCKS)
+    ):
+        raise ValueError("Summary selectors must be nonempty supported values")
+    selected_batches = tuple(
+        batch for batch in BATCHES if batch in selected_batch_set
+    )
+    selected_blocks = tuple(
+        block for block in BLOCKS if block in selected_block_set
+    )
+    states = collect_cell_states(selected_batches, selected_blocks)
+    endpoints = [
+        endpoint_record(batch, states, selected_blocks)
+        for batch in selected_batches
+    ]
     complete = all(bool(endpoint["complete"]) for endpoint in endpoints)
     summary = {
         "schema_version": 1,
@@ -873,9 +1307,9 @@ def summarize() -> dict[str, object]:
             if complete
             else "exploratory_development_partial"
         ),
-        "blocks": list(BLOCKS),
-        "student_seeds": SEEDS,
-        "candidate_effective_batches": list(BATCHES),
+        "blocks": list(selected_blocks),
+        "student_seeds": {block: SEEDS[block] for block in selected_blocks},
+        "candidate_effective_batches": list(selected_batches),
         "examples_per_arm": EXAMPLES_PER_ARM,
         "schedule_examples": SCHEDULE_EXAMPLES,
         "warmup_examples": WARMUP_EXAMPLES,
@@ -886,11 +1320,13 @@ def summarize() -> dict[str, object]:
                 "block": block,
                 "state": states[(batch, block)],
             }
-            for batch in BATCHES
-            for block in BLOCKS
+            for batch in selected_batches
+            for block in selected_blocks
         ],
         "example_count_contour": [
-            example_contour_row(example_count, states)
+            example_contour_row(
+                example_count, states, selected_batches, selected_blocks
+            )
             for example_count in PROBE_EXAMPLE_COUNTS
         ],
         "batch_endpoints": endpoints,
@@ -904,8 +1340,9 @@ def summarize() -> dict[str, object]:
             "reason": "save_model is false and optimizer state is not persisted",
         },
     }
-    destination = RUNS / "max_transfer_equal_examples_one_pass_summary.json"
-    atomic_write_json(destination, summary)
+    if selected_batches == BATCHES and selected_blocks == BLOCKS:
+        destination = RUNS / "max_transfer_equal_examples_one_pass_summary.json"
+        atomic_write_json(destination, summary)
     return summary
 
 
@@ -938,16 +1375,26 @@ def main() -> None:
     except ValueError as error:
         parser.error(str(error))
     if args.summary_only:
-        print(json.dumps(summarize(), indent=2, sort_keys=True), flush=True)
+        print(
+            json.dumps(
+                summarize(selected_batches, selected_blocks),
+                indent=2,
+                sort_keys=True,
+            ),
+            flush=True,
+        )
         return
-    try:
-        for effective_batch in selected_batches:
-            for block in selected_blocks:
-                run_cell(effective_batch, block)
-    except BaseException:
-        print(json.dumps(summarize(), indent=2, sort_keys=True), flush=True)
-        raise
-    print(json.dumps(summarize(), indent=2, sort_keys=True), flush=True)
+    for effective_batch in selected_batches:
+        for block in selected_blocks:
+            run_cell(effective_batch, block)
+    print(
+        json.dumps(
+            summarize(selected_batches, selected_blocks),
+            indent=2,
+            sort_keys=True,
+        ),
+        flush=True,
+    )
 
 
 if __name__ == "__main__":
