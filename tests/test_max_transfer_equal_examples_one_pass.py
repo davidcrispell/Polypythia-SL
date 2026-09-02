@@ -20,6 +20,82 @@ def load_module():
     return module
 
 
+def write_fake_pipeline_outputs(module, effective_batch: int, block: int) -> None:
+    root = module.output_dir(effective_batch, block)
+    root.mkdir(parents=True, exist_ok=True)
+    (root / "resolved_config.json").write_text(
+        json.dumps(module.expected_resolved_config(effective_batch, block))
+    )
+    config = yaml.safe_load(
+        Path(module.GEOMETRIES[effective_batch]["config"]).read_text()
+    )
+    lora_config = config["student_training"]["lora"]
+    for condition in ("preference", "base"):
+        checkpoint_metrics = []
+        for update in module.probe_updates(effective_batch):
+            path = module.checkpoint_path(
+                effective_batch, block, condition, update
+            )
+            path.parent.mkdir(parents=True, exist_ok=True)
+            path.write_text(
+                json.dumps(
+                    {
+                        "optimizer_update": update,
+                        "final_target_logit_margin": {"mean": 0.1},
+                    }
+                )
+            )
+            checkpoint_metrics.append({"optimizer_update": update})
+        update_metrics = [
+            {
+                "optimizer_update": update,
+                "epoch": 0,
+                "learning_rates_after_update": [
+                    module.expected_lr_after_update(effective_batch, update)
+                ],
+            }
+            for update in range(1, module.max_updates(effective_batch) + 1)
+        ]
+        metrics = {
+            "examples": module.EXAMPLES_PER_ARM,
+            "epochs": 1,
+            "configured_epochs": 1,
+            "completed_epochs": 1,
+            "optimizer_updates": module.max_updates(effective_batch),
+            "optimizer": {
+                "name": "adamw",
+                "learning_rate": config["student_training"]["learning_rate"],
+            },
+            "lora": {
+                "r": lora_config["r"],
+                "alpha": lora_config["alpha"],
+                "target_modules": lora_config["target_modules"],
+            },
+            "saved_model": False,
+            "schedule_total_updates": module.schedule_total_updates(
+                effective_batch
+            ),
+            "warmup_updates": module.warmup_updates(effective_batch),
+            "update_metrics": update_metrics,
+            "checkpoint_metrics": checkpoint_metrics,
+            "seed": module.SEEDS[block],
+        }
+        path = module.training_metrics_path(effective_batch, block, condition)
+        path.parent.mkdir(parents=True, exist_ok=True)
+        path.write_text(json.dumps(metrics))
+    (root / "checkpoint_report.json").write_text(
+        json.dumps(
+            {
+                "checkpoints": [
+                    {"optimizer_update": update}
+                    for update in module.probe_updates(effective_batch)
+                ]
+            }
+        )
+    )
+    (root / "checkpoint_report.md").write_text("# checkpoint report\n")
+
+
 def test_equal_example_configs_preserve_example_indexed_lr_geometry():
     module = load_module()
     expected = {
@@ -214,6 +290,15 @@ def test_equal_example_summary_is_keyed_by_example_count(
             if batch != 128:
                 write_pair(batch, 2, update, batch / 200 + example_count / 20000)
 
+    states = {
+        (batch, block): (
+            "incomplete" if (batch, block) == (128, 2) else "complete"
+        )
+        for batch in module.BATCHES
+        for block in module.BLOCKS
+    }
+    monkeypatch.setattr(module, "collect_cell_states", lambda: states)
+
     partial = module.summarize()
 
     assert partial["status"] == "exploratory_development_partial"
@@ -233,13 +318,12 @@ def test_equal_example_summary_is_keyed_by_example_count(
     ]
     assert partial["batch_endpoints"][0]["screen"]["passed"] is True
     assert partial["batch_endpoints"][-1]["screen"]["passed"] is None
-    assert module.cell_complete(32, 1) is True
-    assert module.cell_complete(128, 2) is False
 
     for example_count in module.PROBE_EXAMPLE_COUNTS:
         update = module.updates_for_examples(128, example_count)
         effect = -0.1 if example_count == 8192 else 0.1
         write_pair(128, 2, update, effect)
+    states[(128, 2)] = "complete"
     complete = module.summarize()
 
     assert complete["status"] == "exploratory_development_complete"
@@ -250,7 +334,10 @@ def test_equal_example_summary_is_keyed_by_example_count(
     }
     assert complete["resume"] == {
         "granularity": "complete_batch_block_cell",
-        "complete_definition": "all paired example-count probes exist",
+        "complete_definition": (
+            "valid atomic completion marker bound to frozen identity and "
+            "all required artifact hashes"
+        ),
         "intra_cell_optimizer_resume": False,
         "reason": "save_model is false and optimizer state is not persisted",
     }
@@ -269,49 +356,83 @@ def test_equal_example_cell_freezes_hashes_and_reuses_only_complete_cell(
     }
     monkeypatch.setattr(module, "output_dir", lambda batch, block: cell_dir)
     monkeypatch.setattr(module, "prepare_data", lambda batch, block: carriers)
-
-    def write_probe(condition: str, update: int) -> None:
-        path = module.checkpoint_path(8, 1, condition, update)
-        path.parent.mkdir(parents=True, exist_ok=True)
-        path.write_text(json.dumps({"final_target_logit_margin": {"mean": 0.0}}))
+    monkeypatch.setattr(module, "source_carrier_manifest", lambda block: carriers)
+    monkeypatch.setattr(
+        module,
+        "validate_materialized_data",
+        lambda batch, block, manifest: None,
+    )
 
     def fake_run(command, **kwargs):
         calls.append((command, kwargs))
-        for update in module.probe_updates(8):
-            for condition in ("preference", "base"):
-                write_probe(condition, update)
+        write_fake_pipeline_outputs(module, 128, 1)
 
     monkeypatch.setattr(module.subprocess, "run", fake_run)
 
-    module.run_cell(8, 1)
+    module.run_cell(128, 1)
 
     identity_path = cell_dir / "equal_examples_identity.json"
+    completion_path = cell_dir / "equal_examples_complete.json"
     identity = json.loads(identity_path.read_text())
+    completion = json.loads(completion_path.read_text())
     assert len(calls) == 1
     assert identity["config_sha256"] == module.sha256(
-        ROOT / "configs" / "max_transfer_equal_examples_eb8_one_pass.yaml"
+        ROOT / "configs" / "max_transfer_equal_examples_eb128_one_pass.yaml"
     )
     assert identity["reference_quick_config_sha256"] == module.sha256(
-        ROOT / "configs" / "max_transfer_quick_eb8_u1000.yaml"
+        ROOT / "configs" / "max_transfer_quick_eb128_u1000.yaml"
     )
     assert identity["carriers"] == carriers
     assert identity["probe_example_counts"] == [0, 2048, 4096, 8192]
-    assert identity["probe_updates"] == [0, 256, 512, 1024]
+    assert identity["probe_updates"] == [0, 16, 32, 64]
     assert identity["schedule_examples"] == 81920
+    assert completion["identity"]["sha256"] == module.sha256(identity_path)
+    assert completion["training"]["preference"]["optimizer_updates"] == 64
+    assert completion["training"]["base"]["schedule_total_updates"] == 640
+    assert len(completion["artifacts"]) == 13
     assert "--stage" in calls[0][0] and "students" in calls[0][0]
 
-    module.run_cell(8, 1)
+    module.run_cell(128, 1)
     assert len(calls) == 1
 
-    # Keeping the endpoint while dropping an intermediate probe is partial;
-    # the cell must rerun rather than being silently reused.
-    module.checkpoint_path(8, 1, "base", 256).unlink()
-    assert module.paired_probe_available(8, 1, module.max_updates(8)) is True
-    assert module.cell_complete(8, 1) is False
-    module.run_cell(8, 1)
+    # A marker whose intermediate artifact hash changed is invalid. The runner
+    # removes generated outputs, preserves unrelated files, and replays.
+    notes = cell_dir / "notes.txt"
+    notes.write_text("preserve me")
+    intermediate = module.checkpoint_path(128, 1, "base", 16)
+    intermediate.write_text(
+        json.dumps(
+            {
+                "optimizer_update": 16,
+                "final_target_logit_margin": {"mean": 999.0},
+            }
+        )
+    )
+    with pytest.raises(RuntimeError, match="artifact hash mismatch"):
+        module.validate_present_cell(128, 1)
+    module.run_cell(128, 1)
     assert len(calls) == 2
+    assert notes.read_text() == "preserve me"
+    assert module.cell_complete(128, 1) is True
+
+    # Mixed-attempt probes without a marker are incomplete even when the
+    # endpoint exists; the entire generated evaluation tree is replaced.
+    completion_path.unlink()
+    stale = cell_dir / "evaluations" / "checkpoints" / "stale_attempt.json"
+    stale.write_text("stale")
+    module.run_cell(128, 1)
+    assert len(calls) == 3
+    assert not stale.exists()
+    assert module.cell_complete(128, 1) is True
+
+    # A missing intermediate with a retained endpoint also forces replay.
+    module.checkpoint_path(128, 1, "preference", 32).unlink()
+    assert module.paired_probe_available(128, 1, 64) is True
+    module.run_cell(128, 1)
+    assert len(calls) == 4
+    assert module.cell_complete(128, 1) is True
 
     identity["student_seed"] = 123
     identity_path.write_text(json.dumps(identity))
     with pytest.raises(RuntimeError, match="Frozen identity mismatch"):
-        module.run_cell(8, 1)
+        module.run_cell(128, 1)
