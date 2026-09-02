@@ -3136,6 +3136,46 @@ SHA256 (`7ac7d552...64f587`), norm 10.997561, and mean prompt-difference norm
   Artifacts: `scripts/cotangent_factorial_v1.py`,
   `runs/cotangent_factorial_v1.md`, `runs/cotangent_factorial_v1/results.json`.
 
+### 2026-09-02 — Equal-example batch contour registered (Pythia SL recipe calibration)
+- **Reason for the change**: the fixed-update screens confound batch geometry
+  with example exposure. At 1,000 updates EB2 sees 2,000 examples while EB16
+  sees 16,000, so weak EB2/EB4 results cannot distinguish insufficient carrier
+  coverage from a genuinely harmful small batch. The in-progress fixed-2,560
+  sweep was stopped before EB32 completed at the user's direction. Its completed
+  exploratory endpoints are retained: EB8 +1.1451 and EB16 +1.2102 mean paired
+  wolf-margin transfer over two blocks. They are not an equal-exposure result.
+- **Question**: at identical exposure to the full carrier bank, which effective
+  batch gives the largest paired subliminal wolf transfer? The working account
+  predicts a tradeoff: very small batches may contain too few divergence events
+  per update, while very large batches give Adam too few moment/state updates.
+- **Frozen contour**: EB2/4/8/16/32/64/128; the same 8,192 carrier rows are
+  presented exactly once per arm. Therefore optimizer updates are respectively
+  4,096/2,048/1,024/512/256/128/64. Two paired development blocks use the
+  existing carrier pools and student seeds 91001/91002.
+- **Example-indexed optimizer clock**: preserve the canonical EB16 schedule in
+  example coordinates. Warmup is 128 examples (64/32/16/8/4/2/1 updates), and
+  the linear LR horizon is 81,920 examples
+  (40,960/20,480/10,240/5,120/2,560/1,280/640 updates). LR remains 2e-4 for
+  every batch. This intentionally tests the practical hypothesis that additional
+  Adam transitions at smaller batch improve transfer; it is not a pure
+  stochastic-gradient-noise isolation.
+- **Matched probes**: E=0/2,048/4,096/8,192 examples per arm, translated to the
+  corresponding update for each batch. Primary readout is the paired
+  preference-carrier minus base-carrier mean wolf-target logit margin on the
+  frozen 60-prompt evaluation set. All batches and both blocks continue without
+  optional stopping.
+- **Interpretation registered before launch**: a flat equal-example contour
+  attributes the prior fixed-update differences mainly to exposure; a small-
+  batch advantage supports repeated/bursty adaptive accumulation; a large-batch
+  advantage supports cleaner distribution estimates; an interior maximum
+  supports a coverage-versus-update tradeoff. Because clipping is already near
+  saturated at EB2/4, any claimed mechanism requires a later clipping ablation
+  and more independent blocks.
+- **Implementation**:
+  `scripts/max_transfer_equal_examples_one_pass.py` and
+  `configs/max_transfer_equal_examples_eb*_one_pass.yaml`. Status at
+  registration: code/tests complete; no result inspected and no cell launched.
+
 ## Seed registry
 
 | Range | Use |
